@@ -1,80 +1,50 @@
-# Metric dictionary (implementation.md 5.2). Rows marked `verify` are confirmed by the day-1 XBRL tag dump.
-- id: gnpa_amt
-  subtypes: [bank]
-  unit: inr_cr
-  tier: 1
-  xbrl: ["GrossNonPerformingAssets"]
-  synonyms: ["gross npa", "gross non-performing assets", "gnpa"]
-  sanity: [0, 1.0e7]
-- id: gnpa_pct
-  subtypes: [bank]
-  unit: fraction
-  tier: 1
-  xbrl: ["PercentageOfGrossNpa"]
-  synonyms: ["gross npa %", "gnpa ratio", "gross npa ratio"]
-  sanity: [0, 0.5]
-- id: nnpa_pct
-  subtypes: [bank]
-  unit: fraction
-  tier: 1
-  xbrl: ["PercentageOfNpa"]
-- id: cet1
-  subtypes: [bank]
-  unit: fraction
-  tier: 1
-  xbrl: ["CET1Ratio"]
-- id: roa
-  subtypes: [bank]
-  unit: fraction
-  tier: 1
-  xbrl: ["ReturnOnAssets"]
-- id: interest_earned
-  subtypes: [bank]
-  unit: inr_cr
-  tier: 1
-  xbrl: ["InterestEarned"]
-- id: pat
-  subtypes: [bank, nbfc, insurer_life, insurer_general, holding, generic]
-  unit: inr_cr
-  tier: 1
-  xbrl: ["ProfitLossForThePeriod"]
-- id: interest_expended      # verify
-  subtypes: [bank]
-  tier: 1
-  xbrl: ["InterestExpended"]
-- id: other_income           # verify
-  subtypes: [bank]
-  tier: 1
-  xbrl: ["OtherIncome"]
-- id: opex                   # verify
-  subtypes: [bank]
-  tier: 1
-  xbrl: ["OperatingExpenses"]
-- id: provisions             # verify
-  subtypes: [bank]
-  tier: 1
-  xbrl: ["ProvisionsOtherThanTaxAndContingencies"]
-# Tier 2 (deck / Pillar 3 / press release), target + 3 peers
-- {id: advances, subtypes: [bank], tier: 2, unit: inr_cr, synonyms: ["gross advances", "net advances", "advances"]}
-- {id: deposits, subtypes: [bank], tier: 2, unit: inr_cr, synonyms: ["total deposits", "deposits"]}
-- {id: casa_pct, subtypes: [bank], tier: 2, unit: fraction, synonyms: ["casa ratio", "casa %"]}
-- {id: gross_slippages, subtypes: [bank], tier: 2, unit: inr_cr, synonyms: ["gross slippages", "slippages"]}
-- {id: recoveries_upgrades, subtypes: [bank], tier: 2, unit: inr_cr, synonyms: ["recoveries and upgrades", "recoveries & upgrades"]}
-- {id: write_offs, subtypes: [bank, nbfc], tier: 2, unit: inr_cr, synonyms: ["write-offs", "written off", "technical write-off"]}
-- {id: pcr, subtypes: [bank], tier: 2, unit: fraction, synonyms: ["provision coverage ratio", "pcr"]}
-- {id: nim, subtypes: [bank], tier: 2, unit: fraction, synonyms: ["net interest margin", "nim"]}
-- {id: cost_of_funds, subtypes: [bank, nbfc], tier: 2, unit: fraction}
-- {id: aum, subtypes: [nbfc], tier: 2, unit: inr_cr, synonyms: ["assets under management", "aum"]}
-- {id: stage2_pct, subtypes: [nbfc], tier: 2, unit: fraction}
-- {id: stage3_pct, subtypes: [nbfc], tier: 2, unit: fraction}
-- {id: stage23_amt, subtypes: [nbfc], tier: 2, unit: inr_cr}
+# Metric dictionary (implementation.md 5.2). status: verified = seen in a real file; verify = confirmed by the day-1/2 XBRL tag dump.
+# Merged by id: B0 skeleton rows + B2 rows (B2 wins on conflict). Sanity bounds are plain numbers (YAML 1.1 reads 1.0e7 as a string).
+- {id: gnpa_amt, subtypes: [bank], unit: inr_cr, tier: 1, xbrl: [GrossNonPerformingAssets], synonyms: [gross npa, gross non-performing assets, gnpa], sanity: [0, 10000000], status: verified}
+- {id: nnpa_amt, subtypes: [bank], unit: inr_cr, tier: 1, xbrl: [NonPerformingAssets], synonyms: [net npa, net non-performing assets], sanity: [0, 10000000], status: verified}
+- {id: gnpa_pct, subtypes: [bank], unit: fraction, tier: 1, xbrl: [PercentageOfGrossNpa], synonyms: [gross npa %, gnpa ratio, gross npa ratio], sanity: [0, 0.5], status: verified}
+- {id: nnpa_pct, subtypes: [bank], unit: fraction, tier: 1, xbrl: [PercentageOfNpa], synonyms: [net npa %, nnpa ratio], sanity: [0, 0.5], status: verified}
+- {id: cet1, subtypes: [bank], unit: fraction, tier: 1, xbrl: [CET1Ratio], synonyms: [cet1, cet 1 ratio, common equity tier 1], sanity: [0, 0.6], status: verified}
+- {id: roa, subtypes: [bank], unit: fraction, tier: 1, xbrl: [ReturnOnAssets], synonyms: [return on assets, roa], sanity: [-0.2, 0.2], status: verified}
+- {id: interest_earned, subtypes: [bank], unit: inr_cr, tier: 1, xbrl: [InterestEarned], sanity: [0, 10000000], status: verified}
+- {id: interest_expended, subtypes: [bank], tier: 1, xbrl: [InterestExpended], unit: inr_cr, sanity: [0, 10000000], status: verified}
+- {id: other_income, subtypes: [bank], tier: 1, xbrl: [OtherIncome], unit: inr_cr, sanity: [0, 10000000], status: verified}
+- {id: opex, subtypes: [bank], tier: 1, xbrl: [OperatingExpenses], unit: inr_cr, sanity: [0, 10000000], status: verified}
+- {id: ppop, subtypes: [bank], unit: inr_cr, tier: 1, xbrl: [OperatingProfitBeforeProvisionAndContingencies, OperatingProfitBeforeProvisionsAndContingencies], sanity: [-1000000, 10000000], status: verified}
+- {id: provisions, subtypes: [bank], tier: 1, xbrl: [ProvisionsOtherThanTaxAndContingencies], unit: inr_cr, sanity: [-1000000, 10000000], status: verified}
+- {id: total_income, subtypes: [bank], unit: inr_cr, tier: 1, xbrl: [Income], sanity: [0, 10000000], status: verified}
+- {id: advances, subtypes: [bank], tier: 1, unit: inr_cr, synonyms: [gross advances, net advances, advances], instant: true, xbrl: [Advances], sanity: [0, 100000000], status: verified}
+- {id: deposits, subtypes: [bank], tier: 1, unit: inr_cr, synonyms: [total deposits, deposits], instant: true, xbrl: [Deposits], sanity: [0, 100000000], status: verified}
+- {id: total_assets, subtypes: [bank], unit: inr_cr, tier: 1, instant: true, xbrl: [Assets, CapitalAndLiabilities], sanity: [0, 100000000], status: verified}
+- {id: pat, subtypes: [bank, nbfc, insurer_life, insurer_general, holding, generic], unit: inr_cr, tier: 1, xbrl: [ProfitLossForThePeriod, ProfitLossForPeriod], sanity: [-1000000, 10000000], status: verified}
+- {id: pat_owners, subtypes: [nbfc, insurer_life, insurer_general, holding, generic], unit: inr_cr, tier: 1, xbrl: [ProfitOrLossAttributableToOwnersOfParent], sanity: [-1000000, 10000000], status: verified}
+- {id: pbt, subtypes: [bank, nbfc, insurer_life, insurer_general, holding, generic], unit: inr_cr, tier: 1, xbrl: [ProfitLossFromOrdinaryActivitiesBeforeTax, ProfitBeforeTax], sanity: [-1000000, 10000000], status: verified}
+- {id: tax_expense, subtypes: [bank, nbfc, holding, generic], unit: inr_cr, tier: 1, xbrl: [TaxExpense], sanity: [-1000000, 10000000], status: verified}
+- {id: revenue, subtypes: [nbfc, holding, generic], unit: inr_cr, tier: 1, xbrl: [RevenueFromOperations], sanity: [0, 10000000], status: verified}
+- {id: finance_costs, subtypes: [nbfc, holding, generic], unit: inr_cr, tier: 1, xbrl: [FinanceCosts], sanity: [0, 10000000], status: verified}
+- {id: total_expenses, subtypes: [nbfc, holding, generic], unit: inr_cr, tier: 1, xbrl: [Expenses], sanity: [0, 10000000], status: verified}
+- {id: eps_basic, subtypes: [bank, nbfc, holding, generic], unit: inr_per_share, tier: 1, xbrl: [BasicEarningsPerShareAfterExtraordinaryItems, BasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations, BasicEarningsLossPerShareFromContinuingOperations], sanity: [-10000, 100000], status: verified}
+- {id: interest_income, subtypes: [nbfc], unit: inr_cr, tier: 1, xbrl: [InterestIncome, InterestIncomeOnLoans], sanity: [0, 10000000], status: verify}
+- {id: impairment_fin_instr, subtypes: [nbfc], unit: inr_cr, tier: 1, xbrl: [ImpairmentOnFinancialInstruments, NetLossOnDerecognitionOfFinancialInstrumentsUnderAmortisedCostCategory], sanity: [-1000000, 10000000], status: verify}
+- {id: loans, subtypes: [nbfc], unit: inr_cr, tier: 1, instant: true, xbrl: [Loans], sanity: [0, 100000000], status: verify}
+- {id: premium_income, subtypes: [insurer_life, insurer_general], unit: inr_cr, tier: 1, xbrl: [PremiumsEarnedNet, GrossPremiumIncome, TotalPremium], sanity: [0, 10000000], status: verify}
+- {id: solvency, subtypes: [insurer_life, insurer_general], tier: 1, unit: ratio, xbrl: [SolvencyRatio, SolvencyRatioPolicyholders], sanity: [0, 50], status: verify}
+- {id: casa_pct, subtypes: [bank], tier: 2, unit: fraction, synonyms: [casa ratio, casa %, casa], sanity: [0, 1]}
+- {id: gross_slippages, subtypes: [bank], tier: 2, unit: inr_cr, synonyms: [gross slippages, slippages], sanity: [0, 1000000]}
+- {id: recoveries_upgrades, subtypes: [bank], tier: 2, unit: inr_cr, synonyms: [recoveries and upgrades, recoveries & upgrades], sanity: [0, 1000000]}
+- {id: write_offs, subtypes: [bank, nbfc], tier: 2, unit: inr_cr, synonyms: [write-offs, written off, technical write-off, write offs], sanity: [0, 1000000]}
+- {id: pcr, subtypes: [bank], tier: 2, unit: fraction, synonyms: [provision coverage ratio, pcr], sanity: [0, 1.5]}
+- {id: nim, subtypes: [bank], tier: 2, unit: fraction, synonyms: [net interest margin, nim], sanity: [0, 0.2]}
+- {id: cost_of_funds, subtypes: [bank, nbfc], tier: 2, unit: fraction, synonyms: [cost of funds, cost of borrowings], sanity: [0, 0.3]}
+- {id: aum, subtypes: [nbfc], tier: 2, unit: inr_cr, synonyms: [assets under management, aum], sanity: [0, 100000000]}
+- {id: stage2_pct, subtypes: [nbfc], tier: 2, unit: fraction, synonyms: [stage 2 %, stage 2 assets %, stage ii %], sanity: [0, 0.6]}
+- {id: stage3_pct, subtypes: [nbfc], tier: 2, unit: fraction, synonyms: [stage 3 %, stage 3 assets %, stage iii %, gross stage 3], sanity: [0, 0.6]}
+- {id: stage23_amt, subtypes: [nbfc], tier: 2, unit: inr_cr, synonyms: [stage 2 and 3 assets, stage 2+3, stage 2 + stage 3], sanity: [0, 100000000]}
+- {id: ape, subtypes: [insurer_life], tier: 2, unit: inr_cr, synonyms: [annualised premium equivalent, ape], sanity: [0, 10000000]}
+- {id: vnb_margin, subtypes: [insurer_life], tier: 2, unit: fraction, synonyms: [vnb margin, value of new business margin], sanity: [-0.5, 1]}
+- {id: persistency_13m, subtypes: [insurer_life], tier: 2, unit: fraction, synonyms: [13th month persistency, persistency 13m], sanity: [0, 1]}
+- {id: persistency_61m, subtypes: [insurer_life], tier: 2, unit: fraction, synonyms: [61st month persistency, persistency 61m], sanity: [0, 1]}
 - {id: borrowing_mix, subtypes: [nbfc, bank], tier: 2, unit: composition, parts: [deposits, banks, money_markets, ecb, securitisation, others]}
 - {id: segment_mix, subtypes: [bank, nbfc], tier: 2, unit: composition}
-# Insurer (life): APE, VNB margin, persistency 13m/61m, solvency, product mix, channel mix
-- {id: ape, subtypes: [insurer_life], tier: 2, unit: inr_cr}
-- {id: vnb_margin, subtypes: [insurer_life], tier: 2, unit: fraction}
-- {id: persistency_13m, subtypes: [insurer_life], tier: 2, unit: fraction}
-- {id: persistency_61m, subtypes: [insurer_life], tier: 2, unit: fraction}
-- {id: solvency, subtypes: [insurer_life, insurer_general], tier: 2, unit: ratio}
 - {id: product_mix, subtypes: [insurer_life], tier: 2, unit: composition, parts: [par, non_par, ulip, protection, annuity, group]}
 - {id: channel_mix, subtypes: [insurer_life], tier: 2, unit: composition, parts: [banca, agency, direct, broker, others]}

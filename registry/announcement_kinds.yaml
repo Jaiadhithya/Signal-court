@@ -1,8 +1,15 @@
-# Exchange announcement description patterns -> doc_type (implementation.md 3). Case-insensitive regex.
-# Owner of the patterns: B2 (harvest/announcements.py). Skeleton values below.
-- {pattern: "investor presentation|analyst presentation|earnings presentation", doc_type: deck}
-- {pattern: "transcript", doc_type: transcript}
-- {pattern: "credit rating", doc_type: rating}
-- {pattern: "scheme of (amalgamation|arrangement)|merger|demerger", doc_type: scheme}
-- {pattern: "financial results", doc_type: results}
-- {pattern: "public disclosure|l-forms?|nl-forms?", doc_type: insurer_public_disclosure}
+# Exchange announcement description patterns -> doc_type (implementation.md 5, 7.5).
+# First matching rule wins. Matched case-insensitively against "desc" and then "attchmntText".
+# status: verify = pattern guessed from typical wording; confirm against the captured listings (12 Oct).
+- {kind: transcript,    doc_type: transcript,       desc: ["transcript"], text: ["transcript"], fetch: true, status: verify}
+- {kind: audio,         doc_type: other,            desc: ["audio recording", "audio/video"], text: ["audio recording", "audio link"], fetch: false, status: verify}
+- {kind: deck,          doc_type: deck,             desc: ["investor presentation", "earnings presentation", "analyst presentation", "presentation"], text: ["investor presentation", "earnings presentation", "presentation"], fetch: true, status: verify}
+- {kind: press_release, doc_type: press_release,    desc: ["press release", "media release"], text: ["press release"], fetch: true, status: verify}
+- {kind: business_update, doc_type: press_release,  desc: ["business update", "quarterly update", "operational update"], text: ["business update"], fetch: true, status: verify}
+- {kind: rating_letter, doc_type: rating_letter,    desc: ["credit rating"], text: ["credit rating", "rating action", "rationale"], fetch: true, status: verify}
+- {kind: scheme,        doc_type: scheme,           desc: ["scheme of arrangement", "amalgamation", "merger", "demerger", "acquisition", "slump sale"], text: ["scheme of arrangement", "amalgamation", "merger", "demerger", "acquisition"], fetch: true, event_type: scheme, status: verify}
+- {kind: auditor_change, doc_type: other,           desc: ["auditor"], text: ["change in auditor", "resignation of auditor", "appointment of auditor", "statutory auditor"], fetch: true, event_type: auditor_change, status: verify}
+- {kind: results_pdf,   doc_type: results_pdf,      desc: ["financial results", "outcome of board meeting", "integrated filing"], text: ["financial results", "unaudited", "audited"], fetch: true, status: verify}
+- {kind: pillar3,       doc_type: pillar3,          desc: ["pillar 3", "pillar iii", "basel iii disclosures"], text: ["pillar 3", "pillar iii"], fetch: true, status: verify}
+- {kind: liquidity,     doc_type: liquidity_disclosure, desc: ["liquidity coverage", "asset liability", "alm"], text: ["liquidity coverage ratio", "structural liquidity"], fetch: true, status: verify}
+- {kind: insurer_forms, doc_type: other,            desc: ["l-form", "nl-form", "public disclosures"], text: ["l-form", "nl-form", "public disclosures"], fetch: true, status: verify}
