@@ -1,4 +1,4 @@
-"""B2 against B1's real DocStore and CALC schema (the ports B2 was written against)."""
+"""Data layer against the real DocStore and CALC schema (the ports it was written against)."""
 
 from datetime import date
 

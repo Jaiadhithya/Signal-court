@@ -1,4 +1,4 @@
-# Providers, deployments and role chains from implementation.md 9. `<verify>` ids are filled from the day-1 models smoke report.
+# Providers, deployments and role chains. `<verify>` ids are filled from the day-1 models smoke report.
 providers:
   mistral:    {base_url: "https://api.mistral.ai/v1",                               keys_env: MISTRAL_API_KEYS}
   nim:        {base_url: "https://integrate.api.nvidia.com/v1",                     keys_env: NVIDIA_API_KEYS}

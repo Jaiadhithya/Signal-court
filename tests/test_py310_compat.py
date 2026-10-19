@@ -1,4 +1,4 @@
-"""Code must stay 3.10-compatible (implementation.md 2.1): fail on APIs that arrive in 3.11+."""
+"""Code must stay 3.10-compatible: fail on APIs that arrive in 3.11+."""
 import ast
 from pathlib import Path
 

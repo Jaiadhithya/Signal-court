@@ -1,4 +1,4 @@
-# [wave 2] Generic annual-report section headings for forensics (owner: B6).
+# [wave 2] Generic annual-report section headings for forensics.
 - {id: accounting_policies, headings: ["significant accounting policies", "accounting policies"]}
 - {id: auditor_report, headings: ["independent auditor's report", "auditors' report"]}
 - {id: notes, headings: ["notes to the financial statements", "notes forming part of"]}

@@ -1,4 +1,4 @@
-"""Page text extraction (PyMuPDF), passages with pids, per-page cache (implementation.md 7.2).
+"""Page text extraction (PyMuPDF), passages with pids, per-page cache.
 
 Agents only ever see passages with pids, never whole documents.
 """

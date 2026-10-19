@@ -1,4 +1,4 @@
-"""Web search leads (implementation.md 7.3). A Lead is never citable; only a fetched, hashed DOC is.
+"""Web search leads. A Lead is never citable; only a fetched, hashed DOC is.
 
 Backends are injected so the module is testable offline and the router order is data:
 Tavily while the run's Tavily count is under the budget, then ddgs, then Google News RSS / GDELT.

@@ -1,4 +1,4 @@
-"""Deck table extraction (implementation.md 7.6): period headers, Indian number formats, label matching.
+"""Deck table extraction: period headers, Indian number formats, label matching.
 
 Works on page text lines (from PyMuPDF/pdfplumber word-line reconstruction), so it is testable without
 PDFs. Candidate pages are chosen elsewhere by BM25 over metric synonyms. Output is FACT proposals with

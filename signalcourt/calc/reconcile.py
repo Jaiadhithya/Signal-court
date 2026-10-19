@@ -1,4 +1,4 @@
-"""Reconciliation checks and silent-restatement detection (implementation.md 7.7).
+"""Reconciliation checks and silent-restatement detection.
 
 Never raises on bad data: every problem is a ReconResult so one failing quarter cannot
 crash a run. A 'fail' makes dependent CALCs fail (calculator) and the judge's numbers_ok

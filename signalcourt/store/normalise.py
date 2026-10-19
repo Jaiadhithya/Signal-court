@@ -1,4 +1,4 @@
-"""Quote-gate normaliser (implementation.md 7.2). Applied identically to page text and quotes.
+"""Quote-gate normaliser. Applied identically to page text and quotes.
 
 Numbers are never altered: Indian grouping stays, and hyphens next to digits are untouched
 because a minus sign changes a number.

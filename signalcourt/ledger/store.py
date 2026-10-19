@@ -1,4 +1,4 @@
-"""Append-only, hash-chained run ledger (implementation.md 6.3, 7.1).
+"""Append-only, hash-chained run ledger.
 
 One SQLite file per run plus a JSONL mirror with the same envelopes. ``append`` is
 the only write path; UPDATE and DELETE are blocked by triggers, heads are write-once.

@@ -1,4 +1,4 @@
-"""REGEVENT proposals from announcements and regulator releases (implementation.md 7.6)."""
+"""REGEVENT proposals from announcements and regulator releases."""
 
 from __future__ import annotations
 

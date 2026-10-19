@@ -1,5 +1,5 @@
 """Regulator events: RBI press releases (penalties, directions, restrictions) and IRDAI penalties
-(implementation.md 7.5 T3). Monthly listings are crawled once and cached forever; matching is regex on
+. Monthly listings are crawled once and cached forever; matching is regex on
 the title/body plus the generic entity-name normaliser. The listing URL pattern is [verify 12 Oct]."""
 
 from __future__ import annotations

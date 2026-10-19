@@ -1,4 +1,4 @@
-"""Gate 1: schema + capability + unbacked numbers (implementation.md 7.13)."""
+"""Gate 1: schema + capability + unbacked numbers."""
 
 from __future__ import annotations
 

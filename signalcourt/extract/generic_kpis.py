@@ -1,4 +1,4 @@
-"""Generic KPI extraction (non-lender path, implementation.md 7.6): list every numeric KPI on a page.
+"""Generic KPI extraction (non-lender path): list every numeric KPI on a page.
 
 Labels become ``kpi:<slug>``; slugs stay stable across quarters by fuzzy-matching new labels (>= 92)
 to slugs already seen for the entity.

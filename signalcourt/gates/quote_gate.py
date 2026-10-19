@@ -1,4 +1,4 @@
-"""Gate 3: quote gate (implementation.md 7.13, 7.2).
+"""Gate 3: quote gate.
 
 The cited pid must exist in a dated DOC of this run; the quote (if narrower than the passage)
 must be a substring of the passage after normalisation; prose spans are 4-60 words; table-cell

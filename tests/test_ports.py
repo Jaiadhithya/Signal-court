@@ -1,4 +1,4 @@
-"""B1 satisfies the ports B2 expects: DocStorePort and CalcSink."""
+"""The store and ledger satisfy the ports the data layer expects: DocStorePort and CalcSink."""
 
 from datetime import date
 

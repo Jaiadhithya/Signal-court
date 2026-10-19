@@ -1,6 +1,6 @@
-"""Console entry point: `signal` (implementation.md 11).
+"""Console entry point: `signal`.
 
-B0 ships the app object and two housekeeping commands. Other build threads register their commands here
+The app object and two housekeeping commands. Other commands register here
 as their modules land (run, harvest, panel, verify, ...); keep each command a thin call into its module.
 """
 import typer

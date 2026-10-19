@@ -1,7 +1,7 @@
 """Plain dataclasses that carry extraction output to the gates.
 
-B2 deliberately does not import ledger or store types: the controller adapts these to
-FACT / SPAN / REGEVENT payloads (implementation.md 6.5) and the quote gate verifies them.
+This module deliberately does not import ledger or store types: the controller adapts these to
+FACT / SPAN / REGEVENT payloads and the quote gate verifies them.
 """
 
 from __future__ import annotations

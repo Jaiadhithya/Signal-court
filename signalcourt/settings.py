@@ -148,7 +148,7 @@ class Writer(_Section):
 
 
 class Config(_Section):
-    """Mirror of config/settings.toml (implementation.md 5.1)."""
+    """Mirror of config/settings.toml."""
 
     panel: Panel
     sensors: Sensors
@@ -169,7 +169,7 @@ class Config(_Section):
 
 
 class Env(BaseSettings):
-    """Secrets and identity strings from the environment or .env (implementation.md 2.2).
+    """Secrets and identity strings from the environment or .env.
 
     Key lists stay as comma-separated strings; use `keys()` to split them.
     """
@@ -198,7 +198,7 @@ class Env(BaseSettings):
 
 
 class Workspace(BaseModel):
-    """Paths under SIGNAL_HOME (implementation.md 6.1). Nothing is created until `ensure()`."""
+    """Paths under SIGNAL_HOME. Nothing is created until `ensure()`."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -270,7 +270,7 @@ def load_config(path: Path | None = None) -> Config:
         if not (rule.get("verified") is True and rule.get("span_rid")):
             raise SettingsError(
                 "rbi_divergence.enabled is true but registry/rbi_divergence.yaml is not verified "
-                "with a span_rid (implementation.md 5.1)"
+                "with a span_rid"
             )
     return cfg
 

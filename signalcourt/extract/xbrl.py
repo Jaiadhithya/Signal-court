@@ -1,4 +1,4 @@
-"""Namespace-agnostic XBRL instance parser (implementation.md 7.6).
+"""Namespace-agnostic XBRL instance parser.
 
 Works on both exchange taxonomies (legacy banking/Ind-AS entry points and the
 integrated-filing one) because facts are keyed by local name, never by prefix.

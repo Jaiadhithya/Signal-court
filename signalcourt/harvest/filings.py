@@ -1,4 +1,4 @@
-"""Results + XBRL (legacy and integrated) and annual reports (implementation.md 7.5).
+"""Results + XBRL (legacy and integrated) and annual reports.
 
 Listing rows are read defensively: key names differ between the legacy feed (``toDate``,
 ``broadCastDate``) and the integrated one (``qe_Date``, ``broadcast_Date``, ``pdf_attach``).

@@ -1,4 +1,4 @@
-# No-advice filter terms (one per line; owner: B4 gates/advice_privacy.py).
+# No-advice filter terms (one per line).
 buy
 sell
 hold

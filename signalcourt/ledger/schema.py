@@ -1,4 +1,4 @@
-"""Record types, payload models and the capability table (implementation.md 6.5).
+"""Record types, payload models and the capability table.
 
 Every payload model forbids unknown fields. A correction is a new record whose
 payload sets ``supersedes`` to the rid it replaces; nothing is ever edited.

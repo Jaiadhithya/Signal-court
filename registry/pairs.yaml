@@ -1,4 +1,4 @@
-# Divergence pairs and expected relations (implementation.md 5.4).
+# Divergence pairs and expected relations.
 - {id: P1, a: yoy(advances), b: yoy(deposits), relation: co_move, subtypes: [bank], angle: A1}
 - {id: P2, a: qoq(gnpa_pct), b: yoy(write_offs), relation: gnpa_fall_with_writeoff_rise, subtypes: [bank, nbfc], angle: A2}
 - {id: P3, a: yoy(pat), b: yoy(ppop), relation: co_move, subtypes: [bank], angle: A3}

@@ -1,4 +1,4 @@
-# Red-team checklist (implementation.md 5.5). Each alternative has a code test in court/alttests.py,
+# Red-team checklist. Each alternative has a code test in court/alttests.py,
 # run before any LLM call, and the record kinds that count as an admissible rebuttal.
 - id: sector_shock
   code_test: "twin gap where the twin applies, else peer median move over the break window; regulatory events dated in the window"

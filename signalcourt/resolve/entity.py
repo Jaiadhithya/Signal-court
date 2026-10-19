@@ -1,4 +1,4 @@
-"""name -> symbol/ISIN/legal names (implementation.md 7.4).
+"""name -> symbol/ISIN/legal names.
 
 Keeps every legal name an entity has used, so a pending rename resolves to the same symbol.
 Fuzzy match is ``rapidfuzz.token_set_ratio`` over normalised names; a tie within 3 points

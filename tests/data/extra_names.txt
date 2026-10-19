@@ -1,4 +1,4 @@
-# Non-NIFTY development-set names for the name-grep blocklist (plan.md section 5).
+# Non-NIFTY development-set names for the name-grep blocklist.
 # Hold-out names must NEVER be added here or anywhere shared before the 22 Oct reveal.
 Cholamandalam Investment and Finance|CHOLAFIN|Cholamandalam
 ICICI Prudential Life Insurance|ICICIPRULI|ICICI Prudential Life

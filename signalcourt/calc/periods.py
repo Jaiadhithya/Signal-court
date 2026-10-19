@@ -1,4 +1,4 @@
-"""Indian fiscal-year quarter labels and arithmetic (implementation.md 7.7).
+"""Indian fiscal-year quarter labels and arithmetic.
 
 FY27 runs April 2026 to March 2027, so Q1FY27 = Apr-Jun 2026. A quarter is identified by
 its label ("Q1FY27") or by an integer index (fy * 4 + q - 1) used for series arithmetic.

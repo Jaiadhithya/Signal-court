@@ -1,4 +1,4 @@
-"""Panel view: long format (entity, metric, period, basis) -> value, rid, tier (implementation.md 7.7).
+"""Panel view: long format (entity, metric, period, basis) -> value, rid, tier.
 
 Tier 1 for every financial entity is persisted to ``panels/tier1.parquet`` by the nightly job;
 a run's panel is the target plus peers, filtered by ``as_of`` (a quarter is in the panel only

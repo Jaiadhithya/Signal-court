@@ -1,4 +1,4 @@
-"""Name-grep (implementation.md section 10): no company names, symbols, ISINs or BSE codes in code or data.
+"""Name-grep: no company names, symbols, ISINs or BSE codes in code or data.
 
 The blocklist is built at test time from tests/data/nifty50_constituents.csv plus tests/data/extra_names.txt
 (non-NIFTY development companies). Scanned: signalcourt/, prompts/, registry/, config/. Names are allowed in

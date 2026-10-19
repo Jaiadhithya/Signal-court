@@ -1,4 +1,4 @@
-# Defaults from implementation.md 5.1. Tuned on the development set, frozen 24 Oct, printed in every RUN record.
+# Defaults. Tuned on the development set, frozen 24 Oct, printed in every RUN record.
 [panel]
 quarters = 20                 # five years
 min_quarters_to_run = 8
@@ -14,7 +14,7 @@ open_screen_min_corr = 0.6
 corp_action_window_q = 1
 corp_action_factor = 0.25     # surprise multiplier when a break coincides with a scheme/merger
 
-[placebo]                     # review D5: enlarged placebo set for every sensor statistic
+[placebo]                     # enlarged placebo set for every sensor statistic
 in_space = "all_same_subtype" # every entity of the same sub-type that has the metric
 in_time_shifts = [-4, -3, -2, 2]   # quarters relative to the break; skipped where out of range
 min_for_strong = 40           # fewer placebos -> Strong unreachable, card says why
@@ -22,7 +22,7 @@ holm_alpha = 0.10
 
 [twin]                        # wave 1 (adhi, 10 Oct)
 enabled = true                # per sub-type/metric "not applicable" when the quality gate fails (section 1.1)
-min_donors = 15               # review D7
+min_donors = 15
 pre_period_min_q = 8
 max_pre_rmspe_sd = 0.5
 loo = true
@@ -91,7 +91,7 @@ fuzzy_for_ocr_only = 0.97
 strong_families = 3
 moderate_families = 2
 strong_challenges_answered = 2
-stat_holm_max = 0.10          # Holm-adjusted placebo p across all sealed CLAIMs (review D5)
+stat_holm_max = 0.10          # Holm-adjusted placebo p across all sealed CLAIMs
 moderate_p_raw_max = 0.10
 specificity_kill = 0.3
 specificity_rebut = 0.5

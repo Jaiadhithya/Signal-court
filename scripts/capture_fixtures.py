@@ -7,7 +7,7 @@ quarters of history, field names). Public filings only; no API keys needed.
 Run on your laptop, on your home network:
     python scripts/capture_fixtures.py   (from the repo root)
 Needs only `requests` (already installed). Expect 10-20 minutes, mostly annual
-reports. Paste the SUMMARY block it prints back into the Claude thread.
+reports. It prints a SUMMARY block at the end.
 
 Output, in the repo root:
     fixtures_v0/<SYMBOL>/...        XBRL, decks, transcripts, rating letters, listings (.json.gz)
@@ -27,7 +27,7 @@ import time
 
 import requests
 
-# Development set from plan.md section 5. The sub-type is only for the report.
+# Development set. The sub-type is only for the report.
 DEV_SET = {
     "ICICIBANK": "bank",
     "CHOLAFIN": "nbfc",

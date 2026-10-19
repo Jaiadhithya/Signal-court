@@ -1,4 +1,4 @@
-"""XBRL element -> metric mapping through registry/metrics.yaml (implementation.md 5.2, 7.6).
+"""XBRL element -> metric mapping through registry/metrics.yaml.
 
 Monetary values are full rupees in the files (the declared rounding level of crore does
 not change that), ratios are fractions. Conversion to the registry unit happens here and

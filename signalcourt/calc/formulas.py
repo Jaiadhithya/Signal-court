@@ -1,4 +1,4 @@
-"""Safe formula evaluator over named quarterly series (implementation.md 5.3, 7.7).
+"""Safe formula evaluator over named quarterly series.
 
 An AST walker over ``+ - * / **``, numbers, metric ids and the whitelisted functions
 ``lag, mean, yoy, qoq, abs, min, max``. There is no ``eval``. A series is a pandas Series

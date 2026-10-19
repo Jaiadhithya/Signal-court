@@ -1,4 +1,4 @@
-"""LLM extraction for metrics still missing after tables (implementation.md 7.6).
+"""LLM extraction for metrics still missing after tables.
 
 One call per document, all missing metrics together. The model returns only
 {metric, period_label, value_as_written, unit_as_written, pid, row_label}; code checks that the

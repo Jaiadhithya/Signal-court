@@ -1,4 +1,4 @@
-"""Segment note parsing for holding companies and segment-mix series (implementation.md 7.6)."""
+"""Segment note parsing for holding companies and segment-mix series."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Announcements -> typed documents (implementation.md 7.5, announcement_kinds.yaml)."""
+"""Announcements -> typed documents."""
 
 from __future__ import annotations
 

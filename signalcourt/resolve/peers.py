@@ -1,4 +1,4 @@
-"""Peer selection rule (implementation.md 7.4): same sub-type; Tier 2 = the 3 nearest by
+"""Peer selection rule: same sub-type; Tier 2 = the 3 nearest by
 |log total income - log target total income| that have decks; placebo set = every same-sub-type
 entity in Tier 1 that has the metric."""
 

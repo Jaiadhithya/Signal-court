@@ -1,4 +1,4 @@
-"""Ports to B1's document store. B2 depends on these shapes only, never on store internals."""
+"""Ports to the document store. Harvest depends on these shapes only, never on store internals."""
 
 from __future__ import annotations
 

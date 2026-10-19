@@ -1,5 +1,5 @@
-# Metric dictionary (implementation.md 5.2). status: verified = seen in a real file; verify = confirmed by the day-1/2 XBRL tag dump.
-# Merged by id: B0 skeleton rows + B2 rows (B2 wins on conflict). Sanity bounds are plain numbers (YAML 1.1 reads 1.0e7 as a string).
+# Metric dictionary. status: verified = seen in a real file; verify = confirmed by the day-1/2 XBRL tag dump.
+# One row per metric id. Sanity bounds are plain numbers (YAML 1.1 reads 1.0e7 as a string).
 - {id: gnpa_amt, subtypes: [bank], unit: inr_cr, tier: 1, xbrl: [GrossNonPerformingAssets], synonyms: [gross npa, gross non-performing assets, gnpa], sanity: [0, 10000000], status: verified}
 - {id: nnpa_amt, subtypes: [bank], unit: inr_cr, tier: 1, xbrl: [NonPerformingAssets], synonyms: [net npa, net non-performing assets], sanity: [0, 10000000], status: verified}
 - {id: gnpa_pct, subtypes: [bank], unit: fraction, tier: 1, xbrl: [PercentageOfGrossNpa], synonyms: [gross npa %, gnpa ratio, gross npa ratio], sanity: [0, 0.5], status: verified}

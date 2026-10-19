@@ -1,4 +1,4 @@
-"""Canonical JSON and the ledger hash formula (implementation.md 6.4, review D15).
+"""Canonical JSON and the ledger hash formula.
 
 hash = sha256(prev_hash || canonical_json(envelope without hash and rid))
 
@@ -57,7 +57,7 @@ def hashable_view(envelope: dict) -> dict:
 
 
 def compute_hash(prev_hash: str, env_without_hash: dict) -> str:
-    """D15: sha256(prev_hash || canonical_json(envelope without hash))."""
+    """sha256(prev_hash || canonical_json(envelope without hash))."""
     return sha256_hex(prev_hash.encode("ascii") + canonical_json(hashable_view(env_without_hash)))
 
 

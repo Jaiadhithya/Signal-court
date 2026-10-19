@@ -1,4 +1,4 @@
-# [wave 2] Generic guidance lexicon for Say-Do (owner: B6).
+# [wave 2] Generic guidance lexicon for Say-Do.
 we expect
 guidance
 target

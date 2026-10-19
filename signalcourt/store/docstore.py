@@ -1,4 +1,4 @@
-"""DocStore: the facade over blobs, manifest and text cache (implementation.md 7.2)."""
+"""DocStore: the facade over blobs, manifest and text cache."""
 
 from __future__ import annotations
 
@@ -117,7 +117,7 @@ class DocStore:
     def known_url(self, url: str) -> str | None:
         """sha256 of an already-stored file fetched from ``url`` (first or final), else None.
 
-        Lets the harvester skip a download it already has (DocStorePort, implementation.md 7.5).
+        Lets the harvester skip a download it already has (DocStorePort).
         """
         row = self.manifest.conn.execute(
             "SELECT sha256 FROM documents WHERE first_url=? OR final_url=? LIMIT 1", (url, url)

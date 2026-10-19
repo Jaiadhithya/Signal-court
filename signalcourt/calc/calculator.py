@@ -1,4 +1,4 @@
-"""CALC records: the only place a derived number is made (implementation.md 7.7).
+"""CALC records: the only place a derived number is made.
 
 Agents never write numbers; they send a CALC request and read back the result. Identical
 formula version + inputs + params return the existing CALC instead of a duplicate.
@@ -21,7 +21,7 @@ from . import periods as P
 
 
 class CalcSink(Protocol):
-    """B1's ledger adapter implements this: append a CALC envelope, return its rid."""
+    """The ledger adapter implements this: append a CALC envelope, return its rid."""
 
     def append_calc(self, payload: dict[str, Any], parents: list[str]) -> str: ...
 

@@ -1,6 +1,6 @@
-# Angle library (implementation.md 7.10; architecture.md 3.1). Generic templates only.
+# Angle library. Generic templates only.
 # Row shape: id, question, subtypes, needs[], sensors[], mandatory_alternatives[], falsification_template, coverage_terms[].
-# Owner of the rows' details: B3 (rank). Skeleton values below.
+# Skeleton values below; tuned by the ranker.
 - id: A1
   question: "Loan growth and asset quality move apart"
   brief_question: Q1

@@ -1,4 +1,4 @@
-"""Unbacked-number check (implementation.md 7.13 gate 1).
+"""Unbacked-number check.
 
 Every number token in free text (digits with optional %, bps, cr, x, bn) must equal a cited
 CALC or FACT value after unit conversion and display rounding (+-1 in the last shown digit).

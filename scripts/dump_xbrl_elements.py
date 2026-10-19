@@ -3,7 +3,7 @@
     python scripts/dump_xbrl_elements.py path\to\file.xml [more.xml ...] > elements.txt
 
 Prints entry point, result type, period, then one line per numeric fact in the quarter and
-instant contexts (name, context, unit, value). Paste the output into the B2 thread.
+instant contexts (name, context, unit, value).
 """
 
 import sys

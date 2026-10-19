@@ -1,6 +1,6 @@
 """Moonveil day-1 model smoke test.
 
-For every LLM provider in implementation.md section 9 it checks that your keys work,
+For every LLM provider in config/models.yaml it checks that your keys work,
 finds the exact model ids for the deployments marked `<verify>`, sends each chosen
 model one tiny JSON task (17 + 25), and records which structured-output mode works,
 the latency and the rate-limit headers. It also runs one Tavily search.
@@ -11,7 +11,7 @@ Run on your laptop, on your home network:
     2. python scripts/models_smoke.py
 Needs only `requests`. About 25 small requests in total; no paid usage.
 Keys are never printed: they show as key1, key2, ... and are masked in error text.
-Paste the SUMMARY block it prints back into the Claude thread. The same text is saved
+It prints a SUMMARY block; the same text is saved
 in reports/models_smoke_<date>.md.
 """
 import datetime

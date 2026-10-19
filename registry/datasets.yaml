@@ -1,4 +1,4 @@
-# [wave 2] Official datasets, one entry per dataset (implementation.md 5.7). Every entry starts at status: verify.
+# [wave 2] Official datasets, one entry per dataset. Every entry starts at status: verify.
 - id: rbi_payment_stats_bankwise        # bank-wise ATM, POS and card statistics, monthly XLSX
   group: nowcast
   publisher: RBI

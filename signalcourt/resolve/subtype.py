@@ -1,4 +1,4 @@
-"""Sub-type from filing format + segment note (implementation.md 7.4, D12). Never by name.
+"""Sub-type from filing format + segment note. Never by name.
 
 Order: insurer (insurance format, or L-/NL-form disclosures) -> holding (consolidated segment
 note has both a lending-type and an insurance-type segment, or a CIC phrase) -> bank / nbfc /

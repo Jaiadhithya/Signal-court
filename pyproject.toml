@@ -57,7 +57,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Only if NSE starts fingerprinting TLS (implementation.md 7.3).
+# Only if NSE starts fingerprinting TLS.
 tls = ["curl_cffi"]
 # Only where pdfplumber fails on a table.
 camelot = ["camelot-py"]

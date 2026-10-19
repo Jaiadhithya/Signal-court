@@ -1,4 +1,4 @@
-"""BSE endpoints, kept as a fallback only (implementation.md 7.3).
+"""BSE endpoints, kept as a fallback only.
 
 The announcements API returned 403 from the laptop on 10 Oct even with Referer/Origin, so this
 client first loads the exchange homepage to collect cookies (untested). If that also fails the

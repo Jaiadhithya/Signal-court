@@ -1,7 +1,7 @@
-"""Harvest plan per run (implementation.md 7.5). Idempotent: a URL already in the store is not re-downloaded.
+"""Harvest plan per run. Idempotent: a URL already in the store is not re-downloaded.
 
 T1 results XBRL (legacy + integrated)  | T2 announcements + annual reports | T3 ratings + regulator events.
-T3b (site-restricted search) and T4 (datasets, Wayback) belong to the tools layer and B6.
+T3b (site-restricted search) and T4 (datasets, Wayback) belong to the tools layer.
 """
 
 from __future__ import annotations

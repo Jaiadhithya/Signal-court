@@ -1,5 +1,5 @@
 subtypes: [bank, nbfc, insurer_life, insurer_general, holding, generic]
-# Filing-format -> sub-type rules (implementation.md 7.4, D12). Tokens are matched case-insensitively
+# Filing-format -> sub-type rules. Tokens are matched case-insensitively
 # against the XBRL entry-point file name, the ResultType fact and the XBRL file URL.
 # Confirmed on 11 Oct from real NSE files: the integrated entry point (in-capmkt-ent-*.xsd) is the same for every
 # sub-type, and the legacy NBFC/insurer entry points are generic too, so the signal is the XBRL file name

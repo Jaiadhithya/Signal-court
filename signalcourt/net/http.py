@@ -1,4 +1,4 @@
-"""Polite HTTP client (implementation.md 7.3).
+"""Polite HTTP client.
 
 Per-host token bucket, retries with 2/4/8/16 s backoff on 429/5xx/connection errors,
 one ``prime()`` re-try on 401/403, cross-host redirects, and a ``Blocked`` error for bot

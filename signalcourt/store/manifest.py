@@ -1,4 +1,4 @@
-"""cache/manifest.sqlite: documents, fetches, listings (implementation.md 6.2)."""
+"""cache/manifest.sqlite: documents, fetches, listings."""
 
 from __future__ import annotations
 

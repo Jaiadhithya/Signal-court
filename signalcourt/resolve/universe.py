@@ -1,4 +1,4 @@
-"""Exchange master lists and index CSVs -> entities table (implementation.md 7.4).
+"""Exchange master lists and index CSVs -> entities table.
 
 No hand-written company lists: the financial universe is every symbol whose index row says
 Industry = Financial Services, plus (added by ``mark_financial``) any symbol whose results

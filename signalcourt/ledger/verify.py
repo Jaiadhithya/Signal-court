@@ -1,7 +1,7 @@
-"""Offline re-verification of a run: chain, quotes, CALC recompute (implementation.md 6.6, 7.1).
+"""Offline re-verification of a run: chain, quotes, CALC recompute.
 
 No network and no LLM. Quote re-checking needs the document store; CALC recompute needs the
-calculator (owned by B2), so it is injected as a callable.
+calculator, so it is injected as a callable.
 """
 
 from __future__ import annotations

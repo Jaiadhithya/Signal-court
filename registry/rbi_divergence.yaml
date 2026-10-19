@@ -1,4 +1,4 @@
-# [wave 2] R7: RBI divergence disclosure rule (implementation.md 1.2, 14 item 6).
+# [wave 2] R7: RBI divergence disclosure rule.
 # The sensor refuses to run until verified is true and span_rid points at a cached RBI circular span.
 verified: false
 span_rid: null

@@ -1,4 +1,4 @@
-# Exchange announcement description patterns -> doc_type (implementation.md 5, 7.5).
+# Exchange announcement description patterns -> doc_type.
 # First matching rule wins. Matched case-insensitively against "desc" and then "attchmntText".
 # status: verify = pattern guessed from typical wording; confirm against the captured listings (12 Oct).
 - {kind: transcript,    doc_type: transcript,       desc: ["transcript"], text: ["transcript"], fetch: true, status: verify}

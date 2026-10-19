@@ -1,4 +1,4 @@
-"""Time Gate (implementation.md 6.8, 7.2). Applied in the tool layer so no stage can bypass it."""
+"""Time Gate. Applied in the tool layer so no stage can bypass it."""
 
 from __future__ import annotations
 

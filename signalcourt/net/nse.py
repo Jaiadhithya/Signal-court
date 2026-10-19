@@ -1,4 +1,4 @@
-"""NSE endpoints (implementation.md 7.3). Exchange names are allowed in net/ only.
+"""NSE endpoints. Exchange names are allowed in net/ only.
 
 Plain ``requests``-style access with a browser UA worked from the laptop on 10 Oct without
 cookies; the client keeps a ``prime`` path (homepage visit) for 401/403 anyway. Endpoint

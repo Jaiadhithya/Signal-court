@@ -1,4 +1,4 @@
-"""Loads B2's registries. ``REGISTRY_DIR`` env var overrides the packaged location."""
+"""Loads the extraction registries. ``REGISTRY_DIR`` env var overrides the packaged location."""
 
 from __future__ import annotations
 

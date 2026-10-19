@@ -1,4 +1,4 @@
-"""Publish-date resolution (implementation.md 7.2), in order of trust."""
+"""Publish-date resolution, in order of trust."""
 
 from __future__ import annotations
 

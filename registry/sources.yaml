@@ -1,5 +1,5 @@
-# Source registry: one entry per source TYPE, never per company. Owner of the entries: B2 (net/harvest).
-# Skeleton from implementation.md 7.3-7.5; B2 fills endpoints and retrieval details.
+# Source registry: one entry per source TYPE, never per company.
+# Endpoints and retrieval details live in net/ and harvest/.
 - {id: nse_results_xbrl, publisher: NSE, family: exchange_xbrl, tier: 1, retrieval: json_listing}
 - {id: nse_integrated_filing, publisher: NSE, family: exchange_xbrl, tier: 1, retrieval: json_listing}
 - {id: nse_announcements, publisher: NSE, family: company_filing, tier: 2, retrieval: json_listing}
