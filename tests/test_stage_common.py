@@ -69,3 +69,22 @@ def test_annual_report_text_feeds_the_cic_test(store):
     )
     st = C.subtype_from_store(store, "AAA")
     assert st.decision.subtype == "holding" and st.decision.evidence["cic"]
+
+
+def test_cic_verdict_is_cached_and_skipped_when_it_cannot_matter(store, monkeypatch):
+    put_xbrl(store, "AAA", "nbfc", date(2026, 6, 30))
+    put_xbrl(store, "BNK", "bank", date(2026, 6, 30))
+    for sym in ("AAA", "BNK"):
+        put_pdf(
+            store, ["The Company operates as an Unregistered Core Investment Company (CIC).", sym],
+            url=f"https://example.test/{sym}.pdf", final_url=f"https://example.test/{sym}.pdf",
+            doc_type="annual_report", entity_symbol=sym,
+        )
+    assert C.subtype_from_store(store, "AAA").decision.subtype == "holding"  # computes and caches
+
+    def no_reads(sha):
+        raise AssertionError("annual-report pages must not be re-read")
+
+    monkeypatch.setattr(store, "pages", no_reads)
+    assert C.subtype_from_store(store, "AAA").decision.subtype == "holding"  # from the cached verdict
+    assert C.subtype_from_store(store, "BNK").decision.subtype == "bank"  # a bank never needs the CIC test

@@ -85,6 +85,11 @@ def test_measure_computes_registry_formulas_for_the_latest_quarter(tmp_path):
 def test_measure_with_forty_peers_fits_the_time_cap(tmp_path):
     ctx = ctx_with_synthetic(tmp_path, "nbfc", n_peers=40, quarters=20)
     STAGES["harvest"]["real"](ctx)
+    # Time the stage's own work: on Windows the first open of a just-written file can cost ~40 ms
+    # (on-access scanning), which the pre-warmed store has paid long before a live run.
+    for f in (tmp_path / "home" / "cache" / "raw").rglob("*"):
+        if f.is_file():
+            f.read_bytes()
     t = time.perf_counter()
     STAGES["measure"]["real"](ctx)
     took = time.perf_counter() - t

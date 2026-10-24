@@ -23,6 +23,7 @@ class SubtypeEvidence:
     announcement_texts: list[str] = field(default_factory=list)  # descriptions, for L-/NL-form markers
     segments: list[str] = field(default_factory=list)  # consolidated segment labels
     text_snippets: list[str] = field(default_factory=list)  # annual-report text, for the CIC test
+    cic: bool | None = None  # a CIC verdict already computed from that text (skips the scan)
     consolidated: bool = False
 
 
@@ -75,7 +76,7 @@ def classify_subtype(ev: SubtypeEvidence) -> SubtypeDecision:
     # Holding test applies to non-insurer, non-bank filers with a consolidated segment note.
     if base in (None, "nbfc"):
         kinds = {_classify_segment(s, cfg["segment_lexicon"]) for s in ev.segments}
-        cic = is_cic(ev.text_snippets, cfg)
+        cic = ev.cic if ev.cic is not None else is_cic(ev.text_snippets, cfg)
         if ("lending" in kinds and "insurance" in kinds) or cic:
             return SubtypeDecision(
                 "holding", "segment_note_or_cic", {"segments": ev.segments, "cic": cic, "entry_point": ev.entry_point}

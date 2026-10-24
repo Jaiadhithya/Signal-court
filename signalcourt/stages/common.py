@@ -5,6 +5,8 @@ Everything here works offline: sub-type and size come from results XBRL already 
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from dataclasses import dataclass
 from datetime import date
@@ -12,9 +14,10 @@ from pathlib import PurePosixPath
 from urllib.parse import urlsplit
 
 from ..extract import xbrl as X
+from ..extract.registry import load_yaml
 from ..extract.segments import segment_labels
 from ..harvest import filings as Fl
-from ..resolve.subtype import SubtypeDecision, SubtypeEvidence, classify_subtype
+from ..resolve.subtype import SubtypeDecision, SubtypeEvidence, classify_subtype, is_cic
 from ..store import DocMeta, DocStore
 
 RESULTS = "results_xbrl"
@@ -68,19 +71,42 @@ def parse_doc(
     return Fl.parse_filing(filing, xml, subtype, meta.sha256)
 
 
-def annual_report_text(store: DocStore, symbol: str) -> list[str]:
-    """Page text of the newest stored annual report (empty when T2 has not fetched one)."""
+def _cic_patterns_hash() -> str:
+    cfg = load_yaml("subtypes.yaml")
+    blob = json.dumps([cfg["cic_self"], cfg["cic_negations"]], sort_keys=True).encode()
+    return hashlib.sha256(blob).hexdigest()[:16]
+
+
+def cic_verdict(store: DocStore, symbol: str) -> bool | None:
+    """CIC test over the newest stored annual report, or None without one.
+
+    Reading a long report's text cold can take tens of seconds, so the verdict is cached beside the
+    report's text, keyed by the registry patterns; the pre-warm computes it once and runs read one file.
+    """
     reports = sorted(store.docs_for(symbol, "annual_report"), key=lambda m: m.publish_date or "", reverse=True)
+    key = _cic_patterns_hash()
     for m in reports:
+        cache = store.text.root / m.sha256 / "_cic.json"
         try:
-            return [p.raw for p in store.pages(m.sha256)]
+            hit = json.loads(cache.read_text(encoding="utf-8"))
+            if hit.get("patterns") == key:
+                return bool(hit["cic"])
+        except (FileNotFoundError, ValueError, KeyError):
+            pass
+        try:
+            pages = [p.raw for p in store.pages(m.sha256)]
         except (FileNotFoundError, ValueError):
             continue
-    return []
+        verdict = is_cic(pages, load_yaml("subtypes.yaml"))
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps({"patterns": key, "cic": verdict}), encoding="utf-8")
+        return verdict
+    return None
 
 
 def subtype_from_store(store: DocStore, symbol: str, insurance_type: str = "") -> StoreSubtype | None:
-    """Classify from the newest results XBRL file name plus the newest consolidated segment note."""
+    """Classify from the newest results XBRL file name, the newest consolidated segment note and, for an
+    NBFC-format or generic filer, the CIC test over its newest annual report."""
     docs = store.docs_for(symbol, RESULTS)
     if not docs:
         return None
@@ -103,10 +129,14 @@ def subtype_from_store(store: DocStore, symbol: str, insurance_type: str = "") -
         xbrl_url=newest.first_url,
         insurance_type=insurance_type,
         segments=segments,
-        text_snippets=annual_report_text(store, symbol),
         consolidated=bool(segments),
     )
-    return StoreSubtype(classify_subtype(ev), file_name(newest.first_url), entry, segments)
+    decision = classify_subtype(ev)
+    if decision.subtype in ("nbfc", "generic"):  # only these can still turn out to be a holding company
+        ev.cic = cic_verdict(store, symbol)
+        if ev.cic:
+            decision = classify_subtype(ev)
+    return StoreSubtype(decision, file_name(newest.first_url), entry, segments)
 
 
 def latest_size(store: DocStore, symbol: str, subtype: str) -> float | None:
