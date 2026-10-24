@@ -101,3 +101,12 @@ lead_series_min_points = 8
 discovery_max_words = 35
 why_bullets = [3, 5]
 timeline_min_events = 3
+
+[pipeline]                    # stub or real per stage; each sprint flips its stage to "real"
+harvest = "real"
+measure = "stub"
+sense = "stub"
+prereg = "stub"
+court = "stub"
+judge = "stub"
+report = "stub"

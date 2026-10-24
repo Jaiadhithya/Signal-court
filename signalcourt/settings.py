@@ -147,6 +147,21 @@ class Writer(_Section):
     timeline_min_events: int
 
 
+StageImpl = Literal["stub", "real"]
+
+
+class Pipeline(_Section):
+    """Which implementation each stage runs; a missing "real" falls back to "stub" (signalcourt.pipeline)."""
+
+    harvest: StageImpl
+    measure: StageImpl
+    sense: StageImpl
+    prereg: StageImpl
+    court: StageImpl
+    judge: StageImpl
+    report: StageImpl
+
+
 class Config(_Section):
     """Mirror of config/settings.toml."""
 
@@ -166,6 +181,7 @@ class Config(_Section):
     quote_gate: QuoteGate
     judge: Judge
     writer: Writer
+    pipeline: Pipeline
 
 
 class Env(BaseSettings):
