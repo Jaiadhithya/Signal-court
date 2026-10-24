@@ -41,6 +41,14 @@ def _first(row: dict[str, Any], *keys: str) -> Any:
     return None
 
 
+def _link(v: Any) -> str | None:
+    """A listing link, or None for the placeholders the feed sends instead of a file (".../null")."""
+    if v is None:
+        return None
+    last = str(v).strip().rstrip("/").rsplit("/", 1)[-1].lower()
+    return None if last in ("", "null", "none", "-") else str(v).strip()
+
+
 def _is_cons(v: Any) -> bool:
     return str(v or "").strip().lower().startswith("consol")
 
@@ -54,8 +62,8 @@ def filing_from_row(symbol: str, row: dict[str, Any], source: str) -> ResultFili
         consolidated=_is_cons(_first(row, "consolidated")),
         audited=None if aud is None else str(aud).strip().lower().startswith("audited"),
         broadcast=parse_dt(_first(row, "broadCastDate", "broadcast_Date", "broadcastDate")),
-        xbrl_url=_first(row, "xbrl"),
-        pdf_url=_first(row, "pdf_attach", "pdf", "attachment"),
+        xbrl_url=_link(_first(row, "xbrl")),
+        pdf_url=_link(_first(row, "pdf_attach", "pdf", "attachment")),
         source=source,
         raw=row,
     )

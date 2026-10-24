@@ -293,3 +293,15 @@ def test_insurer_legacy_row_uses_period_end_and_integrated_row_qe_date():
     assert legacy.period_end == date(2024, 12, 31) and not legacy.consolidated
     integ = Fl.filing_from_row("S", {"qe_Date": "30-JUN-2026", "consolidated": "Consolidated"}, "integrated")
     assert integ.period_end == date(2026, 6, 30) and integ.consolidated
+
+
+def test_placeholder_null_attachment_links_are_dropped():
+    row = {
+        "qe_Date": "30-JUN-2026",
+        "consolidated": "Standalone",
+        "xbrl": "https://nsearchives.nseindia.com/corporate/xbrl/X.xml",
+        "pdf_attach": "https://nsearchives.nseindia.com/corporate/null",
+    }
+    f = Fl.filing_from_row("AAA", row, "integrated")
+    assert f.xbrl_url.endswith("X.xml") and f.pdf_url is None
+    assert Fl.filing_from_row("AAA", {**row, "xbrl": "null"}, "integrated").xbrl_url is None
