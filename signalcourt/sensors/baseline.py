@@ -7,7 +7,8 @@ Choice rule, first that applies:
 3. ``own_history``: the target's own pre-break median held flat.
 
 Every fallback leaves a plain-language reason in ``Baseline.note`` so the signal can say what it was measured
-against. Donors are used on the levels given; a donor missing any pre-period quarter is dropped.
+against. Donors are used on the levels given. A donor must report enough pre-period quarters; the twin additionally
+needs a complete pre-period (interior gaps are interpolated).
 """
 
 from __future__ import annotations
@@ -74,20 +75,27 @@ def fit_baseline(target: pd.Series, donors: pd.DataFrame, pre_end_pidx: int, set
     tw, demo = settings["twin"], settings["demo"]
     pre_t = target[(target.index <= pre_end_pidx)].dropna()
     d = donors.reindex(target.index) if donors.shape[1] else pd.DataFrame(index=target.index)
+    # A donor counts when it reports enough of the target's pre-period quarters; scattered gaps are tolerated
+    # (the peer median skips them, the twin interpolates interior ones and drops a donor it cannot complete).
+    need = min(tw["pre_period_min_q"], len(pre_t))
     if d.shape[1]:
-        d = d.loc[:, d.loc[pre_t.index].notna().all(axis=0)] if len(pre_t) else d.iloc[:, :0]
+        seen = d.loc[pre_t.index].notna().sum(axis=0) if len(pre_t) else pd.Series(0, index=d.columns)
+        d = d.loc[:, seen >= max(need, 1)]
     n = d.shape[1]
     ratio: float | None = None
     reason = ""
 
-    if n >= tw["min_donors"] and len(pre_t) >= tw["pre_period_min_q"]:
-        base, ratio, reason = _try_twin(pre_t, d.loc[pre_t.index], d, tw)
-        if base is not None:
-            return base
-    elif n >= tw["min_donors"]:
-        reason = f"twin needs {tw['pre_period_min_q']} pre-period quarters, have {len(pre_t)}"
+    if len(pre_t) >= tw["pre_period_min_q"]:
+        filled = d.loc[pre_t.index].interpolate(limit_area="inside")
+        full = filled.columns[filled.notna().all(axis=0)]
+        if len(full) >= tw["min_donors"]:
+            base, ratio, reason = _try_twin(pre_t, filled[full], d[full], tw)
+            if base is not None:
+                return base
+        else:
+            reason = f"twin needs {tw['min_donors']} donors with complete pre-period history, have {len(full)}"
     else:
-        reason = f"twin needs {tw['min_donors']} donors, have {n}"
+        reason = f"twin needs {tw['pre_period_min_q']} pre-period quarters, have {len(pre_t)}"
 
     if n >= demo["peer_median_min_donors"]:
         series = d.median(axis=1, skipna=True)

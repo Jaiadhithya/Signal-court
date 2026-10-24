@@ -64,12 +64,22 @@ def test_no_donors_at_all_is_own_history():
     assert base.source == "own_history" and base.n_donors == 0
 
 
-def test_donor_with_gaps_in_the_pre_period_is_dropped_not_fatal():
+def test_donor_with_too_few_pre_period_quarters_is_dropped_not_fatal():
     rng = np.random.default_rng(5)
     donors = donors_frame(6, rng)
-    donors.loc[IDX[2], "N00"] = np.nan
+    donors.loc[IDX[:6], "N00"] = np.nan  # reports only 4 of the 10 pre-period quarters
+    donors.loc[IDX[2], "N01"] = np.nan  # one gap is tolerated
     base = fit_baseline(pd.Series(rng.normal(0, 1, 20), index=IDX), donors, IDX[9], S)
     assert base.source == "peer_median" and base.n_donors == 5
+
+
+def test_twin_interpolates_an_interior_gap_in_a_donor():
+    rng = np.random.default_rng(8)
+    a = rng.normal(0, 1, 20).cumsum()
+    donors = donors_frame(15, rng, {"A": a})
+    donors.loc[IDX[4], "A"] = np.nan
+    base = fit_baseline(pd.Series(a, index=IDX), donors, IDX[-1], S)
+    assert base.source == "twin" and base.n_donors == 16
 
 
 def test_short_pre_period_cannot_use_the_twin():
