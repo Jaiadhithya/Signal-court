@@ -22,8 +22,8 @@ LINK = "http://www.xbrl.org/2003/linkbase"
 XLINK = "http://www.w3.org/1999/xlink"
 
 # Contexts for segment/member detail look like OneReportableSegmentRevenue01D,
-# FourOperatingExpenses01D, ...: a two-digit member index followed by D or I.
-_MEMBER_CTX = re.compile(r"\d\d[DI]$")
+# FourOperatingExpenses01D, OneReportable1D, ...: a member index (one or more digits) followed by D or I.
+_MEMBER_CTX = re.compile(r"\d+[DI]$")
 
 # Some ratio facts are filed without a unitRef (e.g. the net NPA ratio); accept plain numbers.
 _PLAIN_NUM = re.compile(r"^-?\d+(\.\d+)?$")
