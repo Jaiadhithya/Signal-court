@@ -117,7 +117,14 @@ def _download(
 
 
 def harvest_t1(
-    exch, store: DocStorePort, ent: EntityRef, as_of: date, rep: HarvestReport, quarters: int, budget: _Budget
+    exch,
+    store: DocStorePort,
+    ent: EntityRef,
+    as_of: date,
+    rep: HarvestReport,
+    quarters: int,
+    budget: _Budget,
+    pdfs: bool = True,
 ) -> None:
     try:
         listing = Fl.list_filings(
@@ -154,7 +161,7 @@ def harvest_t1(
             rep.parsed.append(Fl.parse_filing(f, store.read_bytes(sha), ent.subtype, sha))
         except Exception as e:
             rep.errors.append(f"parse {f.xbrl_url}: {type(e).__name__}")
-        if f.pdf_url and (f.source == "integrated"):
+        if pdfs and f.pdf_url and (f.source == "integrated"):
             _download(
                 exch,
                 store,
@@ -265,7 +272,9 @@ def harvest(
     quarters: int = 20,
     years: int = 5,
     clock: Callable[[], float] = time.monotonic,
+    pdfs: bool = True,
 ) -> HarvestReport:
+    """``pdfs=False`` skips the results PDFs that sit beside integrated XBRL (peers need numbers only)."""
     rep = HarvestReport()
     if mode in ("replay", "offline"):
         rep.skipped_tiers = [t for t in TIER_ORDER if t in tiers]
@@ -278,7 +287,7 @@ def harvest(
             rep.skipped_tiers.append(t)
             continue
         if t == "T1":
-            harvest_t1(exch, store, ent, as_of, rep, quarters, budget)
+            harvest_t1(exch, store, ent, as_of, rep, quarters, budget, pdfs)
         elif t == "T2":
             harvest_t2(exch, store, ent, as_of, rep, years, budget)
         elif t == "T3":

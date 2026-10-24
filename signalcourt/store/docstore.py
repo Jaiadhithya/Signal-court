@@ -128,6 +128,16 @@ class DocStore:
             ).fetchone()
         return row["sha256"] if row else None
 
+    def docs_for(self, symbol: str, doc_type: str | None = None) -> list[DocMeta]:
+        """Every stored document of one entity (optionally one doc type), newest period first."""
+        q = "SELECT * FROM documents WHERE entity_symbol=?"
+        args: tuple = (symbol,)
+        if doc_type is not None:
+            q += " AND doc_type=?"
+            args += (doc_type,)
+        rows = self.manifest.conn.execute(q + " ORDER BY period_end DESC, publish_date DESC, sha256", args)
+        return [DocMeta(**{**dict(r), "ocr": bool(r["ocr"])}) for r in rows]
+
     def has(self, sha: str) -> bool:
         return self.manifest.get_document(sha) is not None
 

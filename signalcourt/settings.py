@@ -32,6 +32,7 @@ class Panel(_Section):
     quarters: int
     min_quarters_to_run: int
     tier2_peers: int
+    max_peers: int
     basis_default: Literal["standalone", "consolidated"]
 
 
@@ -248,6 +249,10 @@ class Workspace(BaseModel):
     @property
     def manifest_db(self) -> Path:
         return self.cache / "manifest.sqlite"
+
+    @property
+    def universe_db(self) -> Path:
+        return self.home / "universe.sqlite"
 
     @property
     def llm_db(self) -> Path:

@@ -3,6 +3,7 @@
 quarters = 20                 # five years
 min_quarters_to_run = 8
 tier2_peers = 3               # nearest same-sub-type peers that also get deck extraction
+max_peers = 40                # peer universe per sub-type: the largest by latest total income
 basis_default = "standalone"  # holding companies override to consolidated + segments
 
 [sensors]

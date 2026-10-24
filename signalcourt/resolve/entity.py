@@ -45,10 +45,12 @@ def _names_by_symbol(con: sqlite3.Connection) -> dict[str, list[str]]:
     return out
 
 
-def resolve(con: sqlite3.Connection, query: str) -> EntityMatch | Ambiguous | None:
+def resolve(con: sqlite3.Connection, query: str, financial_only: bool = False) -> EntityMatch | Ambiguous | None:
+    """``financial_only`` limits candidates to the financial universe (sector-level, never per company)."""
     q = query.strip()
     names = _names_by_symbol(con)
-    ents = {r[0]: r for r in con.execute("SELECT symbol, name, isin FROM entities")}
+    where = " WHERE financial=1" if financial_only else ""
+    ents = {r[0]: r for r in con.execute("SELECT symbol, name, isin FROM entities" + where)}
     up = q.upper().replace(" ", "")
     if up in ents:  # exact symbol (spaces ignored)
         s, n, isin = ents[up]
