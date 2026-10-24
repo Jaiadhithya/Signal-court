@@ -58,14 +58,27 @@ def visible_docs(store: DocStore, symbol: str, as_of: date) -> list[DocMeta]:
     return [m for m in store.docs_for(symbol, C.RESULTS) if m.publish_date and m.publish_date <= as_of.isoformat()]
 
 
-def parse_all(store: DocStore, symbol: str, subtype: str, docs: list[DocMeta]) -> list[tuple[DocMeta, Fl.ParsedFiling]]:
+def parse_all(
+    store: DocStore, symbol: str, subtype: str, docs: list[DocMeta], basis: str | None = None
+) -> list[tuple[DocMeta, Fl.ParsedFiling]]:
+    """Parse filings, optionally only those of one basis (checked from the bytes before parsing)."""
     out = []
     for m in docs:
         try:
-            out.append((m, C.parse_doc(store, m, symbol, subtype)))
+            xml = store.read_bytes(m.sha256)
+            if basis and C.basis_of(xml) != basis:
+                continue
+            out.append((m, C.parse_doc(store, m, symbol, subtype, xml)))
         except Exception:
             continue  # one unreadable filing never stops the panel
     return out
+
+
+def parse_peer(store: DocStore, symbol: str, subtype: str, as_of: date, basis: str) -> list[tuple]:
+    """A peer contributes one basis to the panel: the default, else whatever it files."""
+    docs = visible_docs(store, symbol, as_of)
+    got = parse_all(store, symbol, subtype, docs, basis)
+    return got if any(pf.quarter for _, pf in got) else parse_all(store, symbol, subtype, docs)
 
 
 def published_of(meta: DocMeta) -> date:
@@ -227,7 +240,7 @@ def measure(ctx: RunContext) -> None:
         if time.monotonic() - t0 > cap:
             ctx.on_event("stage_note", {"stage": "measure", "note": f"time cap: {len(ctx.peers) - i} peers skipped"})
             break
-        got = peer_rows(peer, parse_all(ctx.store, peer, subtype, visible_docs(ctx.store, peer, ctx.as_of)))
+        got = peer_rows(peer, parse_peer(ctx.store, peer, subtype, ctx.as_of, cfg["basis_default"]))
         if got:
             peers_raw += got
             used.append(peer)

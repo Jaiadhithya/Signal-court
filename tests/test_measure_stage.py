@@ -95,3 +95,9 @@ def test_measure_with_forty_peers_fits_the_time_cap(tmp_path):
 
 def test_quarter_ends_helper():
     assert quarter_ends(date(2026, 6, 30), 2) == [date(2026, 3, 31), date(2026, 6, 30)]
+
+
+def test_peer_contributes_its_consolidated_filings_when_it_files_no_standalone(tmp_path):
+    ctx = ctx_with_synthetic(tmp_path, "bank")  # synthetic files are all consolidated
+    run_stages(ctx)
+    assert ctx.panel.df[ctx.panel.df.entity == "PEER00"].basis.unique().tolist() == ["consolidated"]

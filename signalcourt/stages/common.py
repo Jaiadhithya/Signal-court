@@ -53,11 +53,18 @@ def filing_of(meta: DocMeta, symbol: str) -> Fl.ResultFiling:
     )
 
 
-def parse_doc(store: DocStore, meta: DocMeta, symbol: str, subtype: str) -> Fl.ParsedFiling:
+def basis_of(xml: bytes) -> str:
+    """Basis from the file's own nature field, without a full parse."""
+    return "consolidated" if _CONSOLIDATED.search(xml) else "standalone"
+
+
+def parse_doc(
+    store: DocStore, meta: DocMeta, symbol: str, subtype: str, xml: bytes | None = None
+) -> Fl.ParsedFiling:
     """Parse a stored results XBRL; the filing's ``consolidated`` flag is set from the file's own nature field."""
-    xml = store.read_bytes(meta.sha256)
+    xml = store.read_bytes(meta.sha256) if xml is None else xml
     filing = filing_of(meta, symbol)
-    filing.consolidated = bool(_CONSOLIDATED.search(xml))
+    filing.consolidated = basis_of(xml) == "consolidated"
     return Fl.parse_filing(filing, xml, subtype, meta.sha256)
 
 
