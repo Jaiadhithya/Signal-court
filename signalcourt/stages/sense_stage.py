@@ -1,0 +1,64 @@
+"""Real sense: scan every metric of the target and append the strongest gap signals to the ledger.
+
+Works for every sub-type: the baseline falls back from twin to peer median to own history by itself and
+each signal records which it used. The scan stops before ``demo.sense_cap_s`` and says so on the signals.
+"""
+
+from __future__ import annotations
+
+import time
+from collections.abc import Callable
+
+from ..ledger import Author, RecordType
+from ..ledger.schema import SignalPayload
+from ..pipeline import RunContext, register
+from ..sensors.gap import scan_metric
+
+SENSORS = Author.code("sensors")
+
+
+def run(ctx: RunContext, clock: Callable[[], float] = time.monotonic) -> None:
+    """Scan, rank and append; ``clock`` is injectable so the time cap can be tested."""
+    ctx.signals = []
+    panel = ctx.panel
+    if panel is None or panel.df.empty:
+        ctx.on_event("stage_note", {"stage": "sense", "note": "no panel, nothing to scan"})
+        return
+    cap = ctx.settings["demo"]["sense_cap_s"]
+    metrics = panel.metrics(panel.target)
+    found: list[SignalPayload] = []
+    t0 = clock()
+    slowest = 0.0
+    scanned = 0
+    capped = False
+    for metric in metrics:
+        if clock() - t0 + slowest >= cap:  # the next scan would probably not finish inside the cap
+            capped = True
+            break
+        t = clock()
+        try:
+            sig = scan_metric(panel, metric, ctx.settings)
+        except Exception as e:  # one odd metric never stops the stage
+            ctx.on_event("stage_note", {"stage": "sense", "note": f"{metric}: scan failed ({type(e).__name__}: {e})"})
+            sig = None
+        slowest = max(slowest, clock() - t)
+        scanned += 1
+        if sig is not None:
+            found.append(sig)
+
+    found.sort(key=lambda s: (-s.surprise.score, s.metrics[0]))
+    top = found[: ctx.settings["rank"]["k"]]
+    if capped:
+        note = f"time cap: {scanned} of {len(metrics)} metrics scanned"
+        ctx.on_event("stage_note", {"stage": "sense", "note": note})
+        for s in top:
+            s.surprise.coverage_status = f"{s.surprise.coverage_status}; {note}"
+    if not top:
+        ctx.on_event("stage_note", {"stage": "sense", "note": "no signal cleared the bar"})
+    for s in top:
+        ctx.signals.append(ctx.ledger.append(RecordType.SIGNAL, s, SENSORS, s.inputs).rid)
+
+
+@register("sense", "real")
+def sense(ctx: RunContext) -> None:
+    run(ctx)
