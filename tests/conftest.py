@@ -81,3 +81,23 @@ def put_pdf(store, pages, *, publish=date(2026, 8, 1), **kw):
 
 
 CODE = Author.code
+
+
+def make_ctx(tmp_path, impl):
+    """A RunContext on a fresh ledger in tmp_path/run, with the real settings and a fixed clock."""
+    from signalcourt.pipeline import RunContext
+    from signalcourt.settings import load_config
+
+    run_dir = tmp_path / "run"
+    led = Ledger.create(run_dir, run_payload(), clock=fixed_clock())
+    return RunContext(
+        ledger=led,
+        store=None,
+        settings=load_config().model_dump(),
+        company="Test Co",
+        symbol="TESTCO",
+        as_of=date(2026, 10, 1),
+        mode="replay",
+        run_dir=run_dir,
+        impl=dict(impl),
+    )
