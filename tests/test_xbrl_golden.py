@@ -99,3 +99,25 @@ def test_unmapped_report_lists_unclaimed_numeric(bank):
 def test_amount_text_is_as_written(bank):
     pat = [p for p in XM.to_fact_proposals(bank, "T", "bank") if p.metric == "pat"][0]
     assert pat.value_as_written == "102610000000.00"
+
+
+def test_main_contexts_rebuilt_when_a_legacy_file_omits_them():
+    """Some exchange-hosted legacy files reference OneD/OneI without defining them."""
+    import re
+    from datetime import date
+
+    from signalcourt.extract import xbrl as X
+    from signalcourt.extract import xbrl_map as XM
+
+    raw = (FIX / "xbrl" / "legacy_banking_sample.xml").read_text(encoding="utf-8")
+    for cid in ("OneD", "OneI", "FourD", "FourI"):  # like the real files: only OneD/OneI are referenced
+        raw = re.sub(rf'<xbrli:context id="{cid}">.*?</xbrli:context>', "", raw, flags=re.S)
+    raw = re.sub(r'<([\w:-]+) contextRef="Four[DI]"[^>]*>[^<]*</>', "", raw)
+    assert 'id="OneD"' not in raw and 'contextRef="OneD"' in raw
+    doc = X.parse(raw.encode())
+    assert X.period_end(doc) == date(2023, 9, 30)
+    assert X.quarter_context(doc, date(2023, 9, 30)).id == "OneD"
+    props = {p.metric: p for p in XM.to_fact_proposals(doc, "AAA", "bank")}
+    good_doc = X.parse((FIX / "xbrl" / "legacy_banking_sample.xml").read_bytes())
+    good = {p.metric: p for p in XM.to_fact_proposals(good_doc, "AAA", "bank")}
+    assert props["pat"].value == good["pat"].value and props["advances"].value == good["advances"].value

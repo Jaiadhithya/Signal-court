@@ -215,6 +215,7 @@ def parse(xml: bytes) -> XbrlDoc:
         facts.append(f)
         by_name.setdefault(f.name, []).append(f)
 
+    _restore_main_contexts(contexts, facts, by_name)
     doc = XbrlDoc(
         schema_ref=schema_ref, entry_point=entry_point, contexts=contexts, units=units, facts=facts, _by_name=by_name
     )
@@ -227,6 +228,27 @@ def parse(xml: bytes) -> XbrlDoc:
         if c and _pdate(f.text):
             c.eff_end = _pdate(f.text)
     return doc
+
+
+def _restore_main_contexts(
+    contexts: dict[str, Context], facts: list[XbrlFact], by_name: dict[str, list[XbrlFact]]
+) -> None:
+    """Some exchange-hosted legacy files reference the main contexts ``OneD`` (the reporting quarter) and
+    ``OneI`` (its end) without defining them. Rebuild those two from the file's own reporting-period facts,
+    so the values filed in them can be read; nothing else is inferred."""
+    used = {f.context_id for f in facts}
+    missing = {"OneD", "OneI"} & used - set(contexts)
+    end = next((_pdate(f.text) for f in by_name.get(_END_FACT, []) if _pdate(f.text)), None)
+    if not missing or end is None:
+        return
+    start = next((_pdate(f.text) for f in by_name.get(_START_FACT, []) if _pdate(f.text)), None)
+    if start is None:
+        m0 = end.month - 2
+        start = date(end.year, m0, 1) if m0 > 0 else date(end.year - 1, m0 + 12, 1)
+    if "OneD" in missing:
+        contexts["OneD"] = Context(id="OneD", start=start, end=end, eff_start=start, eff_end=end)
+    if "OneI" in missing:
+        contexts["OneI"] = Context(id="OneI", instant=end)
 
 
 def period_end(doc: XbrlDoc) -> date | None:
