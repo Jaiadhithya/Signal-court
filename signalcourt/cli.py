@@ -33,12 +33,18 @@ def config_digest() -> None:
 def run(
     company: str = typer.Option(..., help="Company name as typed; resolved by the harvest stage."),
     symbol: str | None = typer.Option(None, help="Exchange symbol, if known."),
+    subtype: str | None = typer.Option(None, help="Sub-type override; normally read from the filing format."),
     as_of: str | None = typer.Option(None, help="YYYY-MM-DD; defaults to today."),
     mode: str = typer.Option("replay", help="live, warm or replay (replay makes no network calls)."),
     stub: str = typer.Option("", help="Comma-separated stages to force onto their stub, e.g. court,judge."),
+    open_card: bool = typer.Option(False, "--open", help="Open the finding card in the browser when done."),
 ) -> None:
-    """Run all seven stages for one company; prints one line per stage, then the finding card path."""
-    from signalcourt.runner import execute_run
+    """Run all seven stages for one company; prints each stage as it finishes, then the total and the card path."""
+    import time
+    import webbrowser
+
+    from signalcourt.pipeline import STAGE_ORDER, run_pipeline
+    from signalcourt.runner import start_run
     from signalcourt.settings import load_settings
 
     if mode not in ("live", "warm", "replay"):
@@ -48,13 +54,29 @@ def run(
     except ValueError as e:
         raise typer.BadParameter("expected YYYY-MM-DD", param_hint="--as-of") from e
     stubs = {s.strip() for s in stub.split(",") if s.strip()}
+    unknown = stubs - set(STAGE_ORDER)
+    if unknown:
+        raise typer.BadParameter(f"unknown stage(s): {sorted(unknown)}", param_hint="--stub")
+
+    def show(kind: str, d: dict) -> None:
+        if kind == "stage_end":
+            typer.echo(f"{d['stage']:<8} {d['impl']:<4} {d['records']:>4} {d['seconds']:7.3f}s")
+        elif kind == "stage_error":
+            typer.echo(f"FAILED at {d['stage']}: {d['error']}")
+
+    t0 = time.perf_counter()
+    ctx = start_run(company, symbol, subtype, day, mode, stubs, load_settings().workspace.home, show)
     try:
-        ctx = execute_run(company, symbol, day, mode, stubs, load_settings().workspace.home)
-    except ValueError as e:
-        raise typer.BadParameter(str(e), param_hint="--stub") from e
-    for r in ctx.stage_runs:
-        typer.echo(f"{r.stage:<8} {r.impl:<4} {r.records:>4} {r.seconds:7.3f}s")
+        run_pipeline(ctx)
+    except Exception as e:  # the stage, its error and a STOP record are already out; point at the evidence
+        typer.echo(f"run {ctx.run_dir}")
+        raise typer.Exit(1) from e
+    finally:
+        ctx.ledger.close()
+    typer.echo(f"total    {time.perf_counter() - t0:.3f}s")
     typer.echo(str(ctx.card_path))
+    if open_card and ctx.card_path:
+        webbrowser.open(ctx.card_path.resolve().as_uri())
 
 
 @app.command()

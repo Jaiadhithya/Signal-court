@@ -67,3 +67,44 @@ def test_stage_error_writes_stop_and_reraises(tmp_path, monkeypatch):
     assert stops[0].author.component == "scheduler"
     assert calls == ["ok", "ok"]  # harvest and measure ran, nothing after sense
     led.close()
+
+
+def test_settings_toml_has_demo_time_caps():
+    demo = load_config().demo
+    assert demo.court_cap_s == 210 and demo.harvest_cap_s == 45 and demo.peer_median_min_donors == 4
+
+
+def test_harvest_stays_stub_until_s1():
+    assert load_config().pipeline.harvest == "stub"
+
+
+def test_events_fire_around_each_stage_in_order(tmp_path):
+    from conftest import make_ctx
+
+    from signalcourt import stubs  # noqa: F401
+
+    seen = []
+    ctx = make_ctx(tmp_path, impl={s: "stub" for s in STAGE_ORDER}, on_event=lambda kind, d: seen.append((kind, d)))
+    run_pipeline(ctx)
+    assert [d["stage"] for k, d in seen if k == "stage_start"] == list(STAGE_ORDER)
+    ends = [d for k, d in seen if k == "stage_end"]
+    assert [d["stage"] for d in ends] == list(STAGE_ORDER)
+    assert all({"impl", "records", "seconds"} <= set(d) for d in ends)
+    ctx.ledger.close()
+
+
+def test_stage_error_fires_stage_error_event(tmp_path, monkeypatch):
+    from conftest import make_ctx
+
+    def boom(ctx):
+        raise ValueError("bad frame")
+
+    stages = {s: {"stub": lambda ctx: None} for s in STAGE_ORDER}
+    stages["sense"] = {"stub": boom}
+    monkeypatch.setattr(pipeline, "STAGES", stages)
+    seen = []
+    ctx = make_ctx(tmp_path, impl={s: "stub" for s in STAGE_ORDER}, on_event=lambda kind, d: seen.append((kind, d)))
+    with pytest.raises(ValueError):
+        run_pipeline(ctx)
+    assert ("stage_error", "sense") in [(k, d["stage"]) for k, d in seen]
+    ctx.ledger.close()

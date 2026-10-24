@@ -83,3 +83,61 @@ def test_verify_refuses_a_dir_without_ledger(tmp_path):
     r = CliRunner().invoke(app, ["verify", str(tmp_path)])
     assert r.exit_code == 1 and "BROKEN" in r.output
     assert not (tmp_path / "ledger.sqlite").exists()
+
+
+def test_run_prints_total_seconds_before_the_card(tmp_path, monkeypatch):
+    r, _ = _run(tmp_path, monkeypatch)
+    lines = r.output.strip().splitlines()
+    assert re.fullmatch(r"total\s+\d+\.\d+s", lines[-2])
+
+
+def test_run_streams_each_stage_line_as_it_finishes(tmp_path, monkeypatch):
+    from signalcourt import cli
+
+    printed = []
+    real_echo = cli.typer.echo
+
+    def spy(msg="", *a, **k):
+        printed.append(str(msg))
+        real_echo(msg, *a, **k)
+
+    def check_on_court(ctx):  # by the time court starts, the four earlier lines are already out
+        assert sum(1 for p in printed if p.split()[:1] and p.split()[0] in STAGE_ORDER) == 4
+
+    from signalcourt import pipeline
+
+    monkeypatch.setattr(cli.typer, "echo", spy)
+    monkeypatch.setitem(pipeline.STAGES["court"], "stub", check_on_court)
+    _run(tmp_path, monkeypatch)
+
+
+def test_run_passes_subtype_into_the_run(tmp_path, monkeypatch):
+    from signalcourt import pipeline
+
+    got = {}
+    monkeypatch.setitem(pipeline.STAGES["judge"], "stub", lambda ctx: got.setdefault("subtype", ctx.subtype))
+    _run(tmp_path, monkeypatch, "--subtype", "insurer_life")
+    assert got["subtype"] == "insurer_life"
+
+
+def test_failing_stage_reports_the_stage_not_the_stub_flag(tmp_path, monkeypatch):
+    from signalcourt import pipeline
+
+    def boom(ctx):
+        raise ValueError("bad frame")
+
+    monkeypatch.setitem(pipeline.STAGES["sense"], "stub", boom)
+    monkeypatch.setenv("SIGNAL_HOME", str(tmp_path))
+    r = CliRunner().invoke(app, ["run", "--company", "Test Co", "--mode", "replay"])
+    assert r.exit_code == 1
+    assert "FAILED at sense: ValueError: bad frame" in r.output and "--stub" not in r.output
+    assert "run " in r.output.splitlines()[-1]
+
+
+def test_open_flag_opens_the_card(tmp_path, monkeypatch):
+    import webbrowser
+
+    opened = []
+    monkeypatch.setattr(webbrowser, "open", lambda url: opened.append(url) or True)
+    _, card = _run(tmp_path, monkeypatch, "--open")
+    assert opened and opened[0].endswith("finding.html")

@@ -22,6 +22,7 @@ from signalcourt.store import DocStore
 STAGE_ORDER = ("harvest", "measure", "sense", "prereg", "court", "judge", "report")
 
 StageFn = Callable[["RunContext"], None]
+EventFn = Callable[[str, dict[str, Any]], None]
 STAGES: dict[str, dict[str, StageFn]] = {s: {} for s in STAGE_ORDER}
 
 
@@ -44,6 +45,11 @@ class RunContext:
     mode: str
     run_dir: Path
     impl: dict[str, str]
+    subtype: str | None = None
+    peers: list[str] = field(default_factory=list)
+    # on_event(kind, data): "stage_start" {stage, impl}, "stage_end" {stage, impl, records, seconds},
+    # "stage_error" {stage, impl, error}; the CLI prints progress from these while the run is going
+    on_event: EventFn = field(default=lambda kind, data: None, repr=False)
     # filled by stages
     doc_shas: list[str] = field(default_factory=list)
     panel: Panel | None = None
@@ -92,14 +98,18 @@ def run_pipeline(ctx: RunContext) -> RunContext:
         impl = ctx.impl.get(stage, "stub")
         before = len(ctx.ledger)
         t = time.perf_counter()
+        ctx.on_event("stage_start", {"stage": stage, "impl": impl})
         try:
             STAGES[stage][impl](ctx)
-        except Exception:
+        except Exception as e:
             stop = StopPayload(
                 reason="error", calls_used=0, tools_used=0, elapsed_s=round(time.perf_counter() - t0, 3),
                 open_items=[stage],
             )
             ctx.ledger.append(RecordType.STOP, stop, Author.code("scheduler"))
+            ctx.on_event("stage_error", {"stage": stage, "impl": impl, "error": f"{type(e).__name__}: {e}"})
             raise
-        ctx.stage_runs.append(StageRun(stage, impl, len(ctx.ledger) - before, time.perf_counter() - t))
+        run = StageRun(stage, impl, len(ctx.ledger) - before, time.perf_counter() - t)
+        ctx.stage_runs.append(run)
+        ctx.on_event("stage_end", {"stage": stage, "impl": impl, "records": run.records, "seconds": run.seconds})
     return ctx

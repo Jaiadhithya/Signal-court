@@ -162,6 +162,18 @@ class Pipeline(_Section):
     report: StageImpl
 
 
+class Demo(_Section):
+    """Time caps for a live finals run, and the donor floor for the peer-median baseline."""
+
+    harvest_cap_s: float
+    measure_cap_s: float
+    sense_cap_s: float
+    prereg_cap_s: float
+    court_cap_s: float
+    report_cap_s: float
+    peer_median_min_donors: int
+
+
 class Config(_Section):
     """Mirror of config/settings.toml."""
 
@@ -182,6 +194,7 @@ class Config(_Section):
     judge: Judge
     writer: Writer
     pipeline: Pipeline
+    demo: Demo
 
 
 class Env(BaseSettings):

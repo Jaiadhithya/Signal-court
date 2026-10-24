@@ -83,7 +83,7 @@ def put_pdf(store, pages, *, publish=date(2026, 8, 1), **kw):
 CODE = Author.code
 
 
-def make_ctx(tmp_path, impl):
+def make_ctx(tmp_path, impl, on_event=None, subtype=None):
     """A RunContext on a fresh ledger in tmp_path/run, with the real settings and a fixed clock."""
     from signalcourt.pipeline import RunContext
     from signalcourt.settings import load_config
@@ -100,4 +100,6 @@ def make_ctx(tmp_path, impl):
         mode="replay",
         run_dir=run_dir,
         impl=dict(impl),
+        subtype=subtype,
+        **({"on_event": on_event} if on_event else {}),
     )

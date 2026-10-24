@@ -35,6 +35,7 @@ def _entity(ctx: RunContext) -> str:
 
 @register("harvest", "stub")
 def harvest(ctx: RunContext) -> None:
+    ctx.subtype = ctx.subtype or "bank"  # the real harvest reads it from the filing format
     ctx.doc_shas = []
 
 

@@ -14,7 +14,7 @@ from pathlib import Path
 from signalcourt import stubs  # noqa: F401  (registers the stub stages)
 from signalcourt.ledger import Ledger, RunPayload
 from signalcourt.ledger.store import utc_now_ms
-from signalcourt.pipeline import RunContext, resolve_impl, run_pipeline
+from signalcourt.pipeline import EventFn, RunContext, resolve_impl, run_pipeline
 from signalcourt.settings import REPO_ROOT, Workspace, config_digest, load_config
 
 
@@ -55,7 +55,16 @@ def run_payload(company: str, symbol: str | None, as_of: date, mode: str, settin
     )
 
 
-def start_run(company: str, symbol: str | None, as_of: date, mode: str, stub: set[str], home: Path) -> RunContext:
+def start_run(
+    company: str,
+    symbol: str | None,
+    subtype: str | None,
+    as_of: date,
+    mode: str,
+    stub: set[str],
+    home: Path,
+    on_event: EventFn | None = None,
+) -> RunContext:
     """Create the run dir and ledger (RUN record) and return a context ready for ``run_pipeline``."""
     settings = load_config().model_dump()
     impl = resolve_impl(settings, stub)
@@ -65,13 +74,23 @@ def start_run(company: str, symbol: str | None, as_of: date, mode: str, stub: se
     ledger = Ledger.create(run_dir, run_payload(company, symbol, as_of, mode, settings))
     return RunContext(
         ledger=ledger, store=None, settings=settings, company=company, symbol=symbol, as_of=as_of, mode=mode,
-        run_dir=run_dir, impl=impl,
+        run_dir=run_dir, impl=impl, subtype=subtype,
+        **({"on_event": on_event} if on_event else {}),
     )
 
 
-def execute_run(company: str, symbol: str | None, as_of: date, mode: str, stub: set[str], home: Path) -> RunContext:
+def execute_run(
+    company: str,
+    symbol: str | None,
+    subtype: str | None,
+    as_of: date,
+    mode: str,
+    stub: set[str],
+    home: Path,
+    on_event: EventFn | None = None,
+) -> RunContext:
     """start_run + run_pipeline; the ledger is closed on return, even when a stage fails."""
-    ctx = start_run(company, symbol, as_of, mode, stub, home)
+    ctx = start_run(company, symbol, subtype, as_of, mode, stub, home, on_event)
     try:
         return run_pipeline(ctx)
     finally:

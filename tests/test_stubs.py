@@ -69,3 +69,14 @@ def test_card_shows_eight_stub_elements_and_footer(tmp_path):
     for s in STAGE_ORDER:
         assert f"<td>{s}</td>" in html
     ctx.ledger.close()
+
+
+def test_stub_harvest_defaults_subtype_and_keeps_a_given_one(tmp_path):
+    ctx = make_ctx(tmp_path, impl=ALL_STUBS)
+    run_pipeline(ctx)
+    assert ctx.subtype == "bank" and ctx.peers == []
+    ctx.ledger.close()
+    ctx = make_ctx(tmp_path / "b", impl=ALL_STUBS, subtype="insurer_life")
+    run_pipeline(ctx)
+    assert ctx.subtype == "insurer_life"
+    ctx.ledger.close()
