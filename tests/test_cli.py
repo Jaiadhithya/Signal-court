@@ -20,9 +20,9 @@ def test_config_digest_lists_settings():
     assert r.exit_code == 0 and "config/settings.toml" in r.stdout
 
 
-# CLI plumbing runs on stubs: the real harvest and measure stages need a universe and a store
-# (tests/test_harvest_stage.py, tests/test_measure_stage.py cover them).
-DATA_STUBS = "harvest,measure"
+# CLI plumbing runs on stubs: the real stages need a universe, a store and a panel, and each has its own
+# tests (tests/test_harvest_stage.py, test_measure_stage.py, test_sense_stage.py, test_judge_stage.py).
+DATA_STUBS = ",".join(STAGE_ORDER)
 
 
 def _with_stubs(extra):

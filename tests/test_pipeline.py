@@ -9,9 +9,10 @@ from signalcourt.pipeline import STAGE_ORDER, RunContext, resolve_impl, run_pipe
 from signalcourt.settings import load_config
 
 
-def test_resolve_impl_falls_back_to_stub_when_real_missing():
+def test_resolve_impl_falls_back_to_stub_when_real_missing(monkeypatch):
+    monkeypatch.setitem(pipeline.STAGES, "sense", {"stub": lambda ctx: None})
     impl = resolve_impl({"pipeline": {"sense": "real"}}, stub_override=set())
-    assert impl["sense"] == "stub"  # no real sense registered yet
+    assert impl["sense"] == "stub"  # no real sense registered
 
 
 def test_stub_override_wins():
@@ -74,9 +75,10 @@ def test_settings_toml_has_demo_time_caps():
     assert demo.court_cap_s == 210 and demo.harvest_cap_s == 45 and demo.peer_median_min_donors == 4
 
 
-def test_stages_after_measure_stay_stub_until_their_sprint():
+def test_pipeline_flags_match_the_sprints_that_landed():
     cfg = load_config().pipeline
-    assert (cfg.sense, cfg.prereg, cfg.court, cfg.judge, cfg.report) == ("stub",) * 5
+    assert (cfg.harvest, cfg.measure, cfg.sense, cfg.judge) == ("real",) * 4
+    assert (cfg.prereg, cfg.court, cfg.report) == ("stub",) * 3
 
 
 def test_events_fire_around_each_stage_in_order(tmp_path):

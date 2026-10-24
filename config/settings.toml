@@ -106,10 +106,10 @@ timeline_min_events = 3
 [pipeline]                    # stub or real per stage; each sprint flips its stage to "real"
 harvest = "real"
 measure = "real"
-sense = "stub"
+sense = "real"
 prereg = "stub"
 court = "stub"
-judge = "stub"
+judge = "real"
 report = "stub"
 
 [demo]                        # live finals run: per-stage time caps (s); whole run must fit the 10-minute slot

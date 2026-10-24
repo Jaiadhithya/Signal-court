@@ -75,10 +75,18 @@ def support_families(ledger: Ledger, claim_rid: str) -> set[str]:
 
 
 def challenge_counts(ledger: Ledger, claim_rid: str) -> tuple[int, int]:
-    """(substantive challenges, how many of them have at least one admissible rebuttal)."""
+    """(substantive challenges, how many of them have at least one admissible rebuttal).
+
+    Admissibility is re-checked here rather than read from the REBUTTAL's own flag: the judge trusts records,
+    not another component's verdict on them.
+    """
     substantive = [c.rid for c in ledger.query(RecordType.CHALLENGE, claim_rid=claim_rid, severity="substantive")]
-    answered = {r.payload["challenge_rid"] for r in ledger.query(RecordType.REBUTTAL, admissible=True)}
-    return len(substantive), sum(1 for rid in substantive if rid in answered)
+    answered = {
+        r.payload["challenge_rid"]
+        for r in ledger.query(RecordType.REBUTTAL)
+        if r.payload["challenge_rid"] in substantive and admissible(ledger, r.payload)[0]
+    }
+    return len(substantive), len(answered)
 
 
 def falsification_met(falsification: dict, panel: Any) -> bool | None:

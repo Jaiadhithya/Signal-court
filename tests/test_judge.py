@@ -235,6 +235,14 @@ def test_minor_and_inadmissibly_rebutted_challenges(court):
     assert court.grade().grade == "Weak"
 
 
+def test_judge_rechecks_admissibility_instead_of_trusting_the_flag(court):
+    ch = court.challenge()
+    court.rebut(ch, admissible_=True)  # says admissible, cites nothing
+    from signalcourt.judge.grade import challenge_counts
+
+    assert challenge_counts(court.led, court.claim) == (1, 0)
+
+
 def test_admissible_requires_existing_cited_rid(court):
     ch = court.challenge()
     ev = court.evidence("exchange")
