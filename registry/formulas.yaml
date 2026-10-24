@@ -19,7 +19,7 @@
 - {id: yoy_advances, text: advances change versus the same quarter a year earlier, expr: yoy(advances), unit: fraction, v: 1}
 - {id: yoy_deposits, text: deposits change versus the same quarter a year earlier, expr: yoy(deposits), unit: fraction, v: 1}
 - {id: yoy_ppop, text: PPOP change versus the same quarter a year earlier, expr: yoy(ppop), unit: fraction, v: 1}
-- {id: qoq_gnpa_pct, text: gross NPA ratio change versus the previous quarter, expr: gnpa_pct - lag(gnpa_pct, 1), unit: fraction, v: 1}
-- {id: cagr_2y_advances, text: two-year compound growth of advances, expr: (advances / lag(advances, 8)) ** 0.5 - 1, unit: fraction, v: 1}
-- {id: nim_proxy, text: annualised net interest income over average total assets, expr: 4 * nii / mean(total_assets, lag(total_assets, 1)), unit: fraction, v: 1}
+- {id: qoq_gnpa_pct, text: gross NPA ratio change versus the previous quarter, expr: "gnpa_pct - lag(gnpa_pct, 1)", unit: fraction, v: 1}
+- {id: cagr_2y_advances, text: two-year compound growth of advances, expr: "(advances / lag(advances, 8)) ** 0.5 - 1", unit: fraction, v: 1}
+- {id: nim_proxy, text: annualised net interest income over average total assets, expr: "4 * nii / mean(total_assets, lag(total_assets, 1))", unit: fraction, v: 1}
 - {id: cost_to_income, text: operating expenses over net interest income plus other income, expr: opex / (nii + other_income), unit: fraction, v: 1}

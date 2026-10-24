@@ -160,3 +160,12 @@ def test_panel_parquet_roundtrip(tmp_path):
     assert pd.read_parquet(tmp_path / "p.parquet").value.iloc[0] == 9
     fb = p.to_factbook()
     assert fb.ref("A", "pat", P.index("Q4FY26")).rid == rows[0].rid
+
+
+def test_formula_registry_rows_are_well_formed():
+    """Unquoted commas inside a YAML flow mapping split an expression into extra keys."""
+    from signalcourt.settings import load_registry
+
+    for r in load_registry("formulas.yaml"):
+        assert set(r) <= {"id", "text", "expr", "unit", "v"}, r["id"]
+        assert r["expr"].count("(") == r["expr"].count(")"), r["id"]

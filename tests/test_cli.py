@@ -20,9 +20,23 @@ def test_config_digest_lists_settings():
     assert r.exit_code == 0 and "config/settings.toml" in r.stdout
 
 
+# CLI plumbing runs on stubs: the real harvest and measure stages need a universe and a store
+# (tests/test_harvest_stage.py, tests/test_measure_stage.py cover them).
+DATA_STUBS = "harvest,measure"
+
+
+def _with_stubs(extra):
+    extra = list(extra)
+    if "--stub" in extra:
+        i = extra.index("--stub") + 1
+        extra[i] = ",".join(dict.fromkeys(extra[i].split(",") + DATA_STUBS.split(",")))
+        return extra
+    return [*extra, "--stub", DATA_STUBS]
+
+
 def _run(tmp_path, monkeypatch, *extra):
     monkeypatch.setenv("SIGNAL_HOME", str(tmp_path))
-    r = CliRunner().invoke(app, ["run", "--company", "Test Co", "--mode", "replay", *extra])
+    r = CliRunner().invoke(app, ["run", "--company", "Test Co", "--mode", "replay", *_with_stubs(extra)])
     assert r.exit_code == 0, r.output
     card = Path(r.output.strip().splitlines()[-1])
     return r, card
@@ -128,7 +142,7 @@ def test_failing_stage_reports_the_stage_not_the_stub_flag(tmp_path, monkeypatch
 
     monkeypatch.setitem(pipeline.STAGES["sense"], "stub", boom)
     monkeypatch.setenv("SIGNAL_HOME", str(tmp_path))
-    r = CliRunner().invoke(app, ["run", "--company", "Test Co", "--mode", "replay"])
+    r = CliRunner().invoke(app, ["run", "--company", "Test Co", "--mode", "replay", *_with_stubs([])])
     assert r.exit_code == 1
     assert "FAILED at sense: ValueError: bad frame" in r.output and "--stub" not in r.output
     assert "run " in r.output.splitlines()[-1]

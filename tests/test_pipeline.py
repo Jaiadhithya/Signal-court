@@ -29,7 +29,7 @@ def test_resolve_impl_uses_real_when_registered(monkeypatch):
 def test_settings_toml_has_a_pipeline_section():
     cfg = load_config()
     assert set(cfg.pipeline.model_dump()) == set(STAGE_ORDER)
-    assert cfg.pipeline.measure == "stub"
+    assert cfg.pipeline.harvest == "real" and cfg.pipeline.measure == "real"  # flipped in S1
 
 
 def test_stage_error_writes_stop_and_reraises(tmp_path, monkeypatch):
@@ -74,8 +74,9 @@ def test_settings_toml_has_demo_time_caps():
     assert demo.court_cap_s == 210 and demo.harvest_cap_s == 45 and demo.peer_median_min_donors == 4
 
 
-def test_harvest_stays_stub_until_s1():
-    assert load_config().pipeline.harvest == "stub"
+def test_stages_after_measure_stay_stub_until_their_sprint():
+    cfg = load_config().pipeline
+    assert (cfg.sense, cfg.prereg, cfg.court, cfg.judge, cfg.report) == ("stub",) * 5
 
 
 def test_events_fire_around_each_stage_in_order(tmp_path):

@@ -104,8 +104,8 @@ why_bullets = [3, 5]
 timeline_min_events = 3
 
 [pipeline]                    # stub or real per stage; each sprint flips its stage to "real"
-harvest = "stub"
-measure = "stub"
+harvest = "real"
+measure = "real"
 sense = "stub"
 prereg = "stub"
 court = "stub"

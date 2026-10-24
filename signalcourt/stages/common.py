@@ -5,6 +5,7 @@ Everything here works offline: sub-type and size come from results XBRL already 
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import date
 from pathlib import PurePosixPath
@@ -21,6 +22,7 @@ RESULTS = "results_xbrl"
 # Ind AS filers revenue from operations; the rest are fallbacks for filings without either).
 # Used only to rank peers within one sub-type.
 SIZE_METRICS = ("total_income", "revenue", "interest_earned", "interest_income", "premium_income")
+_CONSOLIDATED = re.compile(rb"NatureOfReportStandaloneConsolidated[^>]*>\s*Consolidated", re.I)
 # Newest documents searched for a consolidated filing (both bases of the last few quarters).
 SEGMENT_LOOKBACK = 6
 
@@ -52,7 +54,11 @@ def filing_of(meta: DocMeta, symbol: str) -> Fl.ResultFiling:
 
 
 def parse_doc(store: DocStore, meta: DocMeta, symbol: str, subtype: str) -> Fl.ParsedFiling:
-    return Fl.parse_filing(filing_of(meta, symbol), store.read_bytes(meta.sha256), subtype, meta.sha256)
+    """Parse a stored results XBRL; the filing's ``consolidated`` flag is set from the file's own nature field."""
+    xml = store.read_bytes(meta.sha256)
+    filing = filing_of(meta, symbol)
+    filing.consolidated = bool(_CONSOLIDATED.search(xml))
+    return Fl.parse_filing(filing, xml, subtype, meta.sha256)
 
 
 def subtype_from_store(store: DocStore, symbol: str, insurance_type: str = "") -> StoreSubtype | None:
