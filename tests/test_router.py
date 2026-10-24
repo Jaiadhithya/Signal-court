@@ -201,6 +201,13 @@ def test_fenced_json_is_parsed(tmp_path):
     assert make(tmp_path / "z", fake2).call("r", "t", MSG, Out).parsed.ok is False
 
 
+def test_echoed_example_object_before_the_answer_is_skipped(tmp_path):
+    fake = Fake(default='Format: {"example": 1}. Answer: {"ok": true}')
+    r = make(tmp_path, fake)
+    assert r.call("r", "t", MSG, Out).parsed.ok is True
+    assert len(fake.calls) == 1  # no repair round needed
+
+
 def test_budget_exhausted_counts_real_calls_only(tmp_path):
     fake = Fake()
     r = make(tmp_path, fake, mode="warm", call_budget=2)

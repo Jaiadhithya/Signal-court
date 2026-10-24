@@ -123,7 +123,7 @@ AUTHOR = Author.code("router")
 
 
 def parse_json(text: str, schema: type[BaseModel]) -> BaseModel:
-    """The first JSON object in ``text`` (fences and surrounding prose ignored), validated with ``schema``."""
+    """The first JSON object in ``text`` that validates with ``schema`` (fences, prose and echoed examples ignored)."""
     text = _THINK.sub("", text)
     dec = json.JSONDecoder()
     pos = text.find("{")
@@ -132,12 +132,16 @@ def parse_json(text: str, schema: type[BaseModel]) -> BaseModel:
         if pos < 0:
             break
         try:
-            obj, _end = dec.raw_decode(text, pos)
+            obj, end = dec.raw_decode(text, pos)
         except ValueError as e:
             last_err = e
             pos = text.find("{", pos + 1)
             continue
-        return schema.model_validate(obj)
+        try:
+            return schema.model_validate(obj)
+        except ValueError as e:  # e.g. an example object echoed before the answer
+            last_err = e
+            pos = text.find("{", end)
     raise ValueError(str(last_err))
 
 
