@@ -68,6 +68,17 @@ def parse_doc(
     return Fl.parse_filing(filing, xml, subtype, meta.sha256)
 
 
+def annual_report_text(store: DocStore, symbol: str) -> list[str]:
+    """Page text of the newest stored annual report (empty when T2 has not fetched one)."""
+    reports = sorted(store.docs_for(symbol, "annual_report"), key=lambda m: m.publish_date or "", reverse=True)
+    for m in reports:
+        try:
+            return [p.raw for p in store.pages(m.sha256)]
+        except (FileNotFoundError, ValueError):
+            continue
+    return []
+
+
 def subtype_from_store(store: DocStore, symbol: str, insurance_type: str = "") -> StoreSubtype | None:
     """Classify from the newest results XBRL file name plus the newest consolidated segment note."""
     docs = store.docs_for(symbol, RESULTS)
@@ -92,6 +103,7 @@ def subtype_from_store(store: DocStore, symbol: str, insurance_type: str = "") -
         xbrl_url=newest.first_url,
         insurance_type=insurance_type,
         segments=segments,
+        text_snippets=annual_report_text(store, symbol),
         consolidated=bool(segments),
     )
     return StoreSubtype(classify_subtype(ev), file_name(newest.first_url), entry, segments)

@@ -16,6 +16,15 @@ format_rules:
 segment_lexicon:
   lending: ["lending", "loans", "financing", "nbfc", "housing finance", "consumer finance", "finance", "credit"]
   insurance: ["insurance", "life insurance", "general insurance", "reinsurance", "health insurance"]
-cic_phrases: ["core investment company", "core investment companies"]
+# CIC test over annual-report text (lower-cased, whitespace collapsed). Regular expressions.
+# A present-tense self-declaration counts; the auditor's clause about "the Company" overrides it. A bare
+# mention is not enough: every NBFC audit report says "the Company is not a CIC", and many name group CICs.
+# Checked on 24 Oct against the newest annual reports of three CICs and five lenders (all eight right).
+cic_self:
+  - '(?<!formerly )registered as an? (?:systemically important )?(?:core investment compan(?:y|ies)|cic\b)'
+  - '\bas an? (?:registered |unregistered |systemically important )?(?:core investment company|cic\b)'
+  - 'the company (?:is|operates as) an? (?:registered |unregistered |systemically important )?(?:core investment company|cic\b)'
+cic_negations:
+  - 'the company is not an? (?:core investment company|cic\b)'
 # Announcement descriptions that mark an insurer (public disclosure forms).
 insurer_form_markers: ["l-form", "nl-form", "public disclosures", "irdai"]

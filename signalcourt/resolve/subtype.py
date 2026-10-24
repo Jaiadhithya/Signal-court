@@ -7,6 +7,7 @@ generic from the XBRL entry point -> generic. The decision and its evidence go o
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -21,7 +22,7 @@ class SubtypeEvidence:
     insurance_type: str = ""  # legacy insurer listing field, e.g. "Life-Insurance"
     announcement_texts: list[str] = field(default_factory=list)  # descriptions, for L-/NL-form markers
     segments: list[str] = field(default_factory=list)  # consolidated segment labels
-    text_snippets: list[str] = field(default_factory=list)  # e.g. page-1 text of annual report
+    text_snippets: list[str] = field(default_factory=list)  # annual-report text, for the CIC test
     consolidated: bool = False
 
 
@@ -45,6 +46,15 @@ def _classify_segment(label: str, lex: dict[str, list[str]]) -> str | None:
     return None
 
 
+def is_cic(texts: list[str], cfg: dict[str, Any]) -> bool:
+    """A self-declared core investment company that its auditor does not contradict."""
+    t = " ".join(" ".join(x.split()) for x in texts).lower()
+    t = t.replace("’", "'").replace("“", '"').replace("”", '"')
+    if any(re.search(p, t) for p in cfg["cic_negations"]):
+        return False
+    return any(re.search(p, t) for p in cfg["cic_self"])
+
+
 def classify_subtype(ev: SubtypeEvidence) -> SubtypeDecision:
     cfg = load_yaml("subtypes.yaml")
     hay = _hay(ev)
@@ -65,7 +75,7 @@ def classify_subtype(ev: SubtypeEvidence) -> SubtypeDecision:
     # Holding test applies to non-insurer, non-bank filers with a consolidated segment note.
     if base in (None, "nbfc"):
         kinds = {_classify_segment(s, cfg["segment_lexicon"]) for s in ev.segments}
-        cic = any(p in " ".join(ev.text_snippets).lower() for p in cfg["cic_phrases"])
+        cic = is_cic(ev.text_snippets, cfg)
         if ("lending" in kinds and "insurance" in kinds) or cic:
             return SubtypeDecision(
                 "holding", "segment_note_or_cic", {"segments": ev.segments, "cic": cic, "entry_point": ev.entry_point}

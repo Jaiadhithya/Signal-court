@@ -152,3 +152,31 @@ def test_verified_domains_require_appearance_in_own_filings():
 def test_subtype_from_real_xbrl_file_names(url, ins_type, expected):
     ev = S.SubtypeEvidence(entry_point="in-capmkt-ent-2026-01-31.xsd", xbrl_url=url, insurance_type=ins_type)
     assert S.classify_subtype(ev).subtype == expected
+
+
+NBFC_EP = "Ind-AS_entry_point.xsd"
+
+
+@pytest.mark.parametrize(
+    "text, holding",
+    [
+        ("The Company operates as an Unregistered Core Investment Company (CIC).", True),
+        ("XYZ is registered as a Core Investment Company (CIC) with the Reserve Bank of India.", True),
+        ("As a registered Core Investment Company (CIC) under the Master Direction, the Company ...", True),
+        # every NBFC auditor's report carries this clause; it must never make a lender a holding company
+        ("(c) The Company is not a Core Investment Company (CIC) as defined in the regulations.", False),
+        ("The Group has two Core Investment Companies as part of the Group.", False),
+        # a former CIC that has since merged: the auditor's negation wins
+        (
+            "formerly registered as a Systemically Important Core Investment Company. "
+            "The Company is not a Core Investment Company (CIC) as defined in the regulations.",
+            False,
+        ),
+        ("Our parent is an unregistered core investment company.", False),
+    ],
+)
+def test_cic_needs_a_self_declaration_and_no_auditor_negation(text, holding):
+    d = S.classify_subtype(S.SubtypeEvidence(entry_point=NBFC_EP, xbrl_url="x/NBFC_INDAS_1.xml", text_snippets=[text]))
+    assert (d.subtype == "holding") is holding, d
+    if holding:
+        assert d.rule == "segment_note_or_cic" and d.evidence["cic"]

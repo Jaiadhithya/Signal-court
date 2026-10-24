@@ -57,3 +57,15 @@ def test_resolver_can_prefer_the_financial_universe(tmp_path):
     assert {c.symbol for c in fin.candidates} == {"ACMEFIN", "ACMEFSV"}
     assert isinstance(resolve(con, "acme auto ltd", financial_only=True), type(None))
     assert isinstance(resolve(con, "acme finance ltd", financial_only=True), EntityMatch)
+
+
+def test_annual_report_text_feeds_the_cic_test(store):
+    put_xbrl(store, "AAA", "nbfc", date(2026, 6, 30))
+    assert C.subtype_from_store(store, "AAA").decision.subtype == "nbfc"
+    put_pdf(
+        store, ["Annual report", "The Company operates as an Unregistered Core Investment Company (CIC)."],
+        url="https://example.test/ar.pdf", final_url="https://example.test/ar.pdf", doc_type="annual_report",
+        entity_symbol="AAA",
+    )
+    st = C.subtype_from_store(store, "AAA")
+    assert st.decision.subtype == "holding" and st.decision.evidence["cic"]
