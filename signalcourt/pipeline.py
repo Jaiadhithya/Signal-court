@@ -47,8 +47,9 @@ class RunContext:
     impl: dict[str, str]
     subtype: str | None = None
     peers: list[str] = field(default_factory=list)
+    home: Path | None = None  # SIGNAL_HOME: universe.sqlite and the DocStore live under it
     # on_event(kind, data): "stage_start" {stage, impl}, "stage_end" {stage, impl, records, seconds},
-    # "stage_error" {stage, impl, error}; the CLI prints progress from these while the run is going
+    # "stage_error" {stage, impl, error}, "stage_note" {stage, note}; the CLI prints progress from these
     on_event: EventFn = field(default=lambda kind, data: None, repr=False)
     # filled by stages
     doc_shas: list[str] = field(default_factory=list)

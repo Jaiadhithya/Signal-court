@@ -83,7 +83,20 @@ def put_pdf(store, pages, *, publish=date(2026, 8, 1), **kw):
 CODE = Author.code
 
 
-def make_ctx(tmp_path, impl, on_event=None, subtype=None):
+def make_ctx(
+    tmp_path,
+    impl,
+    on_event=None,
+    subtype=None,
+    *,
+    store=None,
+    home=None,
+    company="Test Co",
+    symbol="TESTCO",
+    as_of=date(2026, 10, 1),
+    mode="replay",
+    settings=None,
+):
     """A RunContext on a fresh ledger in tmp_path/run, with the real settings and a fixed clock."""
     from signalcourt.pipeline import RunContext
     from signalcourt.settings import load_config
@@ -92,15 +105,16 @@ def make_ctx(tmp_path, impl, on_event=None, subtype=None):
     led = Ledger.create(run_dir, run_payload(), clock=fixed_clock())
     return RunContext(
         ledger=led,
-        store=None,
-        settings=load_config().model_dump(),
-        company="Test Co",
-        symbol="TESTCO",
-        as_of=date(2026, 10, 1),
-        mode="replay",
+        store=store,
+        settings=settings or load_config().model_dump(),
+        company=company,
+        symbol=symbol,
+        as_of=as_of,
+        mode=mode,
         run_dir=run_dir,
         impl=dict(impl),
         subtype=subtype,
+        home=home,
         **({"on_event": on_event} if on_event else {}),
     )
 
@@ -164,3 +178,46 @@ def put_xbrl(store, symbol: str, subtype: str, end: date, *, scale: float = 1.0,
         publish_date=publish,
         publish_date_source="exchange_broadcast",
     )
+
+
+def build_workspace(home: Path, spec, last=date(2026, 6, 30)):
+    """Universe + DocStore under ``home`` from spec rows (symbol, name, subtype, quarters, scale).
+
+    Every row is a financial entity marked with its sub-type; ``quarters`` synthetic results filings end at
+    ``last``. Returns the open DocStore (caller closes it).
+    """
+    from signalcourt.resolve import universe as U
+    from signalcourt.settings import Workspace
+
+    ws = Workspace(home=home)
+    con = U.connect(ws.universe_db)
+    U.ingest(
+        con,
+        [{"SYMBOL": s, "NAME OF COMPANY": n, "ISIN NUMBER": f"INE{i:06d}01"} for i, (s, n, *_rest) in enumerate(spec)],
+        {"fin": [{"Symbol": s, "Industry": "Financial Services", "Company Name": n} for s, n, *_rest in spec]},
+    )
+    for s, _n, st, *_rest in spec:
+        U.mark_financial(con, s, st)
+    con.close()
+    store = DocStore(ws.cache)
+    for s, _n, st, quarters, scale in spec:
+        for end in quarter_ends(last, quarters):
+            put_xbrl(store, s, st, end, scale=scale)
+    return store
+
+
+@pytest.fixture
+def workspace(tmp_path):
+    """A small workspace: three banks, two NBFCs (one shares a word with a bank) and a life insurer."""
+    spec = [
+        ("ACMEBANK", "Acme Bank Limited", "bank", 8, 1.0),
+        ("BETABANK", "Beta Bank Limited", "bank", 8, 0.5),
+        ("GAMMABANK", "Gamma Bank Limited", "bank", 8, 2.0),
+        ("ACMEFIN", "Acme Finance Limited", "nbfc", 8, 1.0),
+        ("ACMEFSV", "Acme Finserv Limited", "nbfc", 8, 1.5),
+        ("ZETALIFE", "Zeta Life Insurance Company Limited", "insurer_life", 8, 1.0),
+    ]
+    home = tmp_path / "home"
+    store = build_workspace(home, spec)
+    yield home, store
+    store.close()

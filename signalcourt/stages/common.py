@@ -18,8 +18,9 @@ from ..store import DocMeta, DocStore
 
 RESULTS = "results_xbrl"
 # Metrics that measure company size, in order of preference (banks and insurers report total income,
-# Ind AS filers revenue from operations). Used only to rank peers.
-SIZE_METRICS = ("total_income", "revenue")
+# Ind AS filers revenue from operations; the rest are fallbacks for filings without either).
+# Used only to rank peers within one sub-type.
+SIZE_METRICS = ("total_income", "revenue", "interest_earned", "interest_income", "premium_income")
 # Newest documents searched for a consolidated filing (both bases of the last few quarters).
 SEGMENT_LOOKBACK = 6
 

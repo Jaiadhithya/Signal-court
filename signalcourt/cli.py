@@ -44,8 +44,9 @@ def run(
     import webbrowser
 
     from signalcourt.pipeline import STAGE_ORDER, run_pipeline
-    from signalcourt.runner import start_run
+    from signalcourt.runner import close_run, start_run
     from signalcourt.settings import load_settings
+    from signalcourt.stages.harvest_stage import AmbiguousCompany, UnknownCompany
 
     if mode not in ("live", "warm", "replay"):
         raise typer.BadParameter("mode must be live, warm or replay", param_hint="--mode")
@@ -63,16 +64,26 @@ def run(
             typer.echo(f"{d['stage']:<8} {d['impl']:<4} {d['records']:>4} {d['seconds']:7.3f}s")
         elif kind == "stage_error":
             typer.echo(f"FAILED at {d['stage']}: {d['error']}")
+        elif kind == "stage_note":
+            typer.echo(f"{d['stage']:<8} note {d['note']}")
 
     t0 = time.perf_counter()
     ctx = start_run(company, symbol, subtype, day, mode, stubs, load_settings().workspace.home, show)
     try:
         run_pipeline(ctx)
+    except AmbiguousCompany as e:  # the operator retypes; exit 2, never a traceback
+        typer.echo("Did you mean:")
+        for c in e.candidates:
+            typer.echo(f"  {c.symbol:<12} {c.name}")
+        raise typer.Exit(2) from e
+    except UnknownCompany as e:
+        typer.echo(f"{e}. Try the exchange symbol or the full legal name.")
+        raise typer.Exit(2) from e
     except Exception as e:  # the stage, its error and a STOP record are already out; point at the evidence
         typer.echo(f"run {ctx.run_dir}")
         raise typer.Exit(1) from e
     finally:
-        ctx.ledger.close()
+        close_run(ctx)
     typer.echo(f"total    {time.perf_counter() - t0:.3f}s")
     typer.echo(str(ctx.card_path))
     if open_card and ctx.card_path:

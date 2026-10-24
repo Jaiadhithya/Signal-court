@@ -11,11 +11,12 @@ import subprocess
 from datetime import date, datetime, timezone
 from pathlib import Path
 
-from signalcourt import stubs  # noqa: F401  (registers the stub stages)
+from signalcourt import stages, stubs  # noqa: F401  (registers the real and stub stages)
 from signalcourt.ledger import Ledger, RunPayload
 from signalcourt.ledger.store import utc_now_ms
 from signalcourt.pipeline import EventFn, RunContext, resolve_impl, run_pipeline
 from signalcourt.settings import REPO_ROOT, Workspace, config_digest, load_config
+from signalcourt.store import DocStore
 
 
 def git_sha() -> str:
@@ -65,18 +66,27 @@ def start_run(
     home: Path,
     on_event: EventFn | None = None,
 ) -> RunContext:
-    """Create the run dir and ledger (RUN record) and return a context ready for ``run_pipeline``."""
+    """Create the run dir and ledger (RUN record), open the DocStore and return a context for ``run_pipeline``.
+
+    The caller closes both with ``close_run``.
+    """
     settings = load_config().model_dump()
     impl = resolve_impl(settings, stub)
-    runs = Workspace(home=Path(home)).runs
-    runs.mkdir(parents=True, exist_ok=True)
-    run_dir = new_run_dir(runs)
+    ws = Workspace(home=Path(home))
+    ws.runs.mkdir(parents=True, exist_ok=True)
+    run_dir = new_run_dir(ws.runs)
     ledger = Ledger.create(run_dir, run_payload(company, symbol, as_of, mode, settings))
     return RunContext(
-        ledger=ledger, store=None, settings=settings, company=company, symbol=symbol, as_of=as_of, mode=mode,
-        run_dir=run_dir, impl=impl, subtype=subtype,
+        ledger=ledger, store=DocStore(ws.cache), settings=settings, company=company, symbol=symbol, as_of=as_of,
+        mode=mode, run_dir=run_dir, impl=impl, subtype=subtype, home=ws.home,
         **({"on_event": on_event} if on_event else {}),
     )
+
+
+def close_run(ctx: RunContext) -> None:
+    ctx.ledger.close()
+    if ctx.store is not None:
+        ctx.store.close()
 
 
 def execute_run(
@@ -89,9 +99,9 @@ def execute_run(
     home: Path,
     on_event: EventFn | None = None,
 ) -> RunContext:
-    """start_run + run_pipeline; the ledger is closed on return, even when a stage fails."""
+    """start_run + run_pipeline; the ledger and store are closed on return, even when a stage fails."""
     ctx = start_run(company, symbol, subtype, as_of, mode, stub, home, on_event)
     try:
         return run_pipeline(ctx)
     finally:
-        ctx.ledger.close()
+        close_run(ctx)
