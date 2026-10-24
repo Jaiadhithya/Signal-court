@@ -222,6 +222,16 @@ def test_jsonl_mirror_and_repair(tmp_path):
     led2.close()
 
 
+def test_verify_catches_a_payload_edit_in_the_jsonl_mirror(tmp_path):
+    led = Ledger.create(tmp_path / "r", run_payload())
+    claim(led)
+    led.close()
+    jl = tmp_path / "r" / "ledger.jsonl"
+    jl.write_text(jl.read_text().replace('"statement":"s"', '"statement":"t"'))
+    rep = verify_run(tmp_path / "r")
+    assert not rep.ok and [p.kind for p in rep.problems] == ["jsonl_mismatch"] and rep.first_bad_seq() == 2
+
+
 def test_reopen_continues_chain(tmp_path):
     led = Ledger.create(tmp_path / "r", run_payload())
     c = claim(led)

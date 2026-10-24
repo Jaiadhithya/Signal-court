@@ -135,10 +135,14 @@ def verify_run(
         else:
             for line, env in zip(lines, envs, strict=False):
                 try:
-                    if json.loads(line).get("hash") != env["hash"]:
-                        rep.add(env["seq"], "jsonl_mismatch", "hash differs from SQLite")
+                    mirrored = json.loads(line)
                 except ValueError:
                     rep.add(env["seq"], "jsonl_mismatch", "unparseable line")
+                    continue
+                if mirrored.get("hash") != env["hash"]:
+                    rep.add(env["seq"], "jsonl_mismatch", "hash differs from SQLite")
+                elif mirrored != env:  # a field edited in the mirror only
+                    rep.add(env["seq"], "jsonl_mismatch", "record differs from SQLite")
 
     # quotes
     if quote_checker is None and store is not None:
