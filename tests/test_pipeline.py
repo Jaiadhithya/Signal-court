@@ -72,7 +72,7 @@ def test_stage_error_writes_stop_and_reraises(tmp_path, monkeypatch):
 
 def test_settings_toml_has_demo_time_caps():
     demo = load_config().demo
-    assert demo.court_cap_s == 210 and demo.harvest_cap_s == 45 and demo.peer_median_min_donors == 4
+    assert demo.court_cap_s == 90 and demo.harvest_cap_s == 45 and demo.peer_median_min_donors == 4
 
 
 def test_pipeline_flags_match_the_sprints_that_landed():

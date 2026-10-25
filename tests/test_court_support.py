@@ -71,13 +71,19 @@ def _doc(led, meta, family, doc_type, url):
     ).rid
 
 
-def build(tmp_path, *, seal=True, p_raw=0.05, peers_move=False, impl=None) -> Fix:
-    store = DocStore(tmp_path / "cache")
-    deck = put_pdf(store, [DECK], url="https://example.test/deck.pdf", final_url="https://example.test/deck.pdf",
-                   doc_type="deck", source_family="company_filing", publish=date(2026, 8, 1))
-    rating = put_pdf(store, [RATING], url="https://example.test/rating.pdf",
-                     final_url="https://example.test/rating.pdf", doc_type="rating_letter",
-                     source_family="rating_agency", publish=date(2026, 7, 1))
+def build(tmp_path, *, seal=True, p_raw=0.05, peers_move=False, impl=None, reuse: Fix | None = None) -> Fix:
+    """``reuse`` shares another fixture's DocStore and documents (PDF bytes carry a timestamp, so a fresh
+    build would get new shas and pids, unlike a real replay over the same stored files)."""
+    if reuse is not None:
+        store = reuse.store
+        deck, rating = store.meta(reuse.docs["deck"]), store.meta(reuse.docs["rating_letter"])
+    else:
+        store = DocStore(tmp_path / "cache")
+        deck = put_pdf(store, [DECK], url="https://example.test/deck.pdf", final_url="https://example.test/deck.pdf",
+                       doc_type="deck", source_family="company_filing", publish=date(2026, 8, 1))
+        rating = put_pdf(store, [RATING], url="https://example.test/rating.pdf",
+                         final_url="https://example.test/rating.pdf", doc_type="rating_letter",
+                         source_family="rating_agency", publish=date(2026, 7, 1))
     ctx = make_ctx(tmp_path, impl or {"court": "real", "judge": "real"}, store=store, home=tmp_path / "home",
                    mode="warm")
     led = ctx.ledger

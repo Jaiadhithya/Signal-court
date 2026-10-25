@@ -65,7 +65,8 @@ class EntailOut(_Out):
 
 @lru_cache(maxsize=8)
 def template(name: str) -> str:
-    return (PROMPTS_DIR / f"{name}.md").read_text(encoding="utf-8")
+    # line endings normalised: a CRLF checkout must send the same text, or a replay misses the cache
+    return (PROMPTS_DIR / f"{name}.md").read_text(encoding="utf-8").replace("\r\n", "\n")
 
 
 def fill(name: str, **values: str) -> list[dict]:
