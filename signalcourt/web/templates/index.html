@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0B1324">
+  <title>Signal Court | Operator console</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/console.css">
+  <script src="/static/console.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to live view</a>
+  <header class="masthead">
+    <a class="brand" href="/" aria-label="Signal Court home"><span class="brand-mark" aria-hidden="true">SC</span><span>Signal Court<small>EVIDENCE BEFORE CONVICTION</small></span></a>
+    <div class="edition">ATMOS 2026 <span>FINALS / OPERATOR CONSOLE</span></div>
+    <div class="header-actions"><span id="server-status" class="server-status warming" role="status"><i></i> Warming up…</span><button id="history-button" class="quiet">Past runs <span aria-hidden="true">↗</span></button></div>
+  </header>
+
+  <div id="notice" class="notice" role="alert" hidden></div>
+  <div class="workspace">
+    <aside class="rail" aria-label="Run controls">
+      <div class="rail-top"><div class="section-label">SELECT A COMPANY <span id="target-count"></span></div>
+        <label class="search-label" for="company-search">Company name or symbol</label>
+        <div class="search-wrap"><input id="company-search" type="search" placeholder="Search companies" autocomplete="off" spellcheck="false" aria-controls="company-list"><kbd>/</kbd></div>
+        <p id="search-help" class="search-help">Choose a target or resolve another listed company.</p>
+      </div>
+      <div id="company-list" class="company-list" aria-label="Companies"><p class="loading">Loading targets…</p></div>
+      <div class="run-controls">
+        <div class="mode-selector" role="group" aria-label="Run mode"><button type="button" data-mode="warm" aria-pressed="true">Warm</button><button type="button" data-mode="replay" aria-pressed="false">Replay</button></div>
+        <p id="mode-help" class="mode-help">Cached filings + a fresh-data check.</p>
+        <button id="run-button" class="primary run-button" disabled>Run research <span aria-hidden="true">↗</span></button>
+        <div class="rail-foot"><span><i class="ready-dot"></i> Cached replay available</span><span><kbd>Enter</kbd> to run</span></div>
+      </div>
+    </aside>
+
+    <main id="main" tabindex="-1">
+      <section id="live-view" class="live-view" aria-label="Live research">
+        <div class="run-heading"><div><div class="section-label gold">LIVE RESEARCH / SEVEN STAGES</div><h1 id="run-title">The next signal<br>starts here.</h1><p id="run-subtitle">Choose the company named by the judges, then run the research.</p></div>
+          <div class="clock-block"><div class="section-label">RUN CLOCK</div><div><span id="run-clock">000.0</span><span class="clock-unit">s</span></div><p id="budget-label">180 s presentation budget</p><progress id="run-budget" max="180" value="0" aria-label="Elapsed run budget"></progress></div>
+        </div>
+        <div id="stage-grid" class="stage-grid" aria-label="Pipeline stages">
+          {% for stage in stages %}
+          <article class="stage pending" data-stage="{{ stage }}"><div class="stage-top"><span class="stage-number">0{{ loop.index }}</span><span class="stage-state">Pending</span></div><h2>{{ stage }}</h2><div class="stage-time">—<small> s</small></div><div class="stage-meta"><span class="stage-records">0 records</span><span class="stage-impl">—</span></div></article>
+          {% endfor %}
+        </div>
+        <div id="failure" class="failure" role="alert" hidden><div><strong id="failure-title">Run stopped</strong><p id="failure-reason"></p></div><button id="replay-button" class="primary">Re-run in replay ↗</button></div>
+        <section class="court-panel" aria-labelledby="feed-heading"><div class="feed-header"><div><span class="section-label lilac">THE ARGUMENT, AS IT HAPPENS</span><h2 id="feed-heading">Court proceedings</h2></div><span id="feed-state" class="feed-state">Awaiting a run</span></div>
+          <div id="court-feed" class="court-feed" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"><div id="feed-empty" class="feed-empty"><div class="empty-rule" aria-hidden="true"></div><h3>Every claim gets a hearing.</h3><p>The investigator gathers evidence.<br>The red team challenges it. The advocate responds.<br>The ledger records what stands.</p><div class="role-key"><span>Investigator</span><span>Red team</span><span>Advocate</span></div></div></div>
+          <div class="feed-footer"><span>HASH-CHAINED LEDGER</span><span id="run-reference">No run selected</span><button id="show-report" class="quiet" hidden>Read report ↗</button></div>
+        </section>
+      </section>
+
+      <section id="result-view" class="result-view" aria-label="Research report" hidden>
+        <div class="result-toolbar"><div class="result-heading"><span class="section-label gold">RESEARCH REPORT</span><h1 id="result-title"></h1></div><div class="result-actions"><a id="open-report" class="button quiet" target="_blank" rel="noopener">Open in new tab ↗</a><button id="verify-button">Verify ledger</button><button id="pdf-button">Download PDF</button><button id="new-run" class="primary">New run ↗</button></div></div>
+        <div id="verification" class="verification" role="status" hidden></div>
+        <iframe id="report-frame" title="Signal Court research report" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals" referrerpolicy="no-referrer"></iframe>
+      </section>
+      <footer class="console-footer"><span>Code finds the anomaly. Agents argue. Code decides.</span><span>PUBLIC DATA · TRACEABLE EVIDENCE · NO INVESTMENT RECOMMENDATION</span></footer>
+    </main>
+  </div>
+
+  <dialog id="history-drawer" class="history-drawer" aria-labelledby="history-title"><div class="drawer-heading"><div><span class="section-label gold">SAVED RESEARCH</span><h2 id="history-title">Past runs</h2></div><button id="close-history" aria-label="Close past runs">Close ×</button></div><p class="drawer-help">Newest first. Open a report to inspect its evidence.</p><div id="history-list"></div></dialog>
+</body>
+</html>
