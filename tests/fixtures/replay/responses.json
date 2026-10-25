@@ -1,0 +1,65 @@
+[
+  {
+    "key": "25a695ed1669654d133f4d7bd1bc1922dd14e8521f1e7d11aa94f38fddf139dd",
+    "model": "fixture-author",
+    "family": "fixture_author",
+    "provider": "fixture",
+    "text": "{\"rebuttals\": [{\"challenge_index\": 0, \"argument\": \"The sector-shock test shows peers did not move.\", \"evidence_rids\": [], \"calc_rids\": [\"C4\"]}]}",
+    "tokens_in": 10,
+    "tokens_out": 10
+  },
+  {
+    "key": "396f358c0f4fb467c5e72e155b0542193b1a983896d7ddca0d8c80f1fe868605",
+    "model": "fixture-author",
+    "family": "fixture_author",
+    "provider": "fixture",
+    "text": "{\"rebuttals\": [{\"challenge_index\": 0, \"argument\": \"The sector-shock test shows peers did not move.\", \"evidence_rids\": [], \"calc_rids\": [\"C4\"]}]}",
+    "tokens_in": 10,
+    "tokens_out": 10
+  },
+  {
+    "key": "6501be386ce0c9651ca6b078598b2835594ebff59fd5d56a67d9aa0fd1152f74",
+    "model": "fixture-checker",
+    "family": "fixture_checker",
+    "provider": "fixture",
+    "text": "{\"challenges\": [{\"alt_type\": \"sector_shock\", \"argument\": \"Every lender may have grown at once.\", \"evidence_pids\": [\"E1\"], \"calc_rids\": [\"C4\"], \"severity\": \"substantive\"}]}",
+    "tokens_in": 10,
+    "tokens_out": 10
+  },
+  {
+    "key": "a437abd9ee88e54a87f9b48c8cb4c31cad295ba819b56698be396c38ab2ea368",
+    "model": "fixture-checker",
+    "family": "fixture_checker",
+    "provider": "fixture",
+    "text": "{\"challenges\": [{\"alt_type\": \"sector_shock\", \"argument\": \"Every lender may have grown at once.\", \"evidence_pids\": [\"E1\"], \"calc_rids\": [\"C4\"], \"severity\": \"substantive\"}]}",
+    "tokens_in": 10,
+    "tokens_out": 10
+  },
+  {
+    "key": "af3948bd1b2ff3c2e9bfc81763259df6b71ae198996a20c6353bb728a8fe6d6b",
+    "model": "fixture-author",
+    "family": "fixture_author",
+    "provider": "fixture",
+    "text": "{\"evidence\": [{\"pid\": \"4a42423e61-p0001-001\", \"quote\": \"Interest income grew strongly after the expansion of the lending business.\", \"stance\": \"support\", \"sentence\": \"The disclosure attributes interest income growth to business expansion.\"}]}",
+    "tokens_in": 10,
+    "tokens_out": 10
+  },
+  {
+    "key": "cf4aacc0a5ca0b97442e6a1dc63c2666db66e4d21668517bda3bb54808fcc860",
+    "model": "fixture-author",
+    "family": "fixture_author",
+    "provider": "fixture",
+    "text": "{\"evidence\": [{\"pid\": \"4a42423e61-p0001-001\", \"quote\": \"Interest income grew strongly after the expansion of the lending business.\", \"stance\": \"support\", \"sentence\": \"The disclosure attributes interest income growth to business expansion.\"}]}",
+    "tokens_in": 10,
+    "tokens_out": 10
+  },
+  {
+    "key": "e9eb5571bb8ca7b445858f9fc2f5e18d69311fb06e09d1fa853ce6e747d661da",
+    "model": "fixture-checker",
+    "family": "fixture_checker",
+    "provider": "fixture",
+    "text": "{\"labels\": [{\"index\": 0, \"label\": \"entails\"}]}",
+    "tokens_in": 10,
+    "tokens_out": 10
+  }
+]
