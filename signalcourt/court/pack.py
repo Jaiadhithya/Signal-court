@@ -35,6 +35,7 @@ MAX_PASSAGE_WORDS = 160  # longer passages are skipped: they spend the token bud
 LEGAL_SUFFIXES = re.compile(r"\s+(limited|ltd\.?|ltd)$", re.I)
 MIN_WORD_SHARE = 0.6  # a "prose" passage that is mostly figures is a table remnant: no sentence to quote
 _WORD = re.compile(r"[a-z]{3,}")
+_RID_IN_TEXT = re.compile(r"\b[A-Z]{2}-[0-9a-f]{8,64}\b")
 
 
 @lru_cache(maxsize=1)
@@ -142,7 +143,8 @@ def _signal_view(sig: dict[str, Any], pattern: re.Pattern | None) -> dict[str, A
         "quarters_held": sig.get("persistence_q"),
         "placebo_p": _num(placebo.get("p_raw")),
         "placebo_n": placebo.get("n"),
-        "note": blind(status, pattern) if status else None,
+        # rids differ on every run: one left in the text would change the prompt and miss the replay cache
+        "note": _RID_IN_TEXT.sub("a ledger record", blind(status, pattern)) if status else None,
     }
 
 

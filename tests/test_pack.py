@@ -89,3 +89,12 @@ def test_table_remnants_are_not_offered_as_prose(tmp_path):
     doc = {"sha256": meta.sha256, "source_family": "company_filing", "doc_type": "annual_report"}
     assert _passages(f.store, [doc]) == []
     f.led.close()
+
+
+def test_rids_in_the_signal_note_do_not_reach_the_prompt(tmp_path):
+    f = build(tmp_path)
+    sig = f.led.get(f.signal).payload
+    note = "corporate action within 1q of the break (latest DC-4caddb34)"
+    assert "DC-4caddb34" not in build_pack.__globals__["_signal_view"]({**sig, "surprise": {
+        **sig["surprise"], "coverage_status": note}}, None)["note"]
+    f.led.close()
