@@ -77,8 +77,7 @@ def test_settings_toml_has_demo_time_caps():
 
 def test_pipeline_flags_match_the_sprints_that_landed():
     cfg = load_config().pipeline
-    assert (cfg.harvest, cfg.measure, cfg.sense, cfg.prereg, cfg.judge) == ("real",) * 5
-    assert (cfg.court, cfg.report) == ("stub",) * 2
+    assert (cfg.harvest, cfg.measure, cfg.sense, cfg.prereg, cfg.court, cfg.judge, cfg.report) == ("real",) * 7
 
 
 def test_events_fire_around_each_stage_in_order(tmp_path):

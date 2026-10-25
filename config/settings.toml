@@ -116,9 +116,9 @@ harvest = "real"
 measure = "real"
 sense = "real"
 prereg = "real"
-court = "stub"
+court = "real"
 judge = "real"
-report = "stub"
+report = "real"
 
 [demo]                        # live finals run: per-stage time caps (s); whole run must fit the 10-minute slot
 harvest_cap_s = 45
