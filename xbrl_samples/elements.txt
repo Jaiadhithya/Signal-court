@@ -1,0 +1,625 @@
+======================================================================
+xbrl_samples/AXISBANK_integrated.xml
+entry_point: in-capmkt-ent-2026-01-31.xsd | result_type: None | nature: Consolidated | period_end: 2026-06-30
+AdditionalTier1Ratio                                                                       OneD     pure   0.0066
+BasicEarningsPerShareAfterExtraordinaryItems                                               OneD     INRPerShare 24.55
+BasicEarningsPerShareBeforeExtraordinaryItems                                              OneD     INRPerShare 24.55
+CET1Ratio                                                                                  OneD     pure   0.147
+DilutedEarningsPerShareAfterExtraordinaryItems                                             OneD     INRPerShare 24.41
+DilutedEarningsPerShareBeforeExtraordinaryItems                                            OneD     INRPerShare 24.41
+EmployeesCost                                                                              OneD     INR    35299900000
+ExceptionalItems                                                                           OneD     INR    0
+ExpenditureExcludingProvisionsAndContingencies                                             OneD     INR    307140700000
+ExtraordinaryItems                                                                         OneD     INR    0
+FaceValueOfEquityShareCapital                                                              OneD     INRPerShare 2
+GrossNonPerformingAssets                                                                   OneD     INR    171243300000
+Income                                                                                     OneD     INR    432128200000
+InterSegmentRevenue                                                                        OneD     INR    218798500000
+InterestEarned                                                                             OneD     INR    355419600000
+InterestExpended                                                                           OneD     INR    202147000000
+InterestOnBalancesWithReserveBankOfIndiaAndOtherInterBankFunds                             OneD     INR    4509100000
+InterestOrDiscountOnAdvancesOrBills                                                        OneD     INR    279744000000
+NetSegmentAssets                                                                           OneI     INR    19859955500000
+NetSegmentLiabilities                                                                      OneI     INR    17643925500000
+NonPerformingAssets                                                                        OneD     INR    51925600000
+OperatingExpenses                                                                          OneD     INR    104993700000
+OperatingProfitBeforeProvisionAndContingencies                                             OneD     INR    124987500000
+OtherIncome                                                                                OneD     INR    76708600000
+OtherInterest                                                                              OneD     INR    3842700000
+OtherOperatingExpenses                                                                     OneD     INR    69693800000
+OtherUnallocableExpenditureNetOffUnAllocableIncome                                         OneD     INR    0
+PaidUpValueOfEquityShareCapital                                                            OneD     INR    6221600000
+PercentageOfGrossNpa                                                                       OneD     pure   0.0128
+PercentageOfNpa                                                                            OneD     pure   0.0039
+PercentageOfShareHeldByGovernmentOfIndia                                                   OneD     pure   0
+ProfitLossAfterTaxesMinorityInterestAndShareOfProfitLossOfAssociates                       OneD     INR    76323100000
+ProfitLossForThePeriod                                                                     OneD     INR    76565100000
+ProfitLossFromOrdinaryActivitiesAfterTax                                                   OneD     INR    76565100000
+ProfitLossFromOrdinaryActivitiesBeforeTax                                                  OneD     INR    101612800000
+ProfitLossOfMinorityInterest                                                               OneD     INR    380600000
+ProvisionsOtherThanTaxAndContingencies                                                     OneD     INR    23374700000
+ReturnOnAssets                                                                             OneD     pure   0.0151
+RevenueOnInvestments                                                                       OneD     INR    67323800000
+ScripCode                                                                                  OneD            532215
+SegmentAssets                                                                              OneI     INR    19859955500000
+SegmentFinanceCosts                                                                        OneD     INR    0
+SegmentLiabilities                                                                         OneI     INR    17643925500000
+SegmentProfitBeforeTax                                                                     OneD     INR    101612800000
+SegmentProfitLossBeforeTaxAndFinanceCosts                                                  OneD     INR    101612800000
+SegmentRevenue                                                                             OneD     INR    650926700000
+SegmentRevenueFromOperations                                                               OneD     INR    432128200000
+ShareOfProfitLossOfAssociates                                                              OneD     INR    138600000
+TaxExpense                                                                                 OneD     INR    25047700000
+UnAllocableAssets                                                                          OneI     INR    0
+UnAllocableLiabilities                                                                     OneI     INR    0
+-- text facts --
+ClassOfSecurity                                              Equity
+DateOfBoardMeetingWhenFinancialResultsWereApproved           2026-07-18
+DateOfEndOfBoardMeeting                                      2026-07-18
+DateOfEndOfFinancialYear                                     2027-03-31
+DateOfEndOfReportingPeriod                                   2026-06-30
+DateOfStartOfBoardMeeting                                    2026-07-18
+DateOfStartOfFinancialYear                                   2026-04-01
+DateOfStartOfReportingPeriod                                 2026-04-01
+DateOnWhichPriorIntimationOfTheMeetingForConsideringFinancialResultsWasInformedToTheExchange 2026-06-19
+DeclarationOfUnmodifiedOpinionOrStatementOnImpactOfAuditQualification Declaration of unmodified opinion
+DeclarationPursuantToClauseDOfSubRegulation3OfRegulation33OfSEBILODRRegulation2015 false
+DescriptionOfPresentationCurrency                            INR
+EndTimeOfBoardMeeting                                        11:11:00
+ISIN                                                         INE238A01034
+IsCompanyReportingMultisegmentOrSingleSegment                Multi segment
+LevelOfRounding                                              Crores
+MSEISymbol                                                   NA
+NameOfBank                                                   AXIS BANK LIMITED
+NatureOfReportStandaloneConsolidated                         Consolidated
+ReportingQuarter                                             First quarter
+StartTimeOfBoardMeeting                                      09:00:00
+Symbol                                                       AXISBANK
+TypeOfReportingPeriod                                        Quarterly
+WhetherResultsAreAuditedOrUnaudited                          Unaudited
+WhetherResultsAreAuditedOrUnauditedForImpactOfAuditQualification Unaudited
+======================================================================
+xbrl_samples/AXISBANK_legacy.xml
+entry_point: banking_entry_point_2019-09-30.xsd | result_type: Banking Format | nature: Consolidated | period_end: 2024-12-31
+AdditionalTier1Ratio                                                                       OneD     pure   0.0039
+BasicEarningsPerShareAfterExtraordinaryItems                                               OneD     INRPerShare 21.79
+BasicEarningsPerShareBeforeExtraordinaryItems                                              OneD     INRPerShare 21.79
+CET1Ratio                                                                                  OneD     pure   0.1463
+DilutedEarningsPerShareAfterExtraordinaryItems                                             OneD     INRPerShare 21.65
+DilutedEarningsPerShareBeforeExtraordinaryItems                                            OneD     INRPerShare 21.65
+EmployeesCost                                                                              OneD     INR    33538200000.00
+ExceptionalItems                                                                           OneD     INR    0.00
+ExpenditureExcludingProvisionsAndContingencies                                             OneD     INR    277124300000.00
+ExtraordinaryItems                                                                         OneD     INR    0.00
+FaceValueOfEquityShareCapital                                                              OneD     INRPerShare 2.00
+GrossNonPerformingAssets                                                                   OneD     INR    158502700000.00
+Income                                                                                     OneD     INR    389591700000.00
+InterSegmentRevenue                                                                        OneD     INR    193006100000.00
+InterestEarned                                                                             OneD     INR    321622000000.00
+InterestExpended                                                                           OneD     INR    180396800000.00
+InterestOnBalancesWithReserveBankOfIndiaAndOtherInterBankFunds                             OneD     INR    2928900000.00
+InterestOrDiscountOnAdvancesOrBills                                                        OneD     INR    257677100000.00
+NetSegmentAssets                                                                           OneI            15717938500000.00
+NetSegmentLiabilities                                                                      OneI            13934152500000.00
+NonPerformingAssets                                                                        OneD     INR    37747900000.00
+OperatingExpenses                                                                          OneD     INR    96727500000.00
+OperatingProfitBeforeProvisionAndContingencies                                             OneD     INR    112467400000.00
+OtherIncome                                                                                OneD     INR    67969700000.00
+OtherInterest                                                                              OneD     INR    2607900000.00
+OtherOperatingExpenses                                                                     OneD     INR    63189300000.00
+OtherUnallocableExpenditureNetOffUnAllocableIncome                                         OneD     INR    0.00
+PaidUpValueOfEquityShareCapital                                                            OneD     INR    6190300000.00
+PercentageOfGrossNpa                                                                       OneD     pure   0.0146
+PercentageOfNpa                                                                            OneD            0.0035
+PercentageOfShareHeldByGovernmentOfIndia                                                   OneD     pure   0.00
+ProfitLossAfterTaxesMinorityInterestAndShareOfProfitLossOfAssociates                       OneD     INR    67422900000.00
+ProfitLossForThePeriod                                                                     OneD     INR    67631000000.00
+ProfitLossFromOrdinaryActivitiesAfterTax                                                   OneD     INR    67631000000.00
+ProfitLossFromOrdinaryActivitiesBeforeTax                                                  OneD     INR    90067600000.00
+ProfitLossOfMinorityInterest                                                               OneD     INR    366200000.00
+ProvisionsOtherThanTaxAndContingencies                                                     OneD     INR    22399800000.00
+ReturnOnAssets                                                                             OneD     INR    0.0164
+RevenueOnInvestments                                                                       OneD     INR    58408100000.00
+ScripCode                                                                                  OneD            532215
+SegmentAssets                                                                              OneD     INR    15717938500000.00
+SegmentFinanceCosts                                                                        OneD     INR    0.00
+SegmentLiabilities                                                                         OneI     INR    13934152500000.00
+SegmentProfitBeforeTax                                                                     OneD            90067600000.00
+SegmentProfitLossBeforeTaxAndFinanceCosts                                                  OneD     INR    90067600000.00
+SegmentRevenue                                                                             OneD     INR    582597800000.00
+SegmentRevenueFromOperations                                                               OneD            389591700000.00
+ShareOfProfitLossOfAssociates                                                              OneD     INR    158100000.00
+TaxExpense                                                                                 OneD     INR    22436600000.00
+UnAllocableAssets                                                                          OneI     INR    0.00
+UnAllocableLiabilities                                                                     OneI     INR    0.00
+-- text facts --
+ClassOfSecurity                                              Equity
+DateOfBoardMeetingWhenFinancialResultsWereApproved           2025-01-16
+DateOfEndOfBoardMeeting                                      2025-01-16
+DateOfEndOfFinancialYear                                     2025-03-31
+DateOfEndOfReportingPeriod                                   2024-12-31
+DateOfStartOfBoardMeeting                                    2025-01-16
+DateOfStartOfFinancialYear                                   2024-04-01
+DateOfStartOfReportingPeriod                                 2024-10-01
+DateOnWhichPriorIntimationOfTheMeetingForConsideringFinancialResultsWasInformedToTheExchange 2025-01-06
+DeclarationOfUnmodifiedOpinionOrStatementOnImpactOfAuditQualification Not applicable
+DescriptionOfPresentationCurrency                            INR
+EndTimeOfBoardMeeting                                        15:35:00
+ISIN                                                         INE238A01034
+IsCompanyReportingMultisegmentOrSingleSegment                Multi segment
+LevelOfRoundingUsedInFinancialStatements                     Lakhs
+MSEISymbol                                                   NOTLISTED
+NameOfBank                                                   Axis Bank Limited
+NatureOfReportStandaloneConsolidated                         Consolidated
+ReportingQuarter                                             Third quarter
+ResultType                                                   Banking Format
+StartTimeOfBoardMeeting                                      11:30:00
+Symbol                                                       AXISBANK
+WhetherResultsAreAuditedOrUnaudited                          Unaudited
+======================================================================
+xbrl_samples/CHOLAFIN_integrated.xml
+entry_point: in-capmkt-ent-2026-01-31.xsd | result_type: None | nature: Consolidated | period_end: 2026-06-30
+AmountOfItemThatWillBeReclassifiedToProfitAndLoss                                          OneD     INR    -298900000
+AmountOfItemThatWillNotBeReclassifiedToProfitAndLoss                                       OneD     INR    -34700000
+BasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations                           OneD     INRPerShare 19.43
+BasicEarningsLossPerShareFromContinuingOperations                                          OneD     INRPerShare 19.43
+BasicEarningsLossPerShareFromDiscontinuedOperations                                        OneD     INRPerShare 0
+ChangesInInventoriesOfFinishedGoodsWorkInProgressAndStockInTrade                           OneD     INR    0
+ComprehensiveIncomeForThePeriod                                                            OneD     INR    16309400000
+ComprehensiveIncomeForThePeriodAttributableToOwnersOfParent                                OneD     INR    16309400000
+ComprehensiveIncomeForThePeriodAttributableToOwnersOfParentNonControllingInterests         OneD     INR    0
+CostOfMaterialsConsumed                                                                    OneD     INR    0
+CurrentTax                                                                                 OneD     INR    6525300000
+DebtEquityRatio                                                                            OneD     pure   0.0686
+DeferredTax                                                                                OneD     INR    -851900000
+DepreciationDepletionAndAmortisationExpense                                                OneD     INR    750600000
+DilutedEarningsLossPerShareFromContinuingAndDiscontinuedOperations                         OneD     INRPerShare 19.4
+DilutedEarningsLossPerShareFromContinuingOperations                                        OneD     INRPerShare 19.4
+DilutedEarningsLossPerShareFromDiscontinuedOperations                                      OneD     INRPerShare 0
+DividendIncome                                                                             OneD     INR    0
+EmployeeBenefitExpense                                                                     OneD     INR    11489900000
+ExceptionalItemsBeforeTax                                                                  OneD     INR    0
+Expenses                                                                                   OneD     INR    67346100000
+FaceValueOfEquityShareCapital                                                              OneD     INRPerShare 2
+FeesAndCommissionExpense                                                                   OneD     INR    0
+FeesAndCommissionIncome                                                                    OneD     INR    5943500000
+FinanceCosts                                                                               OneD     INR    40073700000
+ImpairmentOnFinancialInstruments                                                           OneD     INR    9220600000
+Income                                                                                     OneD     INR    89566800000
+IncomeTaxRelatingToItemsThatWillBeReclassifiedToProfitOrLoss                               OneD     INR    -72100000
+IncomeTaxRelatingToItemsThatWillNotBeReclassifiedToProfitOrLoss                            OneD     INR    -8700000
+InterestEarned                                                                             OneD     INR    80481100000
+NetGainOnDerecognitionOfFinancialInstrumentsUnderAmortisedCostCategory                     OneD     INR    1613200000
+NetGainOnFairValueChanges                                                                  OneD     INR    501900000
+NetLossOnDerecognitionOfFinancialInstrumentsUnderAmortisedCostCategory                     OneD     INR    0
+NetLossOnFairValueChanges                                                                  OneD     INR    0
+NetSegmentAssets                                                                           OneI     INR    2561030100000
+NetSegmentLiabilities                                                                      OneI     INR    2239676000000
+OtherComprehensiveIncome                                                                   OneD     INR    -252800000
+OtherComprehensiveIncomeNetOfTaxes                                                         OneD     INR    -252800000
+OtherExpenses                                                                              OneD     INR    5811300000
+OtherIncome                                                                                OneD     INR    1003900000
+PaidUpValueOfEquityShareCapital                                                            OneD     INR    1705900000
+ProfitBeforeExceptionalItemsAndTax                                                         OneD     INR    22220700000
+ProfitBeforeTax                                                                            OneD     INR    22220700000
+ProfitLossForPeriod                                                                        OneD     INR    16562200000
+ProfitLossForPeriodFromContinuingOperations                                                OneD     INR    16547300000
+ProfitLossFromDiscontinuedOperationsAfterTax                                               OneD     INR    0
+ProfitLossFromDiscontinuedOperationsBeforeTax                                              OneD     INR    0
+ProfitOrLossAttributableToNonControllingInterests                                          OneD     INR    0
+ProfitOrLossAttributableToOwnersOfParent                                                   OneD     INR    16562200000
+PurchasesOfStockInTrade                                                                    OneD     INR    0
+RentalIncome                                                                               OneD     INR    0
+RevenueFromOperations                                                                      OneD     INR    88562900000
+RevenueFromSaleOfProduct                                                                   OneD     INR    0
+RevenueFromSaleOfServices                                                                  OneD     INR    23200000
+ScripCode                                                                                  OneD            511243
+SegmentAssets                                                                              OneI     INR    2561030100000
+SegmentLiabilities                                                                         OneI     INR    2239676000000
+SegmentProfitBeforeTax                                                                     OneD     INR    22235600000
+SegmentProfitLossBeforeTaxAndFinanceCosts                                                  OneD     INR    22235600000
+SegmentRevenue                                                                             OneD     INR    89566800000
+SegmentRevenueFromOperations                                                               OneD     INR    89566800000
+ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod                 OneD     INR    14900000
+TaxExpense                                                                                 OneD     INR    5673400000
+TaxExpenseOfDiscontinuedOperations                                                         OneD     INR    0
+UnAllocableAssets                                                                          OneI     INR    0
+UnAllocableLiabilities                                                                     OneI     INR    0
+-- text facts --
+ClassOfSecurity                                              Equity
+DateOfBoardMeetingWhenFinancialResultsWereApproved           2026-07-28
+DateOfEndOfBoardMeeting                                      2026-07-28
+DateOfEndOfFinancialYear                                     2027-03-31
+DateOfEndOfReportingPeriod                                   2026-06-30
+DateOfStartOfBoardMeeting                                    2026-07-28
+DateOfStartOfFinancialYear                                   2026-04-01
+DateOfStartOfReportingPeriod                                 2026-04-01
+DateOnWhichPriorIntimationOfTheMeetingForConsideringFinancialResultsWasInformedToTheExchange 2026-07-06
+DeclarationOfUnmodifiedOpinionOrStatementOnImpactOfAuditQualification Not applicable
+DescriptionOfPresentationCurrency                            INR
+EndTimeOfBoardMeeting                                        14:30:00
+ISIN                                                         INE121A01024
+IsCompanyReportingMultisegmentOrSingleSegment                Multi segment
+LevelOfRounding                                              Crores
+MSEISymbol                                                   NOTLISTED
+NameOfTheCompany                                             Cholamandalam Investment and Finance Company Limited
+NatureOfReportStandaloneConsolidated                         Consolidated
+RemarksForDebtServiceCoverageRatio                           Not Applicable for NBFC
+RemarksForInterestServiceCoverageRatio                       Not Applicable for NBFC
+ReportingQuarter                                             First quarter
+StartTimeOfBoardMeeting                                      12:35:00
+Symbol                                                       CHOLAFIN
+TypeOfCompany                                                Main Board
+TypeOfReportingPeriod                                        Quarterly
+WhetherResultsAreAuditedOrUnaudited                          Unaudited
+======================================================================
+xbrl_samples/CHOLAFIN_legacy.xml
+entry_point: in-bse-fin-2020-03-31.xsd | result_type: None | nature: Consolidated | period_end: 2024-12-31
+AmountOfItemThatWillBeReclassifiedToProfitAndLoss                                          OneD     INR    1355800000.00
+AmountOfItemThatWillNotBeReclassifiedToProfitAndLoss                                       OneD     INR    -4400000.00
+BasicEarningsLossPerShareFromContinuingAndDiscontinuedOperations                           OneD     INRPerShare 12.95
+BasicEarningsLossPerShareFromContinuingOperations                                          OneD     INRPerShare 12.95
+BasicEarningsLossPerShareFromDiscontinuedOperations                                        OneD     INRPerShare 0.00
+ChangesInInventoriesOfFinishedGoodsWorkInProgressAndStockInTrade                           OneD     INR    0.00
+ComprehensiveIncomeForThePeriod                                                            OneD     INR    11893200000.00
+ComprehensiveIncomeForThePeriodAttributableToOwnersOfParent                                OneD     INR    11893200000.00
+ComprehensiveIncomeForThePeriodAttributableToOwnersOfParentNonControllingInterests         OneD     INR    0.00
+CostOfMaterialsConsumed                                                                    OneD     INR    0.00
+CurrentTax                                                                                 OneD     INR    4711400000.00
+DebtEquityRatio                                                                            OneD     pure   0.07
+DeferredTax                                                                                OneD     INR    -937000000.00
+DepreciationDepletionAndAmortisationExpense                                                OneD     INR    591500000.00
+DilutedEarningsLossPerShareFromContinuingAndDiscontinuedOperations                         OneD     INRPerShare 12.91
+DilutedEarningsLossPerShareFromContinuingOperations                                        OneD     INRPerShare 12.91
+DilutedEarningsLossPerShareFromDiscontinuedOperations                                      OneD     INRPerShare 0.00
+DividendIncome                                                                             OneD     INR    0.00
+EmployeeBenefitExpense                                                                     OneD     INR    8933100000.00
+ExceptionalItemsBeforeTax                                                                  OneD     INR    0.00
+Expenses                                                                                   OneD     INR    53721800000.00
+FaceValueOfEquityShareCapital                                                              OneD     INRPerShare 2
+FeesAndCommissionExpense                                                                   OneD     INR    0.00
+FeesAndCommissionIncome                                                                    OneD     INR    4386700000.00
+FinanceCosts                                                                               OneD     INR    32749300000.00
+FinancialLiabilities                                                                       OneI     INR    0.00
+FinanicalAssets                                                                            OneI     INR    0.00
+ImpairmentOnFinancialInstruments                                                           OneD     INR    6639900000.00
+Income                                                                                     OneD     INR    68367600000.00
+IncomeTaxRelatingToItmesThatWillBeReclassifiedToProfitOrLoss                               OneD     INR    341400000.00
+IncomeTaxRelatingToItmesThatWillNotBeReclassifiedToProfitOrLoss                            OneD     INR    -1100000.00
+InterestEarned                                                                             OneD     INR    61668100000.00
+NetGainOnDerecognitionOfFinancialInstrumentsUnderAmortisedCostCategory                     OneD     INR    651700000.00
+NetGainOnFairValueChanges                                                                  OneD     INR    617100000.00
+NetLossOnDerecognitionOfFinancialInstrumentsUnderAmortisedCostCategory                     OneD     INR    0.00
+NetLossOnFairValueChanges                                                                  OneD     INR    0.00
+NonFinancialAssets                                                                         OneI     INR    0.00
+NonFinancialLiabilities                                                                    OneI     INR    0.00
+OtherComprehensiveIncome                                                                   OneD     INR    1011100000.00
+OtherComprehensiveIncomeNetOfTaxes                                                         OneD     INR    1011100000.00
+OtherExpenses                                                                              OneD     INR    4808000000.00
+OtherIncome                                                                                OneD     INR    1037800000.00
+PaidUpValueOfEquityShareCapital                                                            OneD     INR    1682300000.00
+ProfitBeforeExceptionalItemsAndTax                                                         OneD     INR    14645800000.00
+ProfitBeforeTax                                                                            OneD     INR    14645800000.00
+ProfitLossForPeriod                                                                        OneD     INR    10882100000.00
+ProfitLossForPeriodFromContinuingOperations                                                OneD     INR    10871400000.00
+ProfitLossFromDiscontinuedOperationsAfterTax                                               OneD     INR    0.00
+ProfitLossFromDiscontinuedOperationsBeforeTax                                              OneD     INR    0.00
+ProfitOrLossAttributableToNonControllingInterests                                          OneD     INR    0.00
+ProfitOrLossAttributableToOwnersOfParent                                                   OneD     INR    10882100000.00
+PurchasesOfStockInTrade                                                                    OneD     INR    0.00
+RentalIncome                                                                               OneD     INR    0.00
+RevenueFromOperations                                                                      OneD     INR    67329800000.00
+RevenueFromSaleOfProduct                                                                   OneD     INR    0.00
+RevenueFromSaleOfServices                                                                  OneD     INR    6200000.00
+ScripCode                                                                                  OneD            511243
+SegmentAssets                                                                              OneD     INR    1926233300000.00
+SegmentLiabilities                                                                         OneI     INR    1699822600000.00
+SegmentProfitBeforeTax                                                                     OneD     INR    14656500000.00
+SegmentProfitLossBeforeTaxAndFinanceCosts                                                  OneD     INR    14656500000.00
+SegmentRevenue                                                                             OneD     INR    68367600000.00
+SegmentRevenueFromOperations                                                               OneD     INR    68367600000.00
+ShareOfProfitLossOfAssociatesAndJointVenturesAccountedForUsingEquityMethod                 OneD     INR    10700000.00
+TaxExpense                                                                                 OneD     INR    3774400000.00
+TaxExpenseOfDiscontinuedOperations                                                         OneD     INR    0.00
+-- text facts --
+ClassOfSecurity                                              Equity
+DateOfBoardMeetingWhenFinancialResultsWereApproved           2025-01-31
+DateOfEndOfBoardMeeting                                      2025-01-31
+DateOfEndOfFinancialYear                                     2025-03-31
+DateOfEndOfReportingPeriod                                   2024-12-31
+DateOfStartOfBoardMeeting                                    2025-01-31
+DateOfStartOfFinancialYear                                   2024-04-01
+DateOfStartOfReportingPeriod                                 2024-10-01
+DateOnWhichPriorIntimationOfTheMeetingForConsideringFinancialResultsWasInformedToTheExchange 2025-01-03
+DeclarationOfUnmodifiedOpinionOrStatementOnImpactOfAuditQualification Not applicable
+DescriptionOfPresentationCurrency                            INR
+EndTimeOfBoardMeeting                                        13:35:00
+IsCompanyReportingMultisegmentOrSingleSegment                Multi segment
+LevelOfRoundingUsedInFinancialStatements                     Crores
+MSEISymbol                                                   NOTLISTED
+NameOfTheCompany                                             Cholamandalam Investment and Finance Company Limited
+NatureOfReportStandaloneConsolidated                         Consolidated
+ReportingQuarter                                             Third quarter
+StartTimeOfBoardMeeting                                      11:40:00
+Symbol                                                       CHOLAFIN
+WhetherCashFlowStatementIsApplicableOnCompany                false
+WhetherResultsAreAuditedOrUnaudited                          Unaudited
+======================================================================
+xbrl_samples/ICICIPRULI_integrated.xml
+entry_point: in-capmkt-ent-2025-01-31.xsd | result_type: None | nature: Standalone | period_end: 2026-06-30
+AdministrationExpenses                                                                     OneD     INR    0
+AdvertisementAndPublicity                                                                  OneD     INR    735800000
+AllocationOfBonusToPolicyholders                                                           OneD     INR    0
+Assets                                                                                     OneI     INR    3316624600000
+AssetsHeldToCoverLinkedLiabilities                                                         OneI     INR    1654148900000
+BasicAndDilutedEPSAfterExtraordinaryItemsNetOfTaxExpenseForThePeriodNotToBeAnnualized      OneD     INRPerShare 2.66
+BasicAndDilutedEPSBeforeExtraordinaryItemsNetOfTaxExpenseForThePeriodNotToBeAnnualized     OneD     INRPerShare 2.66
+BenefitsPaidNet                                                                            OneD     INR    89477700000
+ChangeInActuarialLiability                                                                 OneD     INR    166881400000
+Commission                                                                                 OneD     INR    10141600000
+CommissionFirstYearPremium                                                                 OneD     INR    3042300000
+CommissionRenewalPremium                                                                   OneD     INR    1036400000
+CommissionSinglePremium                                                                    OneD     INR    6062900000
+ConservationRatio                                                                          OneD     pure   0.213
+CurrentTax                                                                                 OneD     INR    384500000
+CurrentTaxes                                                                               OneD     INR    450400000
+DefferedTax                                                                                OneD     INR    0
+DefferedTaxes                                                                              OneD     INR    0
+EmployeesRemunerationAndWelfareExpenses                                                    OneD     INR    5117100000
+Expenses                                                                                   OneD     INR    279187800000
+ExpensesOfManagement                                                                       OneD     INR    22295600000
+ExpensesOfManagementRatio                                                                  OneD     pure   0.218
+ExpensesOtherThanThoseRelatedToInsuranceBusiness                                           OneD     INR    562900000
+ExtraordinaryItemsNetOfTaxExpenses                                                         OneD     INR    0
+FairValueChangeAccountAndRevaluationReserveShareholders                                    OneI     INR    5342200000
+FinalDividend                                                                              OneD     INR    0
+FundsForFutureAppropriation                                                                OneD     INR    2310800000
+GoodsAndServiceTaxChargeOnLinkedCharges                                                    OneD     INR    84500000
+GrossNPAsShareholdersFund                                                                  OneD     INR    0
+GrossPremiumIncome                                                                         OneD     INR    102506300000
+Income                                                                                     OneD     INR    283949000000
+IncomeFirstYearPremium                                                                     OneD     INR    17118600000
+IncomeFromInvestmentsNet                                                                   OneD     INR    185002400000
+IncomeRenewalPremium                                                                       OneD     INR    53836000000
+IncomeSinglePremium                                                                        OneD     INR    31551700000
+IncomeUnderShareholdersAccount                                                             OneD     INR    2942000000
+InterimBonusPaid                                                                           OneD     INR    1993700000
+InterimDividend                                                                            OneD     INR    0
+InvestmentIncome                                                                           OneD     INR    2631400000
+Investments                                                                                OneI     INR    3275689200000
+InvestmentsPolicyholdersFundExcludingLinkedAssets                                          OneI     INR    1458320600000
+InvestmentsShareholdersFund                                                                OneI     INR    163219700000
+LinkedNonParticipatingPolicyholdersFundGrossNPAs                                           OneD     INR    0
+LinkedNonParticipatingPolicyholdersFundNetNPAs                                             OneD     INR    0
+LinkedNonParticipatingPolicyholdersFundPercentageOfGrossNPAs                               OneD     pure   0
+LinkedNonParticipatingPolicyholdersFundPercentageOfNetNPAs                                 OneD     pure   0
+LinkedNonParticipatingPolicyholdersFundWithUnrealisedGains                                 OneD     pure   0.47
+LinkedNonParticipatingPolicyholdersFundWithoutUnrealisedGains                              OneD     pure   0.08
+LinkedParticipatingPolicyholdersFundGrossNPAs                                              OneD     INR    0
+LinkedParticipatingPolicyholdersFundNetNPAs                                                OneD     INR    0
+LinkedParticipatingPolicyholdersFundPercentageOfGrossNPAs                                  OneD     pure   0
+LinkedParticipatingPolicyholdersFundPercentageOfNetNPAs                                    OneD     pure   0
+LinkedParticipatingPolicyholdersFundWithUnrealisedGains                                    OneD     pure   0
+LinkedParticipatingPolicyholdersFundWithoutUnrealisedGains                                 OneD     pure   0
+NetCommission                                                                              OneD     INR    10141600000
+NetNPAsShareholdersFund                                                                    OneD     INR    0
+NetPremiumIncome                                                                           OneD     INR    97493300000
+NetSurplusDeficit                                                                          OneD     INR    4761200000
+NoOfInvestorComplaints                                                                     OneI     pure   0
+NoOfInvestorComplaintsDisposedOffDuringThePeriod                                           OneD     pure   2
+NoOfInvestorComplaintsDuringThePeriod                                                      OneD     pure   0
+NoOfInvestorComplaintsReceivedDuringThePeriod                                              OneD     pure   2
+NonLinkedNonParticipatingPolicyholdersFundGrossNPAs                                        OneD     INR    0
+NonLinkedNonParticipatingPolicyholdersFundNetNPAs                                          OneD     INR    0
+NonLinkedNonParticipatingPolicyholdersFundPercentageOfGrossNPAs                            OneD     pure   0
+NonLinkedNonParticipatingPolicyholdersFundPercentageOfNetNPAs                              OneD     pure   0
+NonLinkedNonParticipatingPolicyholdersFundWithUnrealisedGains                              OneD     pure   0.208
+NonLinkedNonParticipatingPolicyholdersFundWithoutUnrealisedGains                           OneD     pure   0.074
+NonLinkedParticipatingPolicyholdersFundGrossNPAs                                           OneD     INR    0
+NonLinkedParticipatingPolicyholdersFundNetNPAs                                             OneD     INR    0
+NonLinkedParticipatingPolicyholdersFundPercentageOfGrossNPAs                               OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundPercentageOfNetNPAs                                 OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundWithUnrealisedGains                                 OneD     pure   0.235
+NonLinkedParticipatingPolicyholdersFundWithoutUnrealisedGains                              OneD     pure   0.078
+OperatingExpensesRelatedToInsuranceBusiness                                                OneD     INR    12154000000
+OtherAssetsNetOfCurrentLiabilitiesAndProvisions                                            OneI     INR    40935400000
+OtherOperatingExpenses                                                                     OneD     INR    6301100000
+PaidUpEquityShareCapital                                                                   OneI     INR    14507800000
+PercentageOfGrossNPAsShareholdersFund                                                      OneD     pure   0
+PercentageOfNetNPAsShareholdersFund                                                        OneD     pure   0
+PercentageOfSharesHeldByGovernmentOfIndiaInCaseOfPublicSectorInsuranceCompanies            OneD     pure   0
+PersistencyRatio13ThMonth                                                                  OneD     pure   0.815
+PersistencyRatio25ThMonth                                                                  OneD     pure   0.702
+PersistencyRatio37ThMonth                                                                  OneD     pure   0.766
+PersistencyRatio49ThMonth                                                                  OneD     pure   0.694
+PersistencyRatio61ThMonth                                                                  OneD     pure   0.632
+PolicyholdersAccountOtherIncome                                                            OneD     INR    936000000
+PolicyholdersLiabilitiesToShareholdersFund                                                 OneD     INR    218910000
+ProfitLossAfterTaxAndExtraordinaryItems                                                    OneD     INR    3861800000
+ProfitLossAfterTaxBeforeExtraordinaryItems                                                 OneD     INR    3861800000
+ProfitLossBeforeTax                                                                        OneD     INR    4312200000
+ProfitLossCarriedToBalanceSheet                                                            OneD     INR    83021100000
+ProvisionForTax                                                                            OneD     INR    384500000
+ProvisionsForDiminutionInValueOfInvestments                                                OneD     INR    0
+ProvisionsForDoubtfulDebtsIncludingBadDebtsWrittenOff                                      OneD     INR    64100000
+ProvisionsForDoubtfulDebtsIncludingWriteOff                                                OneD     INR    0
+ProvisionsForTaxes                                                                         OneD     INR    450400000
+ReservesAndSurplusExcludingRevaluationReserve                                              OneD     INR    123899800000
+ScripCode                                                                                  OneD            540133
+ShareholdersAccountExpenses                                                                OneD     INR    1080200000
+ShareholdersAccountIncome                                                                  OneD     INR    5392400000
+ShareholdersAccountOtherIncome                                                             OneD     INR    310600000
+ShareholdersAccountProvisionsForDiminutionInValueOfInvestments                             OneD     INR    0
+ShareholdersFundWithUnrealisedGains                                                        OneD     INR    2900000
+ShareholdersFundWithoutUnrealisedGains                                                     OneD     INR    660000
+SolvencyRatio                                                                              OneD     pure   2.254
+SurplusDeficit                                                                             OneD     INR    6754900000
+SurplusShownInTheRevenueAccount                                                            OneD     INR    4761200000
+TerminalBonusPaid                                                                          OneD     INR    0
+TransferFromPolicyholdersAccount                                                           OneD     INR    2450400000
+TransferOfFundsFromShareholdersAccount                                                     OneD     INR    517300000
+TransferOfFundsToPolicyholdersAccount                                                      OneD     INR    517300000
+TransferredToShareholdersAccount                                                           OneD     INR    2450400000
+-- text facts --
+ClassOfSecurity                                              Equity
+DateOfBoardMeetingWhenFinancialResultsWereApproved           2026-07-15
+DateOfEndOfBoardMeeting                                      2026-07-15
+DateOfEndOfFinancialYear                                     2027-03-31
+DateOfEndOfReportingPeriod                                   2026-06-30
+DateOfStartOfBoardMeeting                                    2026-07-15
+DateOfStartOfFinancialYear                                   2026-04-01
+DateOfStartOfReportingPeriod                                 2026-04-01
+DateOnWhichPriorIntimationOfTheMeetingForConsideringFinancialResultsWasInformedToTheExchange 2026-06-26
+DeclarationOfUnmodifiedOpinionOrStatementOnImpactOfAuditQualification Not applicable
+DescriptionOfPresentationCurrency                            INR
+EndTimeOfBoardMeeting                                        13:28:00
+ISIN                                                         INE726G01019
+LevelOfRounding                                              Lakhs
+MSEISymbol                                                   NOTLISTED
+NameOfTheCompany                                             ICICI Prudential Life Insurance Company Limited
+NatureOfReportStandaloneConsolidated                         Standalone
+NoteForNonApplicabilityOfTheDisclosureForTheDefaultOnLoansAndDebtSecuritiesToTheEntity Not Applicable
+ReportingQuarter                                             First quarter
+StartTimeOfBoardMeeting                                      11:05:00
+Symbol                                                       ICICIPRULI
+TypeOfCompany                                                Main Board
+TypeOfInsurance                                              Non-Linked Policy And Linked Policy
+TypeOfReportingPeriod                                        Quarterly
+WhetherResultsAreAuditedOrUnaudited                          Unaudited
+WhetherStatementOnDeviationOrVariationForProceedsOfPublicIssueOrRightIssueOrPreferentialIssueOrQIPEtcIsApplicableToTheCompanyForTheCurrentQuarter false
+WhetherTheDisclosureForTheDefaultOnLoansAndDebtSecuritiesIsApplicableToTheEntity false
+======================================================================
+xbrl_samples/ICICIPRULI_legacy.xml
+entry_point: in-capmkt-ent-2020-03-31.xsd | result_type: None | nature: Standalone | period_end: 2024-12-31
+AdministrationExpenses                                                                     OneD     INR    0.00
+AdvertisementAndPublicity                                                                  OneD     INR    1082700000.00
+AllocationOfBonusToPolicyholders                                                           OneD     INR    0.00
+Assets                                                                                     OneI     INR    3088051800000.00
+AssetsHeldToCoverLinkedLiabilities                                                         OneI     INR    1670555100000.00
+BasicAndDilutedEPSAfterExtraordinaryItemsNetOfTaxExpenseForThePeriodNotToBeAnnualized      OneD     INRPerShare 2.24
+BasicAndDilutedEPSBeforeExtraordinaryItemsNetOfTaxExpenseForThePeriodNotToBeAnnualized     OneD     INRPerShare 2.25
+BenefitsPaidNet                                                                            OneD     INR    123110400000.00
+ChangeInActuarialLiability                                                                 OneD     INR    -105012800000.00
+Commission                                                                                 OneD     INR    9390600000.00
+CommissionFirstYearPremium                                                                 OneD     INR    3271600000.00
+CommissionRenewalPremium                                                                   OneD     INR    1245900000.00
+CommissionSinglePremium                                                                    OneD     INR    4873100000.00
+ConservationRatio                                                                          OneD     pure   0.01
+CurrentTax                                                                                 OneD     INR    355300000.00
+CurrentTaxes                                                                               OneD     INR    501700000.00
+DefferedTax                                                                                OneD     INR    0.00
+DefferedTaxes                                                                              OneD     INR    0.00
+EmployeesRemunerationAndWelfareExpenses                                                    OneD     INR    4754800000.00
+Expenses                                                                                   OneD     INR    40975000000.00
+ExpensesOfManagement                                                                       OneD     INR    20781200000.00
+ExpensesOfManagementRatio                                                                  OneD     pure   0
+ExpensesOtherThanThoseRelatedToInsuranceBusiness                                           OneD     INR    296200000.00
+ExtraordinaryItemsNetOfTaxExpenses                                                         OneD     INR    0.00
+FairValueChangeAccountAndRevaluationReserveShareholders                                    OneI     INR    833000000.00
+FundsForFutureAppropriation                                                                OneD     INR    930000000.00
+GoodsAndServiceTaxChargeOnLinkedCharges                                                    OneD     INR    1758000000.00
+GrossNPAsShareholdersFund                                                                  OneD     INR    0
+GrossPremiumIncome                                                                         OneD     INR    126601400000.00
+Income                                                                                     OneD     INR    45164700000.00
+IncomeFirstYearPremium                                                                     OneD     INR    18246300000.00
+IncomeFromInvestmentsNet                                                                   OneD     INR    -79059300000.00
+IncomeRenewalPremium                                                                       OneD     INR    60900000000.00
+IncomeSinglePremium                                                                        OneD     INR    47455100000.00
+IncomeUnderShareholdersAccount                                                             OneD     INR    1804900000.00
+InterimBonusPaid                                                                           OneD     INR    1392200000.00
+InvestmentIncome                                                                           OneD     INR    1802000000.00
+Investments                                                                                OneI     INR    3060000500000.00
+LinkedNonParticipatingPolicyholdersFundGrossNPAs                                           OneD     pure   0
+LinkedNonParticipatingPolicyholdersFundNetNPAs                                             OneD     pure   0
+LinkedNonParticipatingPolicyholdersFundPercentageOfGrossNPAs                               OneD     pure   0
+LinkedNonParticipatingPolicyholdersFundPercentageOfNetNPAs                                 OneD     pure   0
+LinkedNonParticipatingPolicyholdersFundWithUnrealisedGains                                 OneD     pure   0
+LinkedNonParticipatingPolicyholdersFundWithoutUnrealisedGains                              OneD     pure   0
+LinkedParticipatingPolicyholdersFundGrossNPAs                                              OneD     pure   0
+LinkedParticipatingPolicyholdersFundNetNPAs                                                OneD     pure   0
+LinkedParticipatingPolicyholdersFundPercentageOfGrossNPAs                                  OneD     pure   0
+LinkedParticipatingPolicyholdersFundPercentageOfNetNPAs                                    OneD     pure   0
+LinkedParticipatingPolicyholdersFundWithUnrealisedGains                                    OneD     pure   0
+LinkedParticipatingPolicyholdersFundWithoutUnrealisedGains                                 OneD     pure   0
+NetCommission                                                                              OneD     INR    11037100000.00
+NetNPAsShareholdersFund                                                                    OneD     INR    0
+NetPremiumIncome                                                                           OneD     INR    122613700000.00
+NetSurplusDeficit                                                                          OneD     INR    4189700000.00
+NoOfInvestorComplaintsDisposedOffDuringThePeriod                                           OneD     pure   0
+NoOfInvestorComplaintsDuringThePeriod                                                      OneD     pure   0
+NoOfInvestorComplaintsPendingAtTheBeginningOfThePeriod                                     OneI     pure   0
+NoOfInvestorComplaintsRemainingUnresolvedAtTheEndOfThePeriod                               OneI     pure   0
+NonLinkedNonParticipatingPolicyholdersFundGrossNPAs                                        OneD     pure   0
+NonLinkedNonParticipatingPolicyholdersFundNetNPAs                                          OneD     pure   0
+NonLinkedNonParticipatingPolicyholdersFundPercentageOfGrossNPAs                            OneD     pure   0
+NonLinkedNonParticipatingPolicyholdersFundPercentageOfNetNPAs                              OneD     pure   0
+NonLinkedNonParticipatingPolicyholdersFundWithUnrealisedGains                              OneD     pure   0
+NonLinkedNonParticipatingPolicyholdersFundWithoutUnrealisedGains                           OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundGrossNPAs                                           OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundNetNPAs                                             OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundPercentageOfGrossNPAs                               OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundPercentageOfNetNPAs                                 OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundWithUnrealisedGains                                 OneD     pure   0
+NonLinkedParticipatingPolicyholdersFundWithoutUnrealisedGains                              OneD     pure   0
+OperatingExpensesRelatedToInsuranceBusiness                                                OneD     INR    9744100000.00
+OtherAssetsNetOfCurrentLiabilitiesAndProvisions                                            OneI     INR    28051300000.00
+OtherOperatingExpenses                                                                     OneD     INR    3906600000.00
+PaidUpEquityShareCapital                                                                   OneI     INR    14452100000.00
+PercentageOfGrossNPAsShareholdersFund                                                      OneD     pure   0
+PercentageOfNetNPAsShareholdersFund                                                        OneD     pure   0
+PercentageOfSharesHeldByGovernmentOfIndiaInCaseOfPublicSectorInsuranceCompanies            OneD     pure   0
+PersistencyRatio13ThMonth                                                                  OneD     pure   0.01
+PersistencyRatio25ThMonth                                                                  OneD     pure   0.01
+PersistencyRatio37ThMonth                                                                  OneD     pure   0.01
+PersistencyRatio49ThMonth                                                                  OneD     pure   0.01
+PolicyholdersAccountOtherIncome                                                            OneD     INR    600300000.00
+PolicyholdersFundExcludingLinkedAssets                                                     OneI     INR    1249776600000.00
+PolicyholdersLiabilitiesToShareholdersFund                                                 OneD     INR    2529100
+ProfitLossAfterTaxAndExtraordinaryItems                                                    OneD     INR    3256500000.00
+ProfitLossAfterTaxBeforeExtraordinaryItems                                                 OneD     INR    3256500000.00
+ProfitLossBeforeTax                                                                        OneD     INR    3758200000.00
+ProfitLossCarriedToBalanceSheet                                                            OneD     INR    62915400000.00
+ProvisionsForDiminutionInValueOfInvestments                                                OneD     INR    -40400000.00
+ProvisionsForDoubtfulDebtsIncludingBadDebtsWrittenOff                                      OneD     INR    23300000.00
+ProvisionsForDoubtfulDebtsIncludingWriteOff                                                OneD     INR    200000.00
+ProvisionsForTax                                                                           OneD     INR    355300000.00
+ProvisionsForTaxes                                                                         OneD     INR    501700000.00
+ReserveAndSurplus                                                                          OneI     INR    100815100000.00
+ScripCode                                                                                  OneI            540133
+ShareholderFund                                                                            OneI     INR    139668800000.00
+ShareholdersAccountExpenses                                                                OneD     INR    1306400000.00
+ShareholdersAccountIncome                                                                  OneD     INR    5064600000.00
+ShareholdersAccountOtherIncome                                                             OneD     INR    2900000.00
+ShareholdersAccountProvisionsForDiminutionInValueOfInvestments                             OneD     INR    0.00
+ShareholdersFundWithUnrealisedGains                                                        OneD     INR    -5000.00
+ShareholdersFundWithoutUnrealisedGains                                                     OneD     INR    6000.00
+SolvencyRatio                                                                              OneD     pure   0.02
+SurplusDeficit                                                                             OneD     INR    5581900000.00
+SurplusShownInTheRevenueAccount                                                            OneD     INR    4189700000.00
+TerminalBonusPaid                                                                          OneD     INR    0.00
+TransferFromPolicyholdersAccount                                                           OneD     INR    3259700000.00
+TransferOfFundsFromShareholdersAccount                                                     OneD     INR    1010000000.00
+TransferOfFundsToPolicyholdersAccount                                                      OneD     INR    1010000000.00
+TransferredToShareholdersAccount                                                           OneD     INR    3259700000.00
+-- text facts --
+DateOfBoardMeetingWhenFinancialResultsWereApproved           2025-01-21
+DateOfEndOfBoardMeeting                                      2025-01-21
+DateOfEndOfFinancialYear                                     2025-03-31
+DateOfEndOfReportingPeriod                                   2024-12-31
+DateOfStartOfBoardMeeting                                    2025-01-21
+DateOfStartOfFinancialYear                                   2024-04-01
+DateOfStartOfReportingPeriod                                 2024-10-01
+DateOnWhichPriorIntimationOfTheMeetingForConsideringFinancialResultsWasInformedToTheExchange 2024-12-26
+DeclarationOfUnmodifiedOpinionOrStatementOnImpactOfAuditQualification Not applicable
+EndTimeOfBoardMeeting                                        17:50:00
+ISIN                                                         INE726G01019
+LevelOfRoundingUsedInFinancialStatements                     Lakhs
+MSEISymbol                                                   NA
+NSESymbol                                                    ICICIPRULI
+NameOfTheCompany                                             ICICI Prudential Life Insurance Company Limited
+NatureOfReportStandaloneConsolidated                         Standalone
+ReportingQuarter                                             Third quarter
+StartTimeOfBoardMeeting                                      15:32:00
+TypeOfInsurance                                              Non-Linked Policy And Linked Policy
+WhetherCashFlowStatementIsApplicableOnCompany                false
+WhetherResultsAreAuditedOrUnaudited                          Audited

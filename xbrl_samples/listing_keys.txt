@@ -1,0 +1,18 @@
+## results_legacy index=equities (CHOLAFIN)
+audited, bank, broadCastDate, companyName, consolidated, cumulative, difference, exchdisstime, filingDate, financialYear, format, fromDate, indAs, industry, isin, oldNewFlag, params, period, reInd, relatingTo, resultDescription, resultDetailedDataLink, seqNumber, symbol, toDate, xbrl
+
+## results_integrated (CHOLAFIN)
+attFileSize, audited, broadcast_Date, cmName, consolidated, creation_Date, diff, ixbrl, ixbrlFileSize, pdf_attach, qe_Date, revised_Date, revision_Remark, seq_Id, smName, symbol, type, type_Sub, xbrl, xbrlFileSize
+
+## results_legacy index=insurance (ICICIPRULI)
+audited, broadCastDate, companyName, consolidated, cumulative, difference, exchdisstime, insuranceType, ixbrl, naAttach, period, periodEnd, relatingTo, symbol, xbrl
+
+## results_integrated (ICICIPRULI)
+attFileSize, audited, broadcast_Date, cmName, consolidated, creation_Date, diff, ixbrl, ixbrlFileSize, pdf_attach, qe_Date, revised_Date, revision_Remark, seq_Id, smName, symbol, type, type_Sub, xbrl, xbrlFileSize
+
+## results_legacy index=equities (AXISBANK)
+audited, bank, broadCastDate, companyName, consolidated, cumulative, difference, exchdisstime, filingDate, financialYear, format, fromDate, indAs, industry, isin, oldNewFlag, params, period, reInd, relatingTo, resultDescription, resultDetailedDataLink, seqNumber, symbol, toDate, xbrl
+
+## results_integrated (AXISBANK)
+attFileSize, audited, broadcast_Date, cmName, consolidated, creation_Date, diff, ixbrl, ixbrlFileSize, pdf_attach, qe_Date, revised_Date, revision_Remark, seq_Id, smName, symbol, type, type_Sub, xbrl, xbrlFileSize
+
