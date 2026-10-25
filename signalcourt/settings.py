@@ -46,6 +46,8 @@ class Sensors(_Section):
     corp_action_factor: float
     corp_action_titles: list[str]
     corp_action_cluster_gap_days: int
+    donor_min_coverage: float
+    donor_min_quarters: int
     share_step_factors: list[float]
     share_step_tolerance: float
     share_flat_tolerance: float
