@@ -2,10 +2,12 @@
 
 The text names only the metric, the direction, the baseline and the break quarter, never the company, and
 carries no digits other than quarter labels, so the unbacked-numbers gate passes it without citations.
-The kill test: the claim dies if, at or after two quarters past the latest reported one, the metric falls back
-past halfway to where it stood before the break. The threshold is the median of the target's values before
-the break plus half the signal's size (already in the metric's own units), written as a CALC so every number
-on the card traces to a record.
+The kill test: the claim dies if, at or after two quarters past the latest reported one, the metric gives back
+half of the break gap from its latest reported level. The threshold is the latest value minus half the signal's
+size (signed, and already in the metric's own units), so an upward break dies below it and a downward one above
+it. Anchoring on the latest level, not the pre-break history, keeps the test reachable for a company that kept
+growing: it asks for half the gap to close, never for a collapse. It is written as a CALC on the latest FACT and
+the SIGNAL, so every number on the card traces to a record.
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ DEADLINE_QUARTERS = 2
 THRESHOLD_FORMULA = {
     "formula_id": "kill_threshold",
     "formula_version": 1,
-    "formula_text": "median of the target's values before the break plus half the signal's gap size",
+    "formula_text": "the target's latest reported value minus half the signal's gap size",
 }
 _RID = re.compile(RID_PATTERN)
 BASELINES = {"twin": "synthetic twin", "peer_median": "peer median", "na": "own history"}
@@ -146,14 +148,16 @@ def draft_claim_with_calc(
         panel, _ = adjust_per_share(panel, settings or load_config().model_dump())
 
     rows = panel.df[(panel.df.entity == panel.target) & (panel.df.metric == metric)].dropna(subset=["value"])
-    pre = rows[rows.pidx < P.index(break_period)].sort_values("pidx")
-    if pre.empty or panel.latest_period() is None:
-        raise ValueError(f"no {metric} values before {break_period} for the threshold")
-    pre_median = float(pre.value.median())
-    threshold = pre_median + float(sig["size"]) / 2
+    rows = rows.sort_values("pidx")
+    after = rows[rows.pidx >= P.index(break_period)]
+    if after.empty or panel.latest_period() is None:
+        raise ValueError(f"no {metric} values from {break_period} on for the threshold")
+    last = after.iloc[-1]
+    latest_value = float(last.value)
+    threshold = latest_value - float(sig["size"]) / 2
     latest = panel.latest_period()
 
-    fact_rids = list(dict.fromkeys(r for r in pre.rid if isinstance(r, str) and _RID.match(r)))
+    fact_rids = [last.rid] if isinstance(last.rid, str) and _RID.match(last.rid) else []
     inputs = [*fact_rids, signal_rid]
     calc_rid = LedgerCalcSink(ledger).append_calc(
         {
@@ -162,15 +166,15 @@ def draft_claim_with_calc(
             "params": {
                 "metric": metric,
                 "break_period": break_period,
-                "pre_quarters": len(pre),
-                "pre_median": pre_median,
+                "latest_period": P.from_index(int(last.pidx)),
+                "latest_value": latest_value,
                 "size": float(sig["size"]),
             },
             "value": threshold,
             "unit": _metrics().get(metric, {}).get("unit", "same"),
             "period_end": P.end(latest).isoformat(),
             "entity": panel.target,
-            "recon_status": _recon_status(pre),
+            "recon_status": _recon_status(after.tail(1)),
         },
         inputs,
     )

@@ -33,6 +33,16 @@ def pre_break_median(panel, metric, break_period):
     return float(s[s.index < P.index(break_period)].median())
 
 
+def latest_value(panel, metric):
+    s = panel.series(panel.target, metric).dropna()
+    return float(s.iloc[-1])
+
+
+def latest_fact_rid(panel, metric):
+    d = panel.df[(panel.df.entity == panel.target) & (panel.df.metric == metric)].sort_values("pidx")
+    return d.rid.iloc[-1]
+
+
 def test_claim_fields_follow_the_signal(tmp_path):
     panel = make_panel(metrics=("gnpa_pct",))
     led = new_ledger(tmp_path)
@@ -70,9 +80,8 @@ def test_threshold_is_backed_by_a_calc_record(tmp_path):
     assert calc.type == RecordType.CALC
     assert calc.payload["value"] == pytest.approx(claim.falsification.threshold)
     assert sig_rid in calc.payload["inputs"] and sig_rid in calc.parents
-    pre = [r for r in calc.payload["inputs"] if r != sig_rid]
-    assert pre and all(r in sig["inputs"] for r in pre)  # the target facts before the break
-    expected = pre_break_median(panel, "gnpa_pct", sig["break_period"]) + sig["size"] / 2
+    assert calc.payload["inputs"] == [latest_fact_rid(panel, "gnpa_pct"), sig_rid]  # the latest quarter's fact
+    expected = latest_value(panel, "gnpa_pct") - sig["size"] / 2
     assert claim.falsification.threshold == pytest.approx(expected)
     assert calc.payload["unit"] == "fraction" and calc.payload["formula_id"] == "kill_threshold"
     assert not any(ch.isdigit() for ch in calc.payload["formula_text"])
@@ -88,8 +97,21 @@ def test_comparator_and_deadline_follow_direction_and_latest_quarter(tmp_path, s
     f = draft_claim(led, sig_rid, 0, panel).falsification
     assert f.metric == "gnpa_pct" and f.comparator == comparator
     assert f.deadline_period == P.shift(panel.latest_period(), 2) == P.from_index(LAST + 2)
-    pre = pre_break_median(panel, "gnpa_pct", "Q2FY25")
-    assert (f.threshold > pre) if direction == "up" else (f.threshold < pre)  # halfway back, not past the start
+    latest = latest_value(panel, "gnpa_pct")
+    assert (f.threshold < latest) if direction == "up" else (f.threshold > latest)  # giving back half the gap
+    led.close()
+
+
+def test_kill_test_is_anchored_on_the_latest_level_not_the_old_history(tmp_path):
+    """A company that grew a lot before its break must not need a collapse to falsify the claim."""
+    panel = make_panel(metrics=("gnpa_pct",))
+    led = new_ledger(tmp_path)
+    sig_rid = signal_on(led, panel, "gnpa_pct")
+    sig = led.get(sig_rid).payload
+    f = draft_claim(led, sig_rid, 0, panel).falsification
+    latest = latest_value(panel, "gnpa_pct")
+    give_back = abs(latest - f.threshold)
+    assert give_back == pytest.approx(abs(sig["size"]) / 2)  # exactly half the break gap, from today's level
     led.close()
 
 
