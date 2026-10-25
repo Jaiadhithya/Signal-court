@@ -19,7 +19,7 @@ import pandas as pd
 from ..calc import periods as P
 from ..calc.panel import Panel
 from ..gates.unbacked import number_tokens
-from ..ledger import Ledger, LedgerCalcSink
+from ..ledger import Ledger, LedgerCalcSink, RecordType
 from ..ledger.schema import RID_PATTERN, ClaimPayload, DrafterRef, Falsification
 from ..sensors.per_share import adjust_per_share, per_share_metrics
 from ..settings import load_config, load_registry
@@ -94,11 +94,20 @@ def metric_label(metric: str) -> str:
     return metric.replace("_", " ")
 
 
-def match_angle(metric: str) -> dict[str, Any] | None:
-    """The first registry angle that needs this metric and whose question is free of figures."""
+def match_angle(metric: str, subtype: str | None = None) -> dict[str, Any] | None:
+    """The first registry angle that needs this metric, applies to the sub-type (when known) and has no figures."""
     for angle in load_registry("angles.yaml"):
+        if subtype is not None and subtype not in angle.get("subtypes", []):
+            continue
         if metric in angle.get("needs", []) and _digit_free(angle["question"]):
             return angle
+    return None
+
+
+def _subtype(ledger: Ledger, entity: str) -> str | None:
+    """The sub-type harvest recorded on the target's ENTITY record, if there is one."""
+    for env in ledger.query(RecordType.ENTITY, symbol=entity):
+        return env.payload["subtype"]
     return None
 
 
@@ -108,13 +117,14 @@ def _statement(label: str, direction: str, baseline: str, break_period: str) -> 
 
 
 def _mechanism(label: str, direction: str, baseline: str, angle: dict[str, Any] | None) -> str:
-    shift = f"a lasting {direction}ward shift in {label} that its {baseline} did not share"
+    if baseline == BASELINES["na"]:
+        shift = f"A lasting {direction}ward shift in {label} away from its own history"
+    else:
+        shift = f"A lasting {direction}ward shift in {label} that its {baseline} did not share"
     if angle is not None:
-        return f"{angle['question'].rstrip('.')}: {shift} points to a change specific to this company."
-    return (
-        f"{shift[0].upper()}{shift[1:]} points to a change in how the company earns, funds or reports this line, "
-        "rather than a move across the sector."
-    )
+        question = angle["question"].rstrip(".")
+        return f"{shift} points to a change specific to this company; the angle to test: {question}."
+    return f"{shift} points to a change in how the company earns, funds or reports this line, not a sector-wide move."
 
 
 def _recon_status(rows: pd.DataFrame) -> str:
@@ -167,7 +177,7 @@ def draft_claim_with_calc(
 
     label = metric_label(metric)
     baseline = BASELINES.get(sig.get("specificity_source"), BASELINES["na"])
-    angle = match_angle(metric)
+    angle = match_angle(metric, _subtype(ledger, sig["entity"]))
     claim = ClaimPayload(
         hypothesis_index=index,
         statement=_statement(label, direction, baseline, break_period),

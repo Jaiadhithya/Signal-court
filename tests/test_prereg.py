@@ -162,3 +162,28 @@ def test_judge_reads_the_falsification(tmp_path):
     fell = grade_claim(led, claim_rid, None, S, _extend(make_panel(metrics=("gnpa_pct",)), [t + 1, t - 1]))
     assert fell.grade == "Killed" and not fell.checks["falsification_not_met"]["pass"]
     led.close()
+
+
+@pytest.mark.parametrize("subtype, angle_id", [("bank", "A3"), ("generic", None)])
+def test_angle_must_apply_to_the_targets_subtype(tmp_path, subtype, angle_id):
+    panel = make_panel(metrics=("pat",))
+    led = new_ledger(tmp_path)
+    led.append(
+        RecordType.ENTITY,
+        {"symbol": TARGET, "subtype": subtype, "subtype_evidence": {}, "peer_rule": "same subtype"},
+        Author.code("resolve"),
+    )
+    claim = draft_claim(led, signal_on(led, panel, "pat"), 0, panel)
+    assert claim.angle_id == angle_id
+    assert ("angle to test" in claim.mechanism) is (angle_id is not None)
+    led.close()
+
+
+def test_own_history_baseline_reads_plainly(tmp_path):
+    panel = make_panel(metrics=("gnpa_pct",), n_peers=0)
+    led = new_ledger(tmp_path)
+    sig_rid = signal_on(led, panel, "gnpa_pct")
+    assert led.get(sig_rid).payload["specificity_source"] == "na"
+    claim = draft_claim(led, sig_rid, 0, panel)
+    assert "against its own history" in claim.statement and "away from its own history" in claim.mechanism
+    led.close()
