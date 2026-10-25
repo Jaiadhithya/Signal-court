@@ -133,3 +133,67 @@ def test_worker_failure_saves_verifiable_run_and_safe_stage_diagnostics(tmp_path
     assert saved["run_dir"] == row["run_dir"] and saved["harvest_s"] >= 0
     assert progress["stage"] == "harvest" and progress["status"] == "error"
     assert row["network_attempts"] == 0 and row["startup_s"] >= 0
+
+
+@pytest.mark.parametrize("field,first,other", [
+    ("symbol", "ALPHA", "BETA"),
+    ("company", "Alpha Finance", "Beta Finance"),
+])
+def test_rerun_replaces_latest_canonical_row_and_preserves_attempt_history(
+    tmp_path, monkeypatch, field, first, other,
+):
+    sweep = sweep_module()
+    targets = tmp_path / "targets.csv"
+    targets.write_text(f"{field}\n{first}\n{other}\n", encoding="utf-8")
+    attempts = iter(["run-first", "run-other", "run-latest"])
+
+    def worker(args, **kwargs):
+        with open(args[args.index("--result-file") + 1], "w", encoding="utf-8") as f:
+            json.dump({"run_dir": next(attempts), "error": ""}, f)
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(sweep.subprocess, "run", worker)
+    path = sweep.run_sweep(targets, "warm", tmp_path / "workspace")
+    targets.write_text(f"{field}\n{first}\n", encoding="utf-8")
+    sweep.run_sweep(targets, "warm", tmp_path / "workspace")
+    with path.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    assert [(r[field], r["run_dir"]) for r in rows] == [(first, "run-latest"), (other, "run-other")]
+    with path.with_suffix(".history.csv").open(newline="", encoding="utf-8") as f:
+        history = list(csv.DictReader(f))
+    assert [r["run_dir"] for r in history] == ["run-first", "run-other", "run-latest"]
+
+
+def test_existing_duplicate_attempts_migrate_to_history_once_before_upsert(tmp_path, monkeypatch):
+    from datetime import date
+
+    sweep = sweep_module()
+    home = tmp_path / "workspace"
+    home.mkdir()
+    output = home / f"sweep_{date.today().isoformat()}_warm.csv"
+    with output.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=sweep.COLUMNS)
+        writer.writeheader()
+        writer.writerows([
+            {"symbol": "ALPHA", "run_dir": "old-first"},
+            {"symbol": "BETA", "run_dir": "other-saved"},
+            {"symbol": "ALPHA", "run_dir": "old-latest"},
+        ])
+    targets = tmp_path / "targets.csv"
+    targets.write_text("symbol\nALPHA\n", encoding="utf-8")
+
+    def worker(args, **kwargs):
+        with open(args[args.index("--result-file") + 1], "w", encoding="utf-8") as f:
+            json.dump({"run_dir": "new-latest", "error": ""}, f)
+        return subprocess.CompletedProcess(args, 0)
+
+    monkeypatch.setattr(sweep.subprocess, "run", worker)
+    sweep.run_sweep(targets, "warm", home)
+    with output.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    assert [(r["symbol"], r["run_dir"]) for r in rows] == [("ALPHA", "new-latest"), ("BETA", "other-saved")]
+    targets.write_text("symbol\n", encoding="utf-8")
+    sweep.run_sweep(targets, "warm", home)
+    with output.with_suffix(".history.csv").open(newline="", encoding="utf-8") as f:
+        history = list(csv.DictReader(f))
+    assert [r["run_dir"] for r in history] == ["old-first", "other-saved", "old-latest", "new-latest"]

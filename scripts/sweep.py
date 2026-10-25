@@ -1,4 +1,4 @@
-"""Run selected pre-warmed targets sequentially and flush a measured acceptance row per run.
+"""Run selected pre-warmed targets sequentially and save each target's latest acceptance row.
 
 Each target gets a fresh Python process. total_s includes interpreter startup, imports, pipeline,
 verification and shutdown; startup_s separately reports worker imports. Replay blocks HTTP and sockets.
@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import socket
 import subprocess
 import sys
@@ -182,16 +183,48 @@ def worker(company: str, symbol: str, mode: str, home: Path, as_of: date, result
     return row
 
 
+def target_key(row: dict) -> tuple[str, str]:
+    symbol = (row.get("symbol") or "").strip().upper()
+    return ("symbol", symbol) if symbol else ("company", (row.get("company") or "").strip().casefold())
+
+
+def atomic_csv(path: Path, rows) -> None:
+    """Publish a complete CSV only after its contents reach the filesystem."""
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", newline="", encoding="utf-8", dir=path.parent, prefix=f".{path.name}.", delete=False,
+        ) as f:
+            temp_path = Path(f.name)
+            writer = csv.DictWriter(f, fieldnames=COLUMNS)
+            writer.writeheader()
+            writer.writerows(rows)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, path)
+    finally:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
+
+
 def run_sweep(targets_file: Path, mode: str, home: Path, as_of: date | None = None) -> Path:
     as_of = as_of or date.today()
     home.mkdir(parents=True, exist_ok=True)
     output = home / f"sweep_{date.today().isoformat()}_{mode}.csv"
-    with output.open("a", newline="", encoding="utf-8") as f:
+    targets = read_targets(targets_file)
+    existing = []
+    if output.is_file():
+        with output.open(newline="", encoding="utf-8") as f:
+            existing = list(csv.DictReader(f))
+    history = output.with_suffix(".history.csv")
+    if not history.exists() or history.stat().st_size == 0:
+        # Preserve legacy duplicate attempts before collapsing the canonical summary.
+        atomic_csv(history, existing)
+    latest = {target_key(row): row for row in existing}
+    atomic_csv(output, latest.values())
+    with history.open("a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=COLUMNS)
-        if f.tell() == 0:
-            writer.writeheader()
-            f.flush()
-        for target in read_targets(targets_file):
+        for target in targets:
             row = {**dict.fromkeys(COLUMNS, ""), **target, "mode": mode, "as_of": as_of.isoformat()}
             with tempfile.TemporaryDirectory(prefix="signal-sweep-") as temp:
                 result = Path(temp) / "result.json"
@@ -224,6 +257,9 @@ def run_sweep(targets_file: Path, mode: str, home: Path, as_of: date | None = No
             )
             writer.writerow(row)
             f.flush()
+            os.fsync(f.fileno())
+            latest[target_key(row)] = row
+            atomic_csv(output, latest.values())
             print(f"{row['symbol'] or row['company']}: {'PASS' if row['pass'] else 'FAIL'} ({row['total_s']:.2f}s)", flush=True)
     return output
 
