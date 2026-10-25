@@ -17,6 +17,7 @@ from collections.abc import Callable
 from ..court.alternatives import run_code_tests
 from ..court.pack import build_pack
 from ..court.round import run_round
+from ..court.transport import bounded
 from ..ledger import Author, RecordType
 from ..llm.router import BudgetExhausted, DeadlineExceeded, Router, RouterError
 from ..pipeline import RunContext, register
@@ -37,6 +38,8 @@ def make_router(ctx: RunContext, deadline: float, clock: Callable[[], float]) ->
         ledger=ctx.ledger,
         call_budget=ctx.settings["budgets"]["reasoning_calls"],
         deadline=deadline,
+        per_call_timeout_s=float(ctx.settings["court"]["per_call_timeout_s"]),
+        transport=bounded(),
         clock=clock,
         demo=bool(ctx.settings["court"]["demo_mode"]),
     )

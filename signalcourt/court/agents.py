@@ -36,7 +36,7 @@ class ChallengeItem(_Out):
     argument: str
     evidence_pids: list[str] = Field(default_factory=list)
     calc_rids: list[str] = Field(default_factory=list)
-    severity: Literal["substantive", "minor"]
+    severity: Literal["substantive", "minor"] = "substantive"  # unstated: the stricter reading for the judge
 
 
 class RedteamOut(_Out):

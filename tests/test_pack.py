@@ -76,3 +76,16 @@ def test_sector_shock_sees_peers_that_moved(tmp_path):
     ss = next(f.led.get(r).payload for r in rids if f.led.get(r).payload["formula_id"] == "sector_shock")
     assert ss["value"] > 0.5
     f.led.close()
+
+
+def test_table_remnants_are_not_offered_as_prose(tmp_path):
+    from conftest import put_pdf
+
+    from signalcourt.court.pack import _passages
+
+    f = build(tmp_path)
+    meta = put_pdf(f.store, ["Total\n456,322,818\n492,409,994\n312,148,251\n134,548.50\n124,345.75 SCHEDULE 15"],
+                   url="https://example.test/t.pdf", final_url="https://example.test/t.pdf")
+    doc = {"sha256": meta.sha256, "source_family": "company_filing", "doc_type": "annual_report"}
+    assert _passages(f.store, [doc]) == []
+    f.led.close()

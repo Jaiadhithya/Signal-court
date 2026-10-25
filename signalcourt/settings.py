@@ -192,6 +192,7 @@ class Court(_Section):
     max_challenges: int
     pack_tokens: int
     max_output_tokens: int
+    per_call_timeout_s: float
 
 
 class Config(_Section):

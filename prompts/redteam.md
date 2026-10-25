@@ -11,8 +11,9 @@ Task: raise up to {{MAX}} challenges, each naming one alternative explanation fr
 
 Rules:
 - alt_type must be one id from the list above.
-- argument: two or three plain sentences. Use a number only if you copy it from a calc and list that calc's id
-  in calc_rids. No other digits except quarter labels such as Q2FY26.
+- argument: two or three plain sentences. The only numbers you may write are calc values (the "value" of a
+  calc you list in calc_rids). No other digits except quarter labels such as Q2FY26: the signal's figures and
+  the passages' figures may not be repeated. A text with any other number is rejected.
 - evidence_pids: ids of admitted evidence (E1, E2, ...) you rely on; calc_rids: calc ids (C1, C2, ...).
   Cite only ids shown to you.
 - severity is "substantive" if the alternative, if true, would explain the signal away; else "minor".

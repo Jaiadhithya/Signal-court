@@ -1,6 +1,9 @@
 # Providers, deployments and role chains. Model ids checked against each provider's listing on 25 Oct
 # (scripts/models_smoke.py). Mistral and Z.ai keys answered 429 on every call that day, NIM deepseek timed out
-# and NIM glm took 84 s, so the reasoning chains lead with Groq, NIM/OpenRouter nemotron and Gemini flash-lite.
+# and NIM glm took 84 s. On a real court pack the Groq models answered in 1-5 s while nemotron used its whole
+# reply budget thinking, so the court roles lead with a different Groq model each (Groq limits tokens per model
+# per minute) and the family guard keeps red team, investigator and advocate apart. Nemotron (30-60 s per court
+# call) is kept for draft and write only.
 providers:
   mistral:    {base_url: "https://api.mistral.ai/v1",                               keys_env: MISTRAL_API_KEYS}
   nim:        {base_url: "https://integrate.api.nvidia.com/v1",                     keys_env: NVIDIA_API_KEYS}
@@ -30,10 +33,10 @@ roles:         # ordered chains; `demo` overrides apply in live/warm demo runs
   extract:          [mistral-medium, gemini-flash-lite, glm-flash, nemotron-or]           # no NIM for bulk work (M2)
   extract_wholedoc: [nemotron-ultra, gemini-flash, gemini-flash-lite]                     # rare, >256K
   draft:            [nemotron-ultra, nemotron-or, gemini-flash-lite, mistral-medium]
-  investigate:      [nemotron-ultra, nemotron-or, gemini-flash-lite, mistral-medium]
-  advocate:         [nemotron-or, nemotron-ultra, gemini-flash-lite, mistral-medium]
-  redteam:          [gpt-oss-120b, qwen-27b, gpt-oss-20b, gemini-flash-lite]               # family guard drops any repeat
-  redteam.demo:     [gpt-oss-120b, qwen-27b, gpt-oss-20b, gemini-flash-lite]
-  entail:           [gemini-flash-lite, gpt-oss-20b, qwen-27b, gemma-31b]                  # family guard picks
+  investigate:      [gpt-oss-20b, gpt-oss-120b, qwen-27b, gemini-flash-lite]
+  advocate:         [gpt-oss-120b, gpt-oss-20b, qwen-27b, gemini-flash-lite]
+  redteam:          [qwen-27b, gemini-flash-lite, gpt-oss-120b, gpt-oss-20b]               # family guard drops any repeat
+  redteam.demo:     [qwen-27b, gemini-flash-lite, gpt-oss-120b, gpt-oss-20b]
+  entail:           [gemini-flash-lite, qwen-27b, gpt-oss-20b]                  # family guard picks
   write:            [gemini-flash-lite, nemotron-or, mistral-medium]
   coverage:         [gemini-flash-lite, mistral-small, gemma-31b]

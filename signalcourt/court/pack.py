@@ -33,6 +33,8 @@ DIRECTION_WORDS = {
 }
 MAX_PASSAGE_WORDS = 160  # longer passages are skipped: they spend the token budget on one block of text
 LEGAL_SUFFIXES = re.compile(r"\s+(limited|ltd\.?|ltd)$", re.I)
+MIN_WORD_SHARE = 0.6  # a "prose" passage that is mostly figures is a table remnant: no sentence to quote
+_WORD = re.compile(r"[a-z]{3,}")
 
 
 @lru_cache(maxsize=1)
@@ -159,7 +161,8 @@ def _calcs(ledger: Ledger, signal_rid: str) -> list[dict[str, Any]]:
                 "meaning": p["formula_text"],
                 "value": _num(p["value"]) if p.get("value") is not None else None,
                 "unit": p["unit"],
-                "detail": {k: _num(v) for k, v in sorted((p.get("params") or {}).items())},
+                # only the value is a citable figure (unbacked-numbers gate); numeric params would invite copying
+                "detail": {k: v for k, v in sorted((p.get("params") or {}).items()) if isinstance(v, str)},
             }
         )
     return out
@@ -202,6 +205,8 @@ def _passages(store, docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     continue
                 n_words = len(p.norm.split())
                 if n_words < 6 or n_words > MAX_PASSAGE_WORDS:
+                    continue
+                if sum(1 for w in p.norm.split() if _WORD.search(w)) < MIN_WORD_SHARE * n_words:
                     continue
                 seen.add(p.norm)
                 out.append(
