@@ -101,6 +101,13 @@ def test_unexplained_share_count_move_is_a_marker():
     assert m.detail == "share-count move x1.35 at Q2FY24"
 
 
+def test_a_share_count_that_moves_back_and_forth_is_unreadable_not_a_marker():
+    panel = share_panel(jump_q="Q2FY24", ratio=1.7)
+    eps = (panel.df.metric == "eps_basic") & (panel.df.pidx >= P.index("Q1FY25"))
+    panel.df.loc[eps, "value"] *= 1.7 / 1.0  # the implied share count falls back to where it was
+    assert len(share_count_markers(panel, SENS)) == 0
+
+
 def test_bonus_issue_step_is_not_a_marker():
     assert share_count_markers(share_panel(ratio=2.0), SENS) == []
 

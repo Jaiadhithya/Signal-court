@@ -12,7 +12,9 @@ Two independent markers, neither read from a company's name:
    numbers first appear in the quarter it falls in or the next one.
 2. **Share-count moves.** ``per_share.read_share_count`` reads the share count as profit / EPS. A move that is
    neither flat nor a bonus or split step is direct data evidence of a merger or a large issue, even when no scheme
-   document was harvested. It marks the quarter of the move.
+   document was harvested. It marks the quarter of the move. A series with more such moves than
+   ``sensors.corp_action_max_share_moves`` (a share count that jumps and falls back) does not read as a share count
+   at all, so it gives no marker.
 
 A signal whose break is within ``sensors.corp_action_window_q`` quarters of a marker keeps its place in the ledger
 but its surprise is multiplied by ``sensors.corp_action_factor``, its ``corp_action_rid`` names the scheme DOC (a
@@ -85,6 +87,8 @@ def share_count_markers(panel: Panel, sens: dict[str, Any]) -> list[Marker]:
     seen: dict[int, float] = {}
     for metric in sorted(per_share_metrics() & set(panel.metrics(panel.target))):
         _, unexplained = read_share_count(profit, panel.series(panel.target, metric), sens)
+        if len(unexplained) > sens["corp_action_max_share_moves"]:
+            continue
         for q, r in unexplained:
             seen.setdefault(q, r)
     return [
