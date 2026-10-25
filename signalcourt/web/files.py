@@ -10,6 +10,8 @@ from urllib.request import url2pathname
 
 from fastapi import HTTPException
 
+from .presentation import research_report
+
 PUBLIC_SUFFIXES = {
     ".html",
     ".htm",
@@ -95,4 +97,4 @@ def browser_report(html: str, run_dir: Path, home: Path) -> str:
                 return f"{attribute}={delimiter}{escape(target, quote=True)}{delimiter}"
         return f"{attribute}={delimiter}#{delimiter}"
 
-    return re.sub(r"""\b(href|src)\s*=\s*(["'])(.*?)\2""", replace, offline_fonts(html), flags=re.I)
+    return re.sub(r"""\b(href|src)\s*=\s*(["'])(.*?)\2""", replace, research_report(offline_fonts(html)), flags=re.I)

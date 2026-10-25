@@ -18,8 +18,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sse_starlette.sse import EventSourceResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from .data import companies, past_runs, resolve_target
+from .data import companies, company_mode, past_runs, resolve_target
 from .files import browser_report, confined, offline_fonts, run_directory
+from .presentation import research_report
 from .service import BusyError, NotReadyError, RunManager
 
 ROOT = Path(__file__).resolve().parent
@@ -31,7 +32,7 @@ class RunRequest(BaseModel):
 
     company: str = Field(min_length=1, max_length=200)
     symbol: str | None = Field(default=None, max_length=50)
-    mode: Literal["warm", "replay", "live"] = "warm"
+    mode: Literal["warm", "replay", "live"] | None = None
     stub: list[str] = Field(default_factory=list, max_length=7)
 
     @field_validator("stub")
@@ -103,13 +104,16 @@ def create_app(*, home: Path | None = None) -> FastAPI:
             raise HTTPException(422, resolved)
         request = payload.model_dump()
         request["symbol"] = resolved["match"]["symbol"]
+        request["mode"] = company_mode(home, request["symbol"])
+        if payload.mode == "replay" and request["mode"] != "replay":
+            raise HTTPException(422, "Replay is available only for the original demonstration companies.")
         try:
             session = manager.start(request)
         except BusyError as exc:
             raise HTTPException(409, str(exc)) from exc
         except NotReadyError as exc:
             raise HTTPException(503, str(exc)) from exc
-        return {"id": session.id, "events": f"/api/runs/{session.id}/events"}
+        return {"id": session.id, "mode": session.mode, "events": f"/api/runs/{session.id}/events"}
 
     @app.get("/api/runs")
     def history():
@@ -152,7 +156,7 @@ def create_app(*, home: Path | None = None) -> FastAPI:
         directory = saved_run(run_id)
         path = confined(directory, "report.html", public=True)
         if not path.is_file():
-            raise HTTPException(404, "This run has no finished report. Choose another past run or re-run in replay.")
+            raise HTTPException(404, "This run has no finished report. Choose another past run or retry the research.")
         return html_response(path, directory)
 
     @app.get("/runs/{run_id}/files/{relative:path}")
@@ -199,7 +203,7 @@ def create_app(*, home: Path | None = None) -> FastAPI:
         with NamedTemporaryFile(
             mode="w", encoding="utf-8", suffix=".html", prefix=".console-export-", dir=directory, delete=False
         ) as source:
-            source.write(offline_fonts(report_path.read_text(encoding="utf-8")))
+            source.write(research_report(offline_fonts(report_path.read_text(encoding="utf-8"))))
             export_source = Path(source.name)
         try:
             output = export_pdf(export_source, directory / "report.pdf")
