@@ -7,12 +7,15 @@ Choice rule, first that applies:
 3. ``own_history``: the target's own pre-break median held flat.
 
 Every fallback leaves a plain-language reason in ``Baseline.note`` so the signal can say what it was measured
-against. Donors are used on the levels given. A donor must report enough pre-period quarters; the twin additionally
-needs a complete pre-period (interior gaps are interpolated).
+against. Donors are used on the levels given. A donor must report a share of the pre-period quarters
+(``sensors.donor_min_coverage``, at least ``sensors.donor_min_quarters``), so one quarter a peer filed late or
+could not be read does not drop it; the twin additionally needs a complete pre-period (interior gaps are
+interpolated).
 """
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
@@ -70,6 +73,15 @@ def _try_twin(
     return Baseline(series, "twin", kept, ratio, donors.shape[1]), ratio, ""
 
 
+def donor_quarters_needed(pre_len: int, settings: dict[str, Any]) -> int:
+    """Pre-period quarters a donor must report: ``sensors.donor_min_coverage`` of them, at least
+    ``sensors.donor_min_quarters``, and never more than ``twin.pre_period_min_q`` (a long history asks no more
+    than a short one would)."""
+    sens = settings["sensors"]
+    share = math.ceil(sens["donor_min_coverage"] * pre_len - 1e-9)
+    return min(settings["twin"]["pre_period_min_q"], max(sens["donor_min_quarters"], share))
+
+
 def fit_baseline(target: pd.Series, donors: pd.DataFrame, pre_end_pidx: int, settings: dict[str, Any]) -> Baseline:
     """Baseline for ``target`` (indexed by quarter index); only quarters up to ``pre_end_pidx`` are used to fit."""
     tw, demo = settings["twin"], settings["demo"]
@@ -77,10 +89,10 @@ def fit_baseline(target: pd.Series, donors: pd.DataFrame, pre_end_pidx: int, set
     d = donors.reindex(target.index) if donors.shape[1] else pd.DataFrame(index=target.index)
     # A donor counts when it reports enough of the target's pre-period quarters; scattered gaps are tolerated
     # (the peer median skips them, the twin interpolates interior ones and drops a donor it cannot complete).
-    need = min(tw["pre_period_min_q"], len(pre_t))
+    need = donor_quarters_needed(len(pre_t), settings)
     if d.shape[1]:
         seen = d.loc[pre_t.index].notna().sum(axis=0) if len(pre_t) else pd.Series(0, index=d.columns)
-        d = d.loc[:, seen >= max(need, 1)]
+        d = d.loc[:, seen >= need]
     n = d.shape[1]
     ratio: float | None = None
     reason = ""

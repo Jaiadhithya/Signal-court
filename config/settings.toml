@@ -14,6 +14,11 @@ pelt_penalty_rule = "bic"     # pen = log(n) * var(first differences); never tun
 open_screen_min_corr = 0.6
 corp_action_window_q = 1
 corp_action_factor = 0.25     # surprise multiplier when a break coincides with a scheme/merger
+corp_action_titles = ["amalgamation", "merger", "arrangement"]   # exchange categories of a scheme filing that combine businesses
+corp_action_cluster_gap_days = 120   # scheme filings closer than this belong to one corporate action
+corp_action_max_share_moves = 1      # more unexplained share-count moves than this: profit/EPS is noise, no marker
+donor_min_coverage = 0.75     # a donor must report this share of the target's pre-period quarters
+donor_min_quarters = 3        # and at least this many of them
 share_step_factors = [1.5, 2, 3, 4, 5, 10]   # share-count steps read as a bonus issue or split
 share_step_tolerance = 0.05   # relative distance from a factor that still counts as that step
 share_flat_tolerance = 0.1    # other quarter-on-quarter share moves above this make the share count unreadable

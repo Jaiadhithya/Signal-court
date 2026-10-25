@@ -88,3 +88,44 @@ def test_short_pre_period_cannot_use_the_twin():
     donors = donors_frame(15, rng, {"A": a})
     base = fit_baseline(pd.Series(a, index=IDX), donors, IDX[S["twin"]["pre_period_min_q"] - 2], S)
     assert base.source == "peer_median"
+
+
+def test_donor_missing_one_quarter_of_a_short_pre_period_still_counts_for_the_peer_median():
+    """Pre-period exactly ``pre_period_min_q`` long: one missing quarter must not drop the donor."""
+    rng = np.random.default_rng(9)
+    donors = donors_frame(6, rng)
+    pre_q = S["twin"]["pre_period_min_q"]
+    donors.loc[IDX[3], ["N00", "N01", "N02"]] = np.nan  # half the donors skipped one pre-period quarter
+    base = fit_baseline(pd.Series(rng.normal(0, 1, 20), index=IDX), donors, IDX[pre_q - 1], S)
+    assert base.source == "peer_median" and base.n_donors == 6
+    assert np.allclose(base.series.values, donors.median(axis=1, skipna=True).values)
+
+
+def test_donor_below_the_coverage_share_is_dropped():
+    rng = np.random.default_rng(10)
+    donors = donors_frame(6, rng)
+    pre_q = S["twin"]["pre_period_min_q"]
+    need = max(S["sensors"]["donor_min_quarters"], int(np.ceil(S["sensors"]["donor_min_coverage"] * pre_q)))
+    donors.loc[IDX[: pre_q - need + 1], "N00"] = np.nan  # one quarter short of the share
+    base = fit_baseline(pd.Series(rng.normal(0, 1, 20), index=IDX), donors, IDX[pre_q - 1], S)
+    assert base.n_donors == 5
+
+
+def test_donor_needs_a_minimum_number_of_observed_quarters():
+    rng = np.random.default_rng(11)
+    donors = donors_frame(6, rng)
+    floor = S["sensors"]["donor_min_quarters"]
+    donors.loc[IDX[floor - 1 : floor + 1], "N00"] = np.nan  # pre-period of floor + 1 quarters, N00 sees floor - 1
+    base = fit_baseline(pd.Series(rng.normal(0, 1, 20), index=IDX), donors, IDX[floor], S)
+    assert base.n_donors == 5
+
+
+def test_twin_uses_donors_with_one_interior_gap_in_a_short_pre_period():
+    rng = np.random.default_rng(12)
+    a = rng.normal(0, 1, 20).cumsum()
+    donors = donors_frame(15, rng, {"A": a})
+    pre_q = S["twin"]["pre_period_min_q"]
+    donors.loc[IDX[2], ["A"] + list(donors.columns[:9])] = np.nan  # ten donors skipped the same interior quarter
+    base = fit_baseline(pd.Series(a, index=IDX), donors, IDX[pre_q - 1], S)
+    assert base.source == "twin" and base.n_donors == 16
+    assert base.weights["A"] > 0.9
