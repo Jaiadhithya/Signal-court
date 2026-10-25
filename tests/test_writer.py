@@ -465,3 +465,79 @@ def test_append_finding_keeps_the_hash_chain_verifiable(full_run):
     full_run.ledger.seal_head("run_head")
     result = verify_run(full_run.ledger.run_dir)
     assert result.ok, result.problems
+
+
+@pytest.mark.parametrize("derived_quarter", [False, True])
+def test_unrelated_calculation_cannot_replace_the_metric_level_or_its_unit(full_run, derived_quarter):
+    extra = full_run.ledger.append(
+        "CALC",
+        {
+            "formula_id": "growth",
+            "formula_version": 1,
+            "formula_text": "latest / previous - 1",
+            "inputs": [fact.rid for fact in full_run.facts],
+            "params": {"metric": "gnpa_amt"},
+            "value": 0.25,
+            "unit": "fraction",
+            "period_end": "2025-12-31",
+            "entity": "TESTCO",
+            "recon_status": "single_source",
+        },
+        Author.code("calculator"),
+    )
+    inputs = [*full_run.signal.payload["inputs"], extra.rid]
+    latest = "140.0 cr"
+    if derived_quarter:
+        derived = full_run.ledger.append(
+            "CALC",
+            {
+                "formula_id": "ytd_to_quarter",
+                "formula_version": 1,
+                "formula_text": "current YTD - previous YTD",
+                "inputs": [fact.rid for fact in full_run.facts],
+                "params": {"metric": "gnpa_amt"},
+                "value": 150.0,
+                "unit": "inr_cr",
+                "period_end": "2026-03-31",
+                "entity": "TESTCO",
+                "recon_status": "single_source",
+            },
+            Author.code("calculator"),
+        )
+        inputs.append(derived.rid)
+        latest = "150.0 cr"
+    signal = full_run.ledger.append("SIGNAL", {**full_run.signal.payload, "inputs": inputs}, Author.code("sensors"))
+    claim = full_run.ledger.append("CLAIM", {**full_run.claim.payload, "signal_rid": signal.rid}, Author.code("prereg"))
+    finding = writer.write_finding(
+        full_run.ledger, claim.rid, panel=full_run.panel, settings=full_run.settings, impl=full_run.impl
+    )
+    assert "20.0 cr" in finding.elements.discovery.text
+    assert any(latest in item.text for item in finding.elements.numbers if "latest level" in item.text)
+    assert not any(extra.rid in item.rids for item in finding.elements.numbers if "level" in item.text)
+    assert check_finding_text(full_run.ledger, finding.model_dump()) is None
+
+
+@pytest.mark.parametrize("seal_type", ["PLAN", "CALC"])
+def test_imported_prereg_head_can_reference_any_existing_envelope(full_run, monkeypatch, seal_type):
+    if seal_type == "PLAN":
+        sealed = full_run.ledger.append("PLAN", {}, Author.code("angle_planner"))
+    else:
+        sealed = full_run.ledger.append(
+            "CALC",
+            {
+                "formula_id": "seal_metadata",
+                "formula_version": 1,
+                "formula_text": "metadata",
+                "inputs": [full_run.claim.rid],
+                "value": None,
+                "unit": "metadata",
+                "recon_status": "single_source",
+            },
+            Author.code("calculator"),
+        )
+    heads = full_run.ledger.heads()
+    heads["prereg_head"] = (sealed.seq, sealed.hash)
+    monkeypatch.setattr(full_run.ledger, "heads", lambda: heads)
+    finding = full_run.finding()
+    assert sealed.hash[:12] in finding.elements.falsification.text
+    assert check_finding_text(full_run.ledger, finding.model_dump()) is None

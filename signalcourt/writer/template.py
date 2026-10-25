@@ -212,13 +212,22 @@ class _Writer:
         self.label = metric_label(self.metric)
         self.unit = _metrics().get(self.metric, {}).get("unit", "same")
         self.ancestors = ledger.closure(self.signal.rid) if self.signal else []
+        # CALC has no top-level metric: only the measure stage's explicitly
+        # associated YTD subtraction is a reported metric level. Growth, ratios
+        # and other calculations may share ancestors without sharing its unit.
         self.facts = sorted(
             (
                 env
                 for env in self.ancestors
-                if env.type in (RecordType.FACT, RecordType.CALC)
+                if (
+                    (env.type is RecordType.FACT and env.payload.get("metric") == self.metric)
+                    or (
+                        env.type is RecordType.CALC
+                        and env.payload.get("formula_id") == "ytd_to_quarter"
+                        and env.payload.get("params", {}).get("metric") == self.metric
+                    )
+                )
                 and env.payload.get("entity") == self.s.get("entity")
-                and env.payload.get("metric", self.metric) == self.metric
                 and env.payload.get("value") is not None
                 and env.payload.get("period_end")
             ),
@@ -712,10 +721,13 @@ class _Writer:
             f"(by {period_label(fals['deadline_period'])})."
         )
         head = self.ledger.heads().get("prereg_head")
-        if head and self.claim.seq <= head[0]:
-            sealed_claim = next(env for env in self.ledger.query("CLAIM") if env.seq == head[0])
+        sealed = next(
+            (env for env in self.ledger.iter_records() if head and env.seq == head[0] and env.hash == head[1]),
+            None,
+        )
+        if head and sealed and self.claim.seq <= head[0]:
             prefix = head[1][:12]
-            refs.extend(self.metadata_cites(sealed_claim, "hash", text=prefix, location="envelope_first_twelve"))
+            refs.extend(self.metadata_cites(sealed, "hash", text=prefix, location="envelope_first_twelve"))
             text += f" Pre-registration seal {prefix}: sealed before any evidence was searched."
         else:
             text += " No pre-registration seal was found; the search ordering cannot be established."
