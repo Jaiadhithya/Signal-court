@@ -160,7 +160,7 @@ def render_chart(
         'style="width:100%;height:auto;display:block">',
         f"<title>{escape(label)}: recorded target and sensor baseline</title><style>{styles}</style>",
         f'<text x="{left:g}" y="22" style="font-size:13px">{escape(label)}'
-        f'{escape(" (" + unit_label + ")") if unit_label else ""}</text>',
+        f"{escape(' (' + unit_label + ')') if unit_label else ''}</text>",
     ]
     try:
         break_index = P.index(payload["break_period"])
@@ -174,54 +174,75 @@ def render_chart(
             f'<line class="chart-break" data-break-period="{escape(payload["break_period"], quote=True)}" '
             f'x1="{bx:.2f}" x2="{bx:.2f}" y1="{top:g}" y2="{bottom:g}"/>',
             f'<text class="chart-muted" x="{min(bx + 8, right - 140):.2f}" y="43">'
-            f'Break: {escape(_quarter(break_index))}</text>',
+            f"Break: {escape(_quarter(break_index))}</text>",
         ]
     for value in np.linspace(low, high, 5):
         py = y(float(value))
         parts.append(f'<line class="chart-grid" x1="{left:g}" x2="{right:g}" y1="{py:.2f}" y2="{py:.2f}"/>')
-        parts.append(f'<text class="chart-muted" x="{left - 12:g}" y="{py + 4:.2f}" text-anchor="end">'
-                     f'{escape(_number(float(value), unit, suffix=False))}</text>')
+        parts.append(
+            f'<text class="chart-muted" x="{left - 12:g}" y="{py + 4:.2f}" text-anchor="end">'
+            f"{escape(_number(float(value), unit, suffix=False))}</text>"
+        )
     indices = list(target.index)
     step = max(1, math.ceil(len(indices) / 8))
     shown = list(indices[::step])
     if indices[-1] not in shown:
+        if len(shown) > 1 and x(int(indices[-1])) - x(int(shown[-1])) < 75:
+            shown.pop()
         shown.append(indices[-1])
     for index in shown:
-        parts.append(f'<text class="chart-muted" x="{x(int(index)):.2f}" y="304" text-anchor="middle">'
-                     f'{escape(_quarter(int(index)))}</text>')
+        parts.append(
+            f'<text class="chart-muted" x="{x(int(index)):.2f}" y="304" text-anchor="middle">'
+            f"{escape(_quarter(int(index)))}</text>"
+        )
     if not baseline.empty:
         parts.append(_line(baseline, x, y, "chart-baseline-line"))
     parts.append(_line(target, x, y, "chart-target-line"))
     rows = panel.df[(panel.df.entity == payload.get("entity", panel.target)) & (panel.df.metric == metric)]
-    rids = (rows.sort_values("pidx").drop_duplicates("pidx", keep="last").set_index("pidx").rid.to_dict()
-            if "rid" in rows else {})
+    rids = (
+        rows.sort_values("pidx").drop_duplicates("pidx", keep="last").set_index("pidx").rid.to_dict()
+        if "rid" in rows
+        else {}
+    )
     notes = target.attrs.get("notes", [])
     share_restated = metric in per_share_metrics() and any("restated for" in note.lower() for note in notes)
     for index, value in target.items():
         rid = rids.get(index)
-        tooltip = f'{_quarter(int(index))}: {_number(float(value), unit)}'
+        tooltip = f"{_quarter(int(index))}: {_number(float(value), unit)}"
         if share_restated:
             tooltip += "; adjusted onto a consistent share base"
         title = escape(tooltip)
-        circle = (f'<circle class="chart-point" cx="{x(int(index)):.2f}" cy="{y(float(value)):.2f}" r="3.8">'
-                  f'<title>{title}</title></circle>')
+        circle = (
+            f'<circle class="chart-point" cx="{x(int(index)):.2f}" cy="{y(float(value)):.2f}" r="3.8">'
+            f"<title>{title}</title></circle>"
+        )
         if isinstance(rid, str) and rid:
-            parts.append(f'<a href="#{escape(rid, quote=True)}" data-rid="{escape(rid, quote=True)}" '
-                         f'aria-label="{escape(tooltip, quote=True)}">{circle}</a>')
+            parts.append(
+                f'<a href="#{escape(rid, quote=True)}" data-rid="{escape(rid, quote=True)}" '
+                f'aria-label="{escape(tooltip, quote=True)}">{circle}</a>'
+            )
         else:
             parts.append(circle)
-    parts += ['<line class="chart-target-line" x1="104" x2="132" y1="337" y2="337"/>',
-              '<text x="142" y="341">Target</text>']
+    parts += [
+        '<line class="chart-target-line" x1="104" x2="132" y1="337" y2="337"/>',
+        '<text x="142" y="341">Target</text>',
+    ]
     if not baseline.empty:
         n = baseline.attrs.get("n_donors", 0)
-        legend = {"twin": f"twin of {n} peers", "peer_median": f"peer median of {n} peers",
-                  "own_history": "own history"}.get(source, source)
-        parts += ['<line class="chart-baseline-line" x1="250" x2="278" y1="337" y2="337"/>',
-                  f'<text x="288" y="341">{escape(legend)}</text>']
+        legend = {
+            "twin": f"twin of {n} peers",
+            "peer_median": f"peer median of {n} peers",
+            "own_history": "own history",
+        }.get(source, source)
+        parts += [
+            '<line class="chart-baseline-line" x1="250" x2="278" y1="337" y2="337"/>',
+            f'<text x="288" y="341">{escape(legend)}</text>',
+        ]
     parts.append("</svg>")
     if baseline.empty:
-        parts.append('<figcaption class="chart-note">Baseline unavailable; '
-                     'target observations are shown alone.</figcaption>')
+        parts.append(
+            '<figcaption class="chart-note">Baseline unavailable; target observations are shown alone.</figcaption>'
+        )
     if not rids:
         parts.append('<figcaption class="chart-note">Source links unavailable in the saved panel.</figcaption>')
     if notes:

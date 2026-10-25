@@ -1,1 +1,5 @@
-"""Static report, highlighted pages, PDF export, live dashboard."""
+"""Saved-ledger research reports and export helpers."""
+
+from .report import render_report
+
+__all__ = ["render_report"]
