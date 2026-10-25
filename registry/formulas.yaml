@@ -14,6 +14,10 @@
 - {id: adjusted_for_component, text: "reported value minus a component the company itself disclosed separately", expr: "x - component", unit: same, v: 1}
 - {id: specificity, text: "1 minus peer-median change over company change, clipped to 0..1", expr: "builtin", unit: fraction, v: 1}
 - {id: kill_threshold, text: "the target's latest reported value minus half the signal's gap size", expr: "builtin", unit: same, v: 1}
+- {id: sector_shock, text: "peer median change across the break as a fraction of the target's change (scale-free units)", expr: "builtin", unit: fraction, v: 1}
+- {id: corporate_action, text: "1 if a scheme filing or share-count move lies within the sensor's window of the break", expr: "builtin", unit: flag, v: 1}
+- {id: base_effect, text: "robust z of the last pre-break quarter against the quarters before it", expr: "builtin", unit: z, v: 1}
+- {id: one_off, text: "quarters the gap held after the break", expr: "builtin", unit: quarters, v: 1}
 # Concrete per-entity formulas the calculator can evaluate directly.
 - {id: ppop_calc, text: net interest income plus other income minus operating expenses, expr: nii + other_income - opex, unit: inr_cr, v: 1}
 - {id: yoy_pat, text: PAT change versus the same quarter a year earlier, expr: yoy(pat), unit: fraction, v: 1}

@@ -125,6 +125,14 @@ harvest_cap_s = 45
 measure_cap_s = 30
 sense_cap_s = 30
 prereg_cap_s = 20
-court_cap_s = 210
+court_cap_s = 90
 report_cap_s = 15
 peer_median_min_donors = 4    # below this the sensor falls back to the company's own history
+
+[court]                       # LLM court (stage 5); agents only see a context pack and return JSON proposals
+demo_mode = true              # live/warm runs use the demo chain overrides in config/models.yaml
+max_claims_demo = 2           # claims argued in a demo run, in surprise order
+max_evidence = 3              # EVIDENCE proposals the investigator may make per claim
+max_challenges = 2            # CHALLENGE proposals the red team may make per claim
+pack_tokens = 2500            # passage budget of one context pack (cl100k tokens); keeps Groq under its TPM limit
+max_output_tokens = 2000      # reply budget per court call
