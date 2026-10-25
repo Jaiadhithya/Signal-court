@@ -3,12 +3,17 @@
 Per metric: find the last break in the target series, build a baseline from the quarters before it, measure
 the robust z of the gap after the break, require it to persist, then ask how often placebo units (every peer
 as if it were the target, and the target at earlier break dates) look at least as extreme.
+
+Peers are compared on scale-free series: an amount (crores, per share) is divided by the company's own typical
+size before the break, so a large bank is compared with smaller ones by shape, not size. Ratios are compared as
+they are. The signal's ``size`` is converted back to the metric's own units.
 """
 
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any
 
 import numpy as np
@@ -18,10 +23,43 @@ import ruptures as rpt
 from ..calc import periods as P
 from ..calc.panel import Panel, placebo_entities
 from ..ledger.schema import PlaceboStat, SignalPayload, Surprise
+from ..settings import load_registry
 from .baseline import Baseline, fit_baseline
 
 MAD_TO_SD = 1.4826
 SENSOR = "gap"
+# Units that are already scale-free; anything else (crores, per share, unknown) is an amount and is rescaled.
+LEVEL_UNITS = frozenset({"fraction", "ratio", "pp", "composition"})
+
+
+@lru_cache(maxsize=1)
+def _units() -> dict[str, str]:
+    return {m["id"]: m.get("unit", "") for m in load_registry("metrics.yaml")}
+
+
+def normalise(series: pd.Series, pre_end: int, metric: str) -> tuple[pd.Series | None, float | None]:
+    """(scale-free series, scale): amounts are divided by the median absolute value up to ``pre_end``.
+
+    Ratios come back unchanged with scale 1. An amount with no measurable size before the break gives
+    (None, None): it cannot be compared with peers.
+    """
+    if _units().get(metric) in LEVEL_UNITS:
+        return series, 1.0
+    pre = series[series.index <= pre_end].dropna()
+    scale = float(pre.abs().median()) if len(pre) else float("nan")
+    if not math.isfinite(scale) or scale <= 1e-12:
+        return None, None
+    return series / scale, scale
+
+
+def _normalise_frame(wide: pd.DataFrame, pre_end: int, metric: str) -> pd.DataFrame:
+    """Each donor column on its own scale; donors with no size before the break are dropped."""
+    cols = {}
+    for c in wide.columns:
+        s, _ = normalise(wide[c], pre_end, metric)
+        if s is not None:
+            cols[c] = s
+    return pd.DataFrame(cols, index=wide.index)
 
 
 @dataclass
@@ -85,6 +123,9 @@ def _space_placebos(
         s = panel.series(peer, metric).dropna()
         if len(s) < cfg["panel"]["min_quarters_to_run"]:
             continue
+        s, _ = normalise(s, pre_end, metric)
+        if s is None:
+            continue
         base = fit_baseline(s, wide.drop(columns=[peer], errors="ignore"), pre_end, cfg)
         st = _gap_stat(s, base.series, pre_end, cfg["sensors"]["robust_z_threshold"])
         if st is not None:
@@ -93,7 +134,7 @@ def _space_placebos(
 
 
 def _time_placebos(
-    target: pd.Series, wide: pd.DataFrame, pos: int, cfg: dict[str, Any]
+    target: pd.Series, wide: pd.DataFrame, pos: int, cfg: dict[str, Any], metric: str
 ) -> list[float]:
     """The same test with the break moved earlier, on data from before the real break only (a valid null).
 
@@ -106,8 +147,11 @@ def _time_placebos(
         if shift >= 0 or p < cfg["twin"]["pre_period_min_q"] or pos - p < cfg["sensors"]["persistence_min_quarters"]:
             continue
         pre_end = int(target.index[p - 1])
-        base = fit_baseline(before, wide, pre_end, cfg)
-        st = _gap_stat(before, base.series, pre_end, cfg["sensors"]["robust_z_threshold"])
+        t_norm, _ = normalise(before, pre_end, metric)
+        if t_norm is None:
+            continue
+        base = fit_baseline(t_norm, _normalise_frame(wide, pre_end, metric), pre_end, cfg)
+        st = _gap_stat(t_norm, base.series, pre_end, cfg["sensors"]["robust_z_threshold"])
         if st is not None:
             out.append(st.z)
     return out
@@ -141,14 +185,18 @@ def scan_metric(panel: Panel, metric: str, settings: dict[str, Any]) -> SignalPa
     pre_end = int(target.index[pos - 1])
     break_pidx = int(target.index[pos])
 
-    wide = _donors(panel, metric)
-    base = fit_baseline(target, wide, pre_end, settings)
-    st = _gap_stat(target, base.series, pre_end, sens["robust_z_threshold"])
+    raw_wide = _donors(panel, metric)
+    t_norm, t_scale = normalise(target, pre_end, metric)
+    if t_norm is None:
+        return None
+    wide = _normalise_frame(raw_wide, pre_end, metric) if raw_wide.shape[1] else raw_wide
+    base = fit_baseline(t_norm, wide, pre_end, settings)
+    st = _gap_stat(t_norm, base.series, pre_end, sens["robust_z_threshold"])
     if st is None or abs(st.z) < sens["robust_z_threshold"] or st.persistence_q < sens["persistence_min_quarters"]:
         return None
 
     space = _space_placebos(panel, metric, wide, pre_end, settings) if wide.shape[1] else []
-    placebos = space + _time_placebos(target, wide, pos, settings)
+    placebos = space + _time_placebos(target, raw_wide, pos, settings, metric)
     n = len(placebos)
     az = abs(st.z)
     exceed = sum(1 for z in placebos if abs(z) >= az)
@@ -166,7 +214,7 @@ def scan_metric(panel: Panel, metric: str, settings: dict[str, Any]) -> SignalPa
         metrics=[metric],
         direction="up" if st.z > 0 else "down",
         break_period=P.from_index(break_pidx),
-        size=st.size,
+        size=st.size * t_scale,
         z=st.z,
         persistence_q=st.persistence_q,
         specificity=specificity,

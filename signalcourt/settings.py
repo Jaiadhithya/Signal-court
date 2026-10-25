@@ -44,6 +44,9 @@ class Sensors(_Section):
     open_screen_min_corr: float
     corp_action_window_q: int
     corp_action_factor: float
+    share_step_factors: list[float]
+    share_step_tolerance: float
+    share_flat_tolerance: float
 
 
 class Placebo(_Section):

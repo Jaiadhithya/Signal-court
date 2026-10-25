@@ -1,7 +1,8 @@
 """Real sense: scan every metric of the target and append the strongest gap signals to the ledger.
 
 Works for every sub-type: the baseline falls back from twin to peer median to own history by itself and
-each signal records which it used. The scan stops before ``demo.sense_cap_s`` and says so on the signals.
+each signal records which it used. Per-share metrics are first put on one share base per company, so a bonus
+issue or split is never reported as a collapse. The scan stops before ``demo.sense_cap_s`` and says so.
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from ..ledger import Author, RecordType
 from ..ledger.schema import SignalPayload
 from ..pipeline import RunContext, register
 from ..sensors.gap import scan_metric
+from ..sensors.per_share import adjust_per_share
 
 SENSORS = Author.code("sensors")
 
@@ -24,6 +26,9 @@ def run(ctx: RunContext, clock: Callable[[], float] = time.monotonic) -> None:
     if panel is None or panel.df.empty:
         ctx.on_event("stage_note", {"stage": "sense", "note": "no panel, nothing to scan"})
         return
+    panel, share_notes = adjust_per_share(panel, ctx.settings)
+    for note in share_notes:
+        ctx.on_event("stage_note", {"stage": "sense", "note": note})
     cap = ctx.settings["demo"]["sense_cap_s"]
     metrics = panel.metrics(panel.target)
     found: list[SignalPayload] = []
@@ -53,6 +58,10 @@ def run(ctx: RunContext, clock: Callable[[], float] = time.monotonic) -> None:
         ctx.on_event("stage_note", {"stage": "sense", "note": note})
         for s in top:
             s.surprise.coverage_status = f"{s.surprise.coverage_status}; {note}"
+    for s in top:  # say on the signal itself when its per-share series was restated
+        for note in share_notes:
+            if note.startswith(f"{s.metrics[0]}:"):
+                s.surprise.coverage_status = f"{s.surprise.coverage_status}; {note}"
     if not top:
         ctx.on_event("stage_note", {"stage": "sense", "note": "no signal cleared the bar"})
     for s in top:
