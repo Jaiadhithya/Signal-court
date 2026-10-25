@@ -2,7 +2,9 @@
 
 Works for every sub-type: the baseline falls back from twin to peer median to own history by itself and
 each signal records which it used. Per-share metrics are first put on one share base per company, so a bonus
-issue or split is never reported as a collapse. The scan stops before ``demo.sense_cap_s`` and says so.
+issue or split is never reported as a collapse. A break next to a corporate action (a merger filing or an unexplained
+share-count move, see ``sensors.corp_actions``) is discounted before ranking, not dropped, so the court still sees it.
+The scan stops before ``demo.sense_cap_s`` and says so.
 """
 
 from __future__ import annotations
@@ -10,9 +12,11 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 
+from ..calc import periods as P
 from ..ledger import Author, RecordType
 from ..ledger.schema import SignalPayload
 from ..pipeline import RunContext, register
+from ..sensors.corp_actions import apply_markers, scheme_markers, share_count_markers
 from ..sensors.gap import scan_metric
 from ..sensors.per_share import adjust_per_share
 
@@ -26,6 +30,11 @@ def run(ctx: RunContext, clock: Callable[[], float] = time.monotonic) -> None:
     if panel is None or panel.df.empty:
         ctx.on_event("stage_note", {"stage": "sense", "note": "no panel, nothing to scan"})
         return
+    sens = ctx.settings["sensors"]
+    markers = scheme_markers(ctx.ledger, ctx.store, panel.target, sens) + share_count_markers(panel, sens)
+    for m in markers:
+        note = f"corporate action at {P.from_index(m.pidx)}: {m.detail}"
+        ctx.on_event("stage_note", {"stage": "sense", "note": note})
     panel, share_notes = adjust_per_share(panel, ctx.settings)
     for note in share_notes:
         ctx.on_event("stage_note", {"stage": "sense", "note": note})
@@ -51,6 +60,8 @@ def run(ctx: RunContext, clock: Callable[[], float] = time.monotonic) -> None:
         if sig is not None:
             found.append(sig)
 
+    for s in found:
+        apply_markers(s, markers, sens)
     found.sort(key=lambda s: (-s.surprise.score, s.metrics[0]))
     top = found[: ctx.settings["rank"]["k"]]
     if capped:
