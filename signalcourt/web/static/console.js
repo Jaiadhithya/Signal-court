@@ -17,7 +17,7 @@ async function api(url, options = {}) {
   return response;
 }
 function notify(message, error = false) { $("notice").textContent = message; $("notice").classList.toggle("error", error); $("notice").hidden = !message; }
-function updateRunButton() { $("run-button").disabled = !state.ready || state.busy || state.pending || !state.selected; $("run-button").firstChild.textContent = state.busy ? "Run in progress " : state.pending ? "Starting… " : "Run research "; document.querySelectorAll("[data-mode]").forEach((button) => { button.disabled = state.busy || state.pending; }); }
+function updateRunButton() { $("run-button").disabled = !state.ready || state.busy || state.pending || (!state.selected && !$("company-search").value.trim());$("run-button").firstChild.textContent = state.busy ? "Run in progress " : state.pending ? "Starting… " : "Run research "; document.querySelectorAll("[data-mode]").forEach((button) => { button.disabled = state.busy || state.pending; }); }
 function setMode(mode) {
   if (state.busy || state.pending) return;
   state.mode = mode;
