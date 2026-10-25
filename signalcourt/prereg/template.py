@@ -130,6 +130,8 @@ def draft_claim_with_calc(
     metric, direction, break_period = sig["metrics"][0], sig["direction"], sig.get("break_period")
     if direction not in COMPARATORS or not break_period or sig.get("size") is None:
         raise ValueError(f"signal {signal_rid} has no direction, break or size to build a kill test from")
+    if panel is None:
+        raise ValueError("no panel to read the pre-break level from")
     if metric in per_share_metrics():  # the sensor compared per-share values on one share base; do the same
         panel, _ = adjust_per_share(panel, settings or load_config().model_dump())
 
