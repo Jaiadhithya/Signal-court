@@ -1,4 +1,9 @@
-# Providers, deployments and role chains. `<verify>` ids are filled from the day-1 models smoke report.
+# Providers, deployments and role chains. Model ids checked against each provider's listing on 25 Oct
+# (scripts/models_smoke.py). Mistral and Z.ai keys answered 429 on every call that day, NIM deepseek timed out
+# and NIM glm took 84 s. On a real court pack the Groq models answered in 1-5 s while nemotron used its whole
+# reply budget thinking, so the court roles lead with a different Groq model each (Groq limits tokens per model
+# per minute) and the family guard keeps red team, investigator and advocate apart. Nemotron (30-60 s per court
+# call) is kept for draft and write only.
 providers:
   mistral:    {base_url: "https://api.mistral.ai/v1",                               keys_env: MISTRAL_API_KEYS}
   nim:        {base_url: "https://integrate.api.nvidia.com/v1",                     keys_env: NVIDIA_API_KEYS}
@@ -12,26 +17,26 @@ deployments:   # name: [provider, model id, family, ctx, rpm, tpm, rpd]   (limit
   mistral-medium:   [mistral, mistral-medium-latest, mistral, 256000, 60, 500000, null]
   mistral-large:    [mistral, mistral-large-latest, mistral, 256000, 60, 500000, null]
   mistral-small:    [mistral, mistral-small-latest, mistral, 128000, 60, 500000, null]
-  nemotron-ultra:   [nim, "<verify: nemotron-3-ultra id>", nvidia, 1000000, 40, null, null]
-  deepseek-flash:   [nim, "<verify: deepseek-v4.1-flash id>", deepseek, 128000, 40, null, null]
-  glm-52-nim:       [nim, "<verify: z-ai/glm-5.2>", zhipu, 128000, 40, null, null]
+  nemotron-ultra:   [nim, nvidia/nemotron-3-ultra-550b-a55b, nvidia, 1000000, 40, null, null]
+  deepseek-flash:   [nim, deepseek-ai/deepseek-v4.1-flash, deepseek, 128000, 40, null, null]
+  glm-52-nim:       [nim, z-ai/glm-5.3-flash, zhipu, 128000, 40, null, null]
   gpt-oss-120b:     [groq, openai/gpt-oss-120b, openai, 131000, 30, 8000, 1000]
   gpt-oss-20b:      [groq, openai/gpt-oss-20b, openai, 131000, 30, 8000, 1000]
-  qwen-27b:         [groq, "<verify: qwen/qwen3.8-27b>", qwen, 131000, 30, 8000, 1000]
-  gemma-31b:        [gemini, "<verify: gemma-4-31b-it>", google, 33000, 15, null, 1000]
-  gemini-flash:     [gemini, "<verify: gemini-3.8-flash>", google, 1000000, 10, null, 20]
-  gemini-flash-lite: [gemini, "<verify: gemini-3.5-flash-lite>", google, 1000000, 15, null, null]
+  qwen-27b:         [groq, qwen/qwen3.8-27b, qwen, 131000, 30, 8000, 1000]
+  gemma-31b:        [gemini, gemma-4-31b-it, google, 33000, 15, null, 1000]
+  gemini-flash:     [gemini, gemini-3.8-flash, google, 1000000, 10, null, 20]
+  gemini-flash-lite: [gemini, gemini-3.5-flash-lite, google, 1000000, 15, null, null]
   glm-flash:        [zai, glm-4.7-flash, zhipu, 200000, 5, null, null]
-  nemotron-or:      [openrouter, "<verify: nvidia/nemotron-3-ultra-550b-a55b:free>", nvidia, 1000000, 20, null, 50]
+  nemotron-or:      [openrouter, "nvidia/nemotron-3-ultra-550b-a55b:free", nvidia, 1000000, 20, null, 50]
 
 roles:         # ordered chains; `demo` overrides apply in live/warm demo runs
   extract:          [mistral-medium, gemini-flash-lite, glm-flash, nemotron-or]           # no NIM for bulk work (M2)
   extract_wholedoc: [nemotron-ultra, gemini-flash, gemini-flash-lite]                     # rare, >256K
-  draft:            [nemotron-ultra, deepseek-flash, mistral-medium, gemini-flash]
-  investigate:      [mistral-medium, mistral-large, gemini-flash-lite, glm-flash]
-  advocate:         [mistral-medium, mistral-large, glm-52-nim, gemini-flash-lite]
-  redteam:          [gpt-oss-120b, qwen-27b, gpt-oss-20b, glm-flash]                       # sweeps and pre-runs
-  redteam.demo:     [deepseek-flash, gpt-oss-120b, qwen-27b, glm-flash]                    # M1: NIM first in demo
-  entail:           [gemma-31b, gpt-oss-20b, mistral-small, glm-flash]                     # family guard picks
-  write:            [mistral-medium, gemini-flash-lite, nemotron-or]
-  coverage:         [mistral-small, gemma-31b]
+  draft:            [nemotron-ultra, nemotron-or, gemini-flash-lite, mistral-medium]
+  investigate:      [gpt-oss-20b, gpt-oss-120b, qwen-27b, gemini-flash-lite]
+  advocate:         [gpt-oss-120b, gpt-oss-20b, qwen-27b, gemini-flash-lite]
+  redteam:          [qwen-27b, gemini-flash-lite, gpt-oss-120b, gpt-oss-20b]               # family guard drops any repeat
+  redteam.demo:     [qwen-27b, gemini-flash-lite, gpt-oss-120b, gpt-oss-20b]
+  entail:           [gemini-flash-lite, qwen-27b, gpt-oss-20b]                  # family guard picks
+  write:            [gemini-flash-lite, nemotron-or, mistral-medium]
+  coverage:         [gemini-flash-lite, mistral-small, gemma-31b]

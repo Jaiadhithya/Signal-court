@@ -183,6 +183,18 @@ class Demo(_Section):
     peer_median_min_donors: int
 
 
+class Court(_Section):
+    """The LLM court: how many claims a demo run argues, and the per-claim caps on proposals and pack size."""
+
+    demo_mode: bool
+    max_claims_demo: int
+    max_evidence: int
+    max_challenges: int
+    pack_tokens: int
+    max_output_tokens: int
+    per_call_timeout_s: float
+
+
 class Config(_Section):
     """Mirror of config/settings.toml."""
 
@@ -204,6 +216,7 @@ class Config(_Section):
     writer: Writer
     pipeline: Pipeline
     demo: Demo
+    court: Court
 
 
 class Env(BaseSettings):
