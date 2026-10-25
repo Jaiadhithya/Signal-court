@@ -108,5 +108,49 @@ def verify(run_dir: Annotated[Path, typer.Argument(help="A run directory holding
     raise typer.Exit(1)
 
 
+@app.command()
+def report(
+    run_dir: Annotated[Path, typer.Argument(help="An existing run directory holding ledger.sqlite.")],
+    pdf: bool = typer.Option(False, "--pdf", help="Also export report.pdf when Chrome is available."),
+    open_report: bool = typer.Option(False, "--open", help="Open the HTML research report in the browser."),
+) -> None:
+    """Re-render a saved research report without appending ledger records."""
+    import webbrowser
+
+    from signalcourt.ledger.store import LEDGER_DB
+
+    if not (run_dir / LEDGER_DB).is_file():
+        typer.echo(f"No ledger at {run_dir / LEDGER_DB}")
+        raise typer.Exit(1)
+
+    from signalcourt.render import render_report
+    from signalcourt.settings import Workspace, load_settings
+    from signalcourt.store import DocStore
+
+    configured = load_settings().workspace
+    nearby = Workspace(home=run_dir.resolve().parent.parent)
+    workspace = next((ws for ws in (configured, nearby) if ws.manifest_db.is_file()), None)
+    store = DocStore(workspace.cache) if workspace else None
+    try:
+        html = render_report(run_dir, store=store)
+    finally:
+        if store is not None:
+            store.close()
+    html_path = run_dir / "report.html"
+    html_path.write_text(html, encoding="utf-8")
+    (run_dir / "finding.html").write_text(html, encoding="utf-8")
+    typer.echo(str(html_path))
+    if pdf:
+        from signalcourt.render.pdf import export_pdf
+
+        pdf_path = export_pdf(html_path)
+        if pdf_path is None:
+            typer.echo("PDF unavailable: Chrome was not found or could not export; the HTML report is ready.")
+        else:
+            typer.echo(str(pdf_path))
+    if open_report:
+        webbrowser.open(html_path.resolve().as_uri())
+
+
 if __name__ == "__main__":
     app()
