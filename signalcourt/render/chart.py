@@ -14,7 +14,7 @@ from ..calc.panel import Panel
 from ..ledger.schema import SignalPayload
 from ..sensors.baseline import fit_baseline
 from ..sensors.gap import normalise
-from ..sensors.per_share import adjust_per_share
+from ..sensors.per_share import adjust_per_share, per_share_metrics
 from ..settings import load_registry
 
 
@@ -42,7 +42,7 @@ def chart_series(
         target = panel.series(entity, metric).replace([np.inf, -np.inf], np.nan).dropna()
         adjusted, notes = adjust_per_share(panel, settings)
         target = adjusted.series(entity, metric).replace([np.inf, -np.inf], np.nan).dropna()
-        target.attrs["notes"] = notes
+        target.attrs["notes"] = [note for note in notes if note.startswith(f"{metric}:")]
         if target.empty:
             target.attrs["baseline_note"] = "No usable target observations after the sensor's share-base checks."
             return target, _empty(), "unavailable"
@@ -196,10 +196,11 @@ def render_chart(
     rids = (rows.sort_values("pidx").drop_duplicates("pidx", keep="last").set_index("pidx").rid.to_dict()
             if "rid" in rows else {})
     notes = target.attrs.get("notes", [])
+    share_restated = metric in per_share_metrics() and any("restated for" in note.lower() for note in notes)
     for index, value in target.items():
         rid = rids.get(index)
         tooltip = f'{_quarter(int(index))}: {_number(float(value), unit)}'
-        if notes:
+        if share_restated:
             tooltip += "; adjusted onto a consistent share base"
         title = escape(tooltip)
         circle = (f'<circle class="chart-point" cx="{x(int(index)):.2f}" cy="{y(float(value)):.2f}" r="3.8">'

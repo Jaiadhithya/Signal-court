@@ -195,3 +195,31 @@ def test_pdf_export_does_not_report_a_missing_or_stale_file_as_success(tmp_path,
     monkeypatch.setattr(pdf.subprocess, "run", lambda args, **kwargs: CompletedProcess(args, 0))
     assert pdf.export_pdf(html) is None
     assert output.read_bytes() == b"%PDF-1.7\nprevious export"
+
+
+@pytest.mark.parametrize(
+    "metric,split,missing_profit,adjusted",
+    [("interest_expended", False, True, False), ("eps_basic", False, False, False),
+     ("eps_basic", True, False, True)],
+)
+def test_chart_share_base_notes_describe_only_the_plotted_metric(metric, split, missing_profit, adjusted):
+    from signalcourt.render.chart import chart_series, render_chart
+
+    panel = chart_panel(metric="pat")
+    eps = panel.df.copy()
+    eps["metric"] = "eps_basic"
+    divisor = np.where(eps.pidx < P.index("Q2FY25"), 10.0, 20.0) if split else 20.0
+    eps["value"] = eps.value / divisor
+    eps["rid"] = eps.rid.str.replace("FA-", "FA-9", regex=False)
+    if missing_profit:
+        panel.df["metric"] = "interest_expended"
+    panel.df = pd.concat([panel.df, eps], ignore_index=True)
+    settings, signal = load_config().model_dump(), chart_signal(metric)
+    target, _, _ = chart_series(panel, signal, settings)
+    notes = target.attrs.get("notes", [])
+    assert all(note.startswith(f"{metric}:") for note in notes)
+    assert bool(notes) is adjusted
+    rendered = render_chart(panel, signal, settings)
+    assert ("adjusted onto a consistent share base" in rendered) is adjusted
+    if metric != "eps_basic":
+        assert "eps_basic:" not in rendered
