@@ -2,7 +2,7 @@
 const $ = (id) => document.getElementById(id);
 const stages = [...document.querySelectorAll("[data-stage]")].map((el) => el.dataset.stage);
 const idleFeed = $("feed-empty").cloneNode(true);
-const state = {targets: [], selected: null, mode: "warm", ready: false, busy: false, id: null, result: null,
+const state = {targets: [], selected: null, mode: "live", ready: false, busy: false, id: null, result: null,
   source: null, start: 0, clock: null, currentStage: null, stageStart: 0, lastEvent: 0, pending: false, missingPolls: 0};
 const seconds = (n) => Number(n || 0).toFixed(1);
 
@@ -17,12 +17,12 @@ async function api(url, options = {}) {
   return response;
 }
 function notify(message, error = false) { $("notice").textContent = message; $("notice").classList.toggle("error", error); $("notice").hidden = !message; }
-function updateRunButton() { $("run-button").disabled = !state.ready || state.busy || state.pending || !state.selected; $("run-button").firstChild.textContent = state.busy ? "Run in progress " : state.pending ? "Starting… " : "Run research "; document.querySelectorAll("[data-mode]").forEach((button) => { button.disabled = state.busy || state.pending; }); }
-function setMode(mode) {
-  if (state.busy || state.pending) return;
-  state.mode = mode;
-  document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
-  $("mode-help").textContent = mode === "warm" ? "Cached filings + a fresh-data check." : "Cached inputs only. No network calls.";
+function updateRunButton() { $("run-button").disabled = !state.ready || state.busy || state.pending || !state.selected; $("run-button").firstChild.textContent = state.busy ? "Run in progress " : state.pending ? "Starting… " : "Run research "; }
+function companyMode(company) {
+  return company.run_mode || state.targets.find((target) => target.symbol === company.symbol)?.run_mode || "live";
+}
+function updateRunHelp() {
+  $("run-help").textContent = !state.selected ? "Select a company to begin." : state.mode === "replay" ? "Replay for this demonstration company. No network calls." : "Fetch public filings and run the research.";
 }
 function option(company) {
   const button = document.createElement("button"); button.type = "button"; button.className = "company-option";
@@ -32,7 +32,6 @@ function option(company) {
   const symbol = document.createElement("span"); symbol.textContent = company.symbol;
   const subtype = document.createElement("span"); subtype.className = "subtype"; subtype.textContent = (company.subtype || "listed").replaceAll("_", " ");
   meta.append(symbol, subtype); button.append(name, meta);
-  if (company.replay_ready) { const dot = document.createElement("i"); dot.className = "ready-dot"; dot.title = "Cached replay available"; button.append(dot); }
   button.addEventListener("click", () => selectCompany(company)); return button;
 }
 function renderCompanies() {
@@ -42,12 +41,12 @@ function renderCompanies() {
   if (query) {
     const resolve = document.createElement("button"); resolve.className = "resolve-button"; resolve.textContent = `Resolve “${$("company-search").value.trim()}” ↗`;
     resolve.addEventListener("click", resolveSearch); $("company-list").append(resolve);
-  } else if (!filtered.length) { const text = document.createElement("p"); text.className = "no-results"; text.textContent = "No prewarmed targets found. Search by full name or symbol."; $("company-list").append(text); }
+  } else if (!filtered.length) { const text = document.createElement("p"); text.className = "no-results"; text.textContent = "No companies found. Search by full name or symbol."; $("company-list").append(text); }
 }
 function selectCompany(company) {
   if (state.busy || state.pending) return;
   if (state.id) resetIdle();
-  state.selected = company; renderCompanies();
+  state.selected = company; state.mode = companyMode(company); renderCompanies(); updateRunHelp();
   $("run-title").textContent = company.name;
   $("run-subtitle").textContent = `${company.symbol} / ${(company.subtype || "listed company").replaceAll("_", " ")} · Ready to investigate`;
   notify(""); updateRunButton();
@@ -61,7 +60,7 @@ async function resolveSearch() {
     else notify(data.message || "No company matched. Try a full name or symbol.", true);
   } catch (error) { notify(error.message, true); }
 }
-function showCandidates(candidates) { $("company-list").replaceChildren(...candidates.map(option)); $("search-help").textContent = "Several companies match. Choose the one named by the judges."; state.selected = null; updateRunButton(); }
+function showCandidates(candidates) { $("company-list").replaceChildren(...candidates.map(option)); $("search-help").textContent = "Several companies match. Choose the one named by the judges."; state.selected = null; updateRunHelp(); updateRunButton(); }
 function resetStages() {
   document.querySelectorAll("[data-stage]").forEach((el) => {
     el.className = "stage pending"; el.querySelector(".stage-state").textContent = "Pending";
@@ -103,19 +102,18 @@ function addNote(note, forcedRole) {
 function showLive() { document.body.classList.remove("results"); $("live-view").hidden = false; $("result-view").hidden = true; }
 function prepareRun(company, mode) {
   showLive(); resetStages(); $("court-feed").replaceChildren(); $("failure").hidden = true; $("show-report").hidden = true;
-  $("run-title").textContent = company.name; $("run-subtitle").textContent = `${company.symbol || ""} / ${mode.toUpperCase()} MODE`;
+  $("run-title").textContent = company.name; $("run-subtitle").textContent = `${company.symbol || ""} / ${mode === "replay" ? "CACHED REPLAY" : "PUBLIC FILINGS RESEARCH"}`;
   $("feed-state").textContent = "Research in progress"; $("feed-state").classList.add("active"); state.lastEvent = 0;
   state.currentStage = null; state.missingPolls = 0; state.busy = true; updateRunButton(); startClock();
 }
-async function runResearch(overrideMode) {
+async function runResearch() {
   if (state.busy || state.pending || !state.ready) return;
   if (!state.selected) { await resolveSearch(); if (!state.selected) return; }
-  if (overrideMode) setMode(overrideMode);
-  const company = {...state.selected}, mode = state.mode;
+  const company = {...state.selected};
   state.pending = true; updateRunButton(); notify("");
   try {
-    const data = await (await api("/api/runs", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({company: company.name, symbol: company.symbol, mode})})).json();
-    prepareRun(company, mode); state.id = data.id; $("run-reference").textContent = data.id;
+    const data = await (await api("/api/runs", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({company: company.name, symbol: company.symbol})})).json();
+    state.mode = data.mode; updateRunHelp(); prepareRun(company, data.mode); state.id = data.id; $("run-reference").textContent = data.id;
     sessionStorage.removeItem("signal-court-report"); connectEvents(data.id);
   } catch (error) {
     if (error.detail?.candidates?.length) showCandidates(error.detail.candidates);
@@ -140,7 +138,7 @@ function handleEvent(kind, data) {
     if (kind === "stage_start") {
       tile.className = "stage running"; tile.querySelector(".stage-state").textContent = "Running";
       tile.querySelector(".stage-impl").textContent = data.impl; state.currentStage = data.stage; state.stageStart = data.elapsed_seconds === undefined ? performance.now() : state.start + data.elapsed_seconds * 1000;
-      addNote(`${data.stage.charAt(0).toUpperCase() + data.stage.slice(1)} started.`, "system");
+      addNote(`${data.stage === "judge" ? "Checks" : data.stage.charAt(0).toUpperCase() + data.stage.slice(1)} started.`, "system");
     } else if (kind === "stage_end") {
       tile.className = "stage done"; tile.querySelector(".stage-state").textContent = "Done";
       tile.querySelector(".stage-time").textContent = `${seconds(data.seconds)} s`;
@@ -160,7 +158,7 @@ function handleEvent(kind, data) {
     } else {
       $("feed-state").textContent = "Run stopped"; $("failure").hidden = false;
       $("failure-title").textContent = `Stopped at ${data.stage || "setup"}`; $("failure-reason").textContent = data.error;
-      $("replay-button").disabled = false;
+      $("retry-button").disabled = false;
       const tile = document.querySelector(`[data-stage="${data.stage}"]`); if (tile) { tile.className = "stage failed"; tile.querySelector(".stage-state").textContent = "Failed"; }
       addNote(data.error, "system");
     }
@@ -203,9 +201,9 @@ async function showHistory() {
       const row = document.createElement("button"); row.className = "history-row";
       const name = document.createElement("strong"); name.textContent = run.company;
       const meta = document.createElement("span"); meta.className = "history-meta";
-      const grade = document.createElement("span"); grade.className = `grade ${run.grade || ""}`; grade.textContent = run.grade || run.status;
-      const mode = document.createElement("span"); mode.textContent = `${run.mode.toUpperCase()} / ${seconds(run.total_seconds)} s`;
-      const date = document.createElement("span"); date.textContent = new Date(run.time).toLocaleString(); meta.append(grade, mode, date);
+      const status = document.createElement("span"); status.textContent = run.has_report ? "Complete" : "Incomplete";
+      const mode = document.createElement("span"); mode.textContent = `${run.mode === "replay" ? "REPLAY" : "RESEARCH"} / ${seconds(run.total_seconds)} s`;
+      const date = document.createElement("span"); date.textContent = new Date(run.time).toLocaleString(); meta.append(status, mode, date);
       const ref = document.createElement("small"); ref.textContent = `${run.id}${run.has_report ? "" : " · No finished report"}`;
       row.append(name, meta, ref); row.disabled = !run.has_report;
       row.addEventListener("click", () => { drawer.close(); showResult(run.id, run.company); notify(""); }); list.append(row);
@@ -220,10 +218,10 @@ async function pollStatus() {
   try {
     const data = await (await api("/api/status")).json(); state.ready = data.state === "ready";
     const status = $("server-status"); status.className = `server-status ${data.state === "ready" ? "" : data.state}`;
-    status.replaceChildren(Object.assign(document.createElement("i"), {ariaHidden: "true"}), document.createTextNode(data.state === "ready" ? "Ready" : data.state === "error" ? "Warm-up failed" : "Warming up…"));
-    if (data.state === "error") notify(`Warm-up failed: ${data.message}. Restart the launcher after checking the local workspace.`, true);
+    status.replaceChildren(Object.assign(document.createElement("i"), {ariaHidden: "true"}), document.createTextNode(data.state === "ready" ? "Ready" : data.state === "error" ? "Startup failed" : "Starting…"));
+    if (data.state === "error") notify(`Startup failed: ${data.message}. Restart the launcher after checking the local workspace.`, true);
     if (data.active_run && data.active_run.id !== state.id && !state.pending) {
-      const run = data.active_run; state.busy = false; state.selected = {name: run.company, symbol: run.symbol}; setMode(run.mode);
+      const run = data.active_run; state.busy = false; state.selected = {name: run.company, symbol: run.symbol}; state.mode = run.mode; updateRunHelp();
       renderCompanies();
       prepareRun(state.selected, run.mode); state.id = run.id; $("run-reference").textContent = run.id; startClock(run.elapsed_seconds);
       run.events.forEach((e) => { state.lastEvent = e.id; handleEvent(e.event, e.data); }); connectEvents(run.id, state.lastEvent);
@@ -235,15 +233,14 @@ async function pollStatus() {
         const runs = await (await api("/api/runs")).json();
         const saved = runs.find((run) => run.id === state.id);
         if (saved?.has_report) handleEvent("done", {total_seconds: saved.total_seconds});
-        else handleEvent("error", {stage: state.currentStage || "interrupted run", total_seconds: (performance.now() - state.start) / 1000, error: "The server restarted or the run was interrupted. Re-run this company in replay, or open a completed report in Past runs."});
+        else handleEvent("error", {stage: state.currentStage || "interrupted run", total_seconds: (performance.now() - state.start) / 1000, error: "The server restarted or the run was interrupted. Retry the research, or open a completed report in Past runs."});
       }
     } else state.missingPolls = 0;
     updateRunButton(); return data;
   } catch { state.ready = false; updateRunButton(); $("server-status").textContent = "Server unavailable"; notify("The local server is unavailable. Double-click the launcher to restart it.", true); }
 }
-$("company-search").addEventListener("input", () => { if (!state.busy) { state.selected = null; updateRunButton(); } renderCompanies(); });
-document.querySelectorAll("[data-mode]").forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
-$("run-button").addEventListener("click", () => runResearch()); $("replay-button").addEventListener("click", () => runResearch("replay"));
+$("company-search").addEventListener("input", () => { if (!state.busy) { state.selected = null; updateRunHelp(); updateRunButton(); } renderCompanies(); });
+$("run-button").addEventListener("click", runResearch); $("retry-button").addEventListener("click", runResearch);
 $("history-button").addEventListener("click", showHistory); $("close-history").addEventListener("click", () => $("history-drawer").close());
 $("verify-button").addEventListener("click", verifyLedger); $("pdf-button").addEventListener("click", downloadPdf);
 $("show-report").addEventListener("click", () => showResult(state.id, $("run-title").textContent));

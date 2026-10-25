@@ -14,7 +14,7 @@
   <header class="masthead">
     <a class="brand" href="/" aria-label="Signal Court home"><span class="brand-mark" aria-hidden="true">SC</span><span>Signal Court<small>EVIDENCE BEFORE CONVICTION</small></span></a>
     <div class="edition">ATMOS 2026 <span>FINALS / OPERATOR CONSOLE</span></div>
-    <div class="header-actions"><span id="server-status" class="server-status warming" role="status"><i></i> Warming up…</span><button id="history-button" class="quiet">Past runs <span aria-hidden="true">↗</span></button></div>
+    <div class="header-actions"><span id="server-status" class="server-status warming" role="status"><i></i> Starting…</span><button id="history-button" class="quiet">Past runs <span aria-hidden="true">↗</span></button></div>
   </header>
 
   <div id="notice" class="notice" role="alert" hidden></div>
@@ -27,10 +27,9 @@
       </div>
       <div id="company-list" class="company-list" aria-label="Companies"><p class="loading">Loading targets…</p></div>
       <div class="run-controls">
-        <div class="mode-selector" role="group" aria-label="Run mode"><button type="button" data-mode="warm" aria-pressed="true">Warm</button><button type="button" data-mode="replay" aria-pressed="false">Replay</button></div>
-        <p id="mode-help" class="mode-help">Cached filings + a fresh-data check.</p>
+        <p id="run-help" class="mode-help">Select a company to begin.</p>
         <button id="run-button" class="primary run-button" disabled>Run research <span aria-hidden="true">↗</span></button>
-        <div class="rail-foot"><span><i class="ready-dot"></i> Cached replay available</span><span><kbd>Enter</kbd> to run</span></div>
+        <div class="rail-foot"><span>Public filings research</span><span><kbd>Enter</kbd> to run</span></div>
       </div>
     </aside>
 
@@ -41,10 +40,10 @@
         </div>
         <div id="stage-grid" class="stage-grid" aria-label="Pipeline stages">
           {% for stage in stages %}
-          <article class="stage pending" data-stage="{{ stage }}"><div class="stage-top"><span class="stage-number">0{{ loop.index }}</span><span class="stage-state">Pending</span></div><h2>{{ stage }}</h2><div class="stage-time">—<small> s</small></div><div class="stage-meta"><span class="stage-records">0 records</span><span class="stage-impl">—</span></div></article>
+          <article class="stage pending" data-stage="{{ stage }}"><div class="stage-top"><span class="stage-number">0{{ loop.index }}</span><span class="stage-state">Pending</span></div><h2>{{ 'Checks' if stage == 'judge' else stage }}</h2><div class="stage-time">—<small> s</small></div><div class="stage-meta"><span class="stage-records">0 records</span><span class="stage-impl">—</span></div></article>
           {% endfor %}
         </div>
-        <div id="failure" class="failure" role="alert" hidden><div><strong id="failure-title">Run stopped</strong><p id="failure-reason"></p></div><button id="replay-button" class="primary">Re-run in replay ↗</button></div>
+        <div id="failure" class="failure" role="alert" hidden><div><strong id="failure-title">Run stopped</strong><p id="failure-reason"></p></div><button id="retry-button" class="primary">Retry research ↗</button></div>
         <section class="court-panel" aria-labelledby="feed-heading"><div class="feed-header"><div><span class="section-label lilac">THE ARGUMENT, AS IT HAPPENS</span><h2 id="feed-heading">Court proceedings</h2></div><span id="feed-state" class="feed-state">Awaiting a run</span></div>
           <div id="court-feed" class="court-feed" role="log" aria-live="polite" aria-relevant="additions" tabindex="0"><div id="feed-empty" class="feed-empty"><div class="empty-rule" aria-hidden="true"></div><h3>Every claim gets a hearing.</h3><p>The investigator gathers evidence.<br>The red team challenges it. The advocate responds.<br>The ledger records what stands.</p><div class="role-key"><span>Investigator</span><span>Red team</span><span>Advocate</span></div></div></div>
           <div class="feed-footer"><span>HASH-CHAINED LEDGER</span><span id="run-reference">No run selected</span><button id="show-report" class="quiet" hidden>Read report ↗</button></div>
@@ -60,6 +59,6 @@
     </main>
   </div>
 
-  <dialog id="history-drawer" class="history-drawer" aria-labelledby="history-title"><div class="drawer-heading"><div><span class="section-label gold">SAVED RESEARCH</span><h2 id="history-title">Past runs</h2></div><button id="close-history" aria-label="Close past runs">Close ×</button></div><p class="drawer-help">Newest first. Open a report to inspect its evidence.</p><div id="history-list"></div></dialog>
+  <dialog id="history-drawer" class="history-drawer" aria-labelledby="history-title"><div class="drawer-heading"><div><span class="section-label gold">SAVED RESEARCH</span><h2 id="history-title">Past runs</h2></div><button id="close-history" aria-label="Close past runs">Close ×</button></div><p class="drawer-help">Newest first. Open a report to inspect its sources.</p><div id="history-list"></div></dialog>
 </body>
 </html>

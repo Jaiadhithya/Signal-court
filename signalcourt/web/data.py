@@ -71,35 +71,51 @@ def past_runs(home: Path) -> list[dict]:
     return sorted(summaries, key=lambda s: (s["time"], s["id"]), reverse=True)
 
 
-def companies(home: Path) -> list[dict]:
+def replay_targets(home: Path) -> dict[str, dict]:
     try:
         with (home / "prewarm_report.csv").open(encoding="utf-8-sig", newline="") as stream:
-            targets = [r for r in csv.DictReader(stream) if r.get("role") in {"track_a", "dev"}]
+            return {
+                r["symbol"].strip(): r
+                for r in csv.DictReader(stream)
+                if r.get("role") in {"track_a", "dev"} and r.get("symbol", "").strip()
+            }
+    except OSError:
+        return {}
+
+
+def company_mode(home: Path, symbol: str) -> str:
+    return "replay" if symbol in replay_targets(home) else "live"
+
+
+def companies(home: Path) -> list[dict]:
+    targets = replay_targets(home)
+    try:
         with closing(connect_readonly(home / "universe.sqlite")) as con:
-            entities = {r[0]: (r[1], r[2]) for r in con.execute("SELECT symbol,name,subtype FROM entities")}
-    except (OSError, sqlite3.Error):
+            entities = {
+                r[0]: (r[1], r[2])
+                for r in con.execute(
+                    "SELECT symbol,name,subtype FROM entities WHERE financial=1 "
+                    "ORDER BY CASE WHEN subtype='bank' THEN 0 ELSE 1 END, name COLLATE NOCASE, symbol"
+                )
+            }
+    except sqlite3.Error:
         return []
-    replay = {
-        s["symbol"]
-        for s in past_runs(home)
-        if s["has_report"] and len(s["impl"]) == 7 and all(i == "real" for i in s["impl"].values())
-    }
-    result, seen = [], set()
-    for row in targets:
-        symbol = row.get("symbol", "").strip()
-        if not symbol or symbol in seen or symbol not in entities:
+    result = []
+    for symbol in dict.fromkeys([*targets, *entities]):
+        if symbol not in entities:
             continue
-        seen.add(symbol)
+        row = targets.get(symbol, {})
         name, subtype = entities[symbol]
         result.append(
             {
                 "symbol": symbol,
                 "name": name,
                 "subtype": row.get("subtype") or subtype or "generic",
-                "role": row["role"],
-                "replay_ready": symbol in replay,
+                "run_mode": "replay" if symbol in targets else "live",
             }
         )
+        if len(result) == 50:
+            break
     return result
 
 
@@ -107,7 +123,7 @@ def resolve_target(home: Path, query: str, symbol: str | None = None) -> dict:
     from signalcourt.stages.harvest_stage import AmbiguousCompany, UnknownCompany, resolve_company
 
     def candidate(match):
-        return {"symbol": match.symbol, "name": match.name}
+        return {"symbol": match.symbol, "name": match.name, "run_mode": company_mode(home, match.symbol)}
 
     try:
         with closing(connect_readonly(home / "universe.sqlite")) as con:

@@ -61,16 +61,79 @@ def events(client, run_id, headers=None):
     return result
 
 
-def test_companies_are_runtime_targets_and_replay_readiness(client):
+def test_companies_include_universe_and_automatic_run_modes(client):
     targets = client.get("/api/companies").json()
     assert [(c["symbol"], c["name"], c["subtype"]) for c in targets] == [
         ("ALPHA", "Alpha Finance Limited", "nbfc"),
         ("BETA", "Alpha Insurance Limited", "life_insurer"),
+        ("GAMMA", "Gamma Limited", "nbfc"),
     ]
-    assert not any(c["replay_ready"] for c in targets)
+    assert [c["run_mode"] for c in targets] == ["replay", "replay", "live"]
+
+
+def test_catalog_is_limited_to_50_and_preserves_replay_targets(client, home):
+    con = U.connect(home / "universe.sqlite")
+    for i in range(60):
+        con.execute(
+            "INSERT INTO entities(symbol,name,financial,subtype) VALUES(?,?,1,'bank')",
+            (f"BANK{i:03}", f"Test Bank {i:03}"),
+        )
+    con.commit()
+    con.close()
+    targets = client.get("/api/companies").json()
+    assert len(targets) == 50
+    assert targets[0]["symbol"] == "ALPHA" and targets[1]["symbol"] == "BETA"
+    assert len({c["symbol"] for c in targets}) == 50
+    assert sum(c["run_mode"] == "replay" for c in targets) == 2
+
+
+def test_run_mode_is_selected_by_server_for_target_and_other_company(client):
+    for symbol, mode in [("ALPHA", "replay"), ("GAMMA", "live")]:
+        response = client.post("/api/runs", json={"company": symbol, "stub": list(STAGE_ORDER)})
+        assert response.status_code == 202
+        assert response.json()["mode"] == mode
+        run_id = response.json()["id"]
+        assert events(client, run_id)[-1][0] == "done"
+        assert next(r for r in client.get("/api/runs").json() if r["id"] == run_id)["mode"] == mode
+    assert client.get("/api/resolve", params={"q": "GAMMA"}).json()["match"]["run_mode"] == "live"
+
+
+def test_replay_cannot_be_requested_for_other_company(client):
+    response = client.post("/api/runs", json={"company": "GAMMA", "mode": "replay", "stub": list(STAGE_ORDER)})
+    assert response.status_code == 422
+    assert "replay" in response.json()["detail"].lower()
+
+
+def test_report_and_pdf_remove_strength_and_verdict_presentation(client, monkeypatch, home):
+    from lxml import html
+
+    from signalcourt.render import pdf
+
     run_id = run_stub(client)
     events(client, run_id)
-    assert client.get("/api/companies").json()[0]["replay_ready"] is False  # stub research is not a replay
+    directory = home / "runs" / run_id
+    source = (directory / "report.html").read_text(encoding="utf-8")
+    assert 'id="strength"' in source and 'class="grade-box' in source
+
+    def assert_clean(text):
+        document = html.document_fromstring(text)
+        assert not document.xpath('//*[@id="strength"] | //a[@href="#strength"]')
+        assert not document.xpath('//*[contains(concat(" ",normalize-space(@class)," ")," grade-box ")]')
+        assert not document.xpath('//span[@class="record-type" and text()="VERDICT"]')
+        assert "Evidence strength" not in document.xpath("//body")[0].text_content()
+        assert document.xpath('//*[@id="evidence"]') and document.xpath('//*[@id="counterargument"]')
+
+    assert_clean(client.get(f"/runs/{run_id}/report").text)
+
+    def export(path, pdf_path=None):
+        assert_clean(path.read_text(encoding="utf-8"))
+        pdf_path.write_bytes(b"%PDF-1.7\nfixture")
+        return pdf_path
+
+    monkeypatch.setattr(pdf, "find_chrome", lambda: "chrome")
+    monkeypatch.setattr(pdf, "export_pdf", export)
+    assert client.post(f"/api/runs/{run_id}/pdf").status_code == 200
+    assert client.post(f"/api/runs/{run_id}/verify").json()["status"] == "OK"
 
 
 def test_resolve_unique_ambiguous_and_unknown(client):
