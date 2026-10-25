@@ -13,6 +13,7 @@
 - {id: robust_z, text: "(x - peer median) / (1.4826 * peer MAD)", expr: "builtin", unit: z, v: 1}
 - {id: adjusted_for_component, text: "reported value minus a component the company itself disclosed separately", expr: "x - component", unit: same, v: 1}
 - {id: specificity, text: "1 minus peer-median change over company change, clipped to 0..1", expr: "builtin", unit: fraction, v: 1}
+- {id: kill_threshold, text: "median of the target's values before the break plus half the signal's gap size", expr: "builtin", unit: same, v: 1}
 # Concrete per-entity formulas the calculator can evaluate directly.
 - {id: ppop_calc, text: net interest income plus other income minus operating expenses, expr: nii + other_income - opex, unit: inr_cr, v: 1}
 - {id: yoy_pat, text: PAT change versus the same quarter a year earlier, expr: yoy(pat), unit: fraction, v: 1}
